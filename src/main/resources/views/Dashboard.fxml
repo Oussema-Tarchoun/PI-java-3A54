@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      spacing="24"
+      alignment="TOP_LEFT"
+      style="-fx-background-color: transparent; -fx-padding: 0;">
+
+    <!-- Welcome banner -->
+    <VBox styleClass="front-stat-card" spacing="8">
+        <HBox alignment="CENTER_LEFT" spacing="16">
+            <StackPane styleClass="front-icon-bg front-icon-cyan">
+                <Label text="▲" style="-fx-font-size: 20px; -fx-text-fill: #00d4ff;"/>
+            </StackPane>
+            <VBox spacing="4">
+                <Label text="Bienvenue sur AIVA" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #ffffff;"/>
+                <Label text="Utilisez le menu de gauche pour gérer vos activités et objectifs."
+                       style="-fx-font-size: 13px; -fx-text-fill: #94a3b8;"/>
+            </VBox>
+        </HBox>
+    </VBox>
+
+    <!-- Quick nav cards -->
+    <HBox spacing="16">
+
+        <VBox styleClass="front-stat-card" spacing="10" HBox.hgrow="ALWAYS"
+              style="-fx-cursor: hand;">
+            <StackPane styleClass="front-icon-bg front-icon-cyan" style="-fx-alignment: center;">
+                <Label text="⚡" style="-fx-font-size: 22px;"/>
+            </StackPane>
+            <Label text="Mes Activités" style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ffffff;"/>
+            <Label text="Enregistrez et consultez vos séances sportives."
+                   style="-fx-font-size: 12px; -fx-text-fill: #94a3b8; -fx-wrap-text: true;"/>
+        </VBox>
+
+        <VBox styleClass="front-stat-card" spacing="10" HBox.hgrow="ALWAYS"
+              style="-fx-cursor: hand;">
+            <StackPane styleClass="front-icon-bg front-icon-purple" style="-fx-alignment: center;">
+                <Label text="🎯" style="-fx-font-size: 22px;"/>
+            </StackPane>
+            <Label text="Mes Objectifs" style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ffffff;"/>
+            <Label text="Définissez et suivez la progression de vos objectifs."
+                   style="-fx-font-size: 12px; -fx-text-fill: #94a3b8; -fx-wrap-text: true;"/>
+        </VBox>
+
+    </HBox>
+
+</VBox>

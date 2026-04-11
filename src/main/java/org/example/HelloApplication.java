@@ -10,7 +10,10 @@ public class HelloApplication extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/ObjectifView.fxml"));
+        // Use ClassLoader to properly load from src/main/resources/views/
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("views/Main.fxml"));
+        Parent root = loader.load();
+
         stage.setTitle("AIVA - Objectifs");
         stage.setScene(new Scene(root, 1200, 700));
         stage.show();

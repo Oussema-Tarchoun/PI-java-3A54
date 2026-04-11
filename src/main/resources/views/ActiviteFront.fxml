@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.ActiviteFrontController"
+      spacing="24"
+      style="-fx-background-color: transparent; -fx-padding: 0;">
+
+    <!-- ── STAT CARDS ──────────────────────────────────── -->
+    <HBox spacing="16" alignment="CENTER_LEFT">
+        <VBox styleClass="user-stat-card" HBox.hgrow="ALWAYS">
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <StackPane styleClass="user-icon-box user-icon-cyan">
+                    <Label text="⚡" style="-fx-font-size:15px;"/>
+                </StackPane>
+                <VBox spacing="2">
+                    <Label text="Total activités" styleClass="user-stat-label"/>
+                    <Label fx:id="statTotalLabel" text="0" styleClass="user-stat-value"/>
+                </VBox>
+            </HBox>
+        </VBox>
+        <VBox styleClass="user-stat-card" HBox.hgrow="ALWAYS">
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <StackPane styleClass="user-icon-box user-icon-pink">
+                    <Label text="🔥" style="-fx-font-size:15px;"/>
+                </StackPane>
+                <VBox spacing="2">
+                    <Label text="Calories brûlées" styleClass="user-stat-label"/>
+                    <Label fx:id="statCaloriesLabel" text="0 kcal" styleClass="user-stat-value"/>
+                </VBox>
+            </HBox>
+        </VBox>
+        <VBox styleClass="user-stat-card" HBox.hgrow="ALWAYS">
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <StackPane styleClass="user-icon-box user-icon-purple">
+                    <Label text="⏱" style="-fx-font-size:15px;"/>
+                </StackPane>
+                <VBox spacing="2">
+                    <Label text="Durée totale" styleClass="user-stat-label"/>
+                    <Label fx:id="statDureeLabel" text="0 min" styleClass="user-stat-value"/>
+                </VBox>
+            </HBox>
+        </VBox>
+        <VBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
+            <Button text="＋  Ajouter une activité"
+                    styleClass="user-btn-primary"
+                    onAction="#ouvrirFormulaire"/>
+        </VBox>
+    </HBox>
+
+    <!-- ── ADD / EDIT FORM ─────────────────────────────── -->
+    <VBox fx:id="formPane" styleClass="user-form-card"
+          spacing="16" visible="false" managed="false">
+        <HBox alignment="CENTER_LEFT" spacing="10">
+            <StackPane styleClass="user-icon-box user-icon-cyan">
+                <Label text="＋" style="-fx-font-size:13px; -fx-text-fill:#00d4ff;"/>
+            </StackPane>
+            <Label text="Nouvelle activité" styleClass="user-form-title"/>
+        </HBox>
+        <GridPane hgap="16" vgap="12">
+            <columnConstraints>
+                <ColumnConstraints hgrow="ALWAYS" percentWidth="33"/>
+                <ColumnConstraints hgrow="ALWAYS" percentWidth="33"/>
+                <ColumnConstraints hgrow="ALWAYS" percentWidth="34"/>
+            </columnConstraints>
+            <VBox GridPane.columnIndex="0" GridPane.rowIndex="0" spacing="5">
+                <Label text="Type d'activité" styleClass="user-field-label"/>
+                <TextField fx:id="typeField" promptText="Course, Natation…" styleClass="user-field"/>
+            </VBox>
+            <VBox GridPane.columnIndex="1" GridPane.rowIndex="0" spacing="5">
+                <Label text="Durée (min)" styleClass="user-field-label"/>
+                <TextField fx:id="dureeField" promptText="45" styleClass="user-field"/>
+            </VBox>
+            <VBox GridPane.columnIndex="2" GridPane.rowIndex="0" spacing="5">
+                <Label text="Calories" styleClass="user-field-label"/>
+                <TextField fx:id="caloriesField" promptText="320" styleClass="user-field"/>
+            </VBox>
+            <VBox GridPane.columnIndex="0" GridPane.rowIndex="1" spacing="5">
+                <Label text="Intensité" styleClass="user-field-label"/>
+                <TextField fx:id="intensiteField" promptText="Modérée, Élevée…" styleClass="user-field"/>
+            </VBox>
+            <VBox GridPane.columnIndex="1" GridPane.rowIndex="1" spacing="5">
+                <Label text="Date" styleClass="user-field-label"/>
+                <DatePicker fx:id="datePicker" styleClass="user-field" maxWidth="Infinity"/>
+            </VBox>
+            <VBox GridPane.columnIndex="2" GridPane.rowIndex="1" spacing="5">
+                <Label text="Objectif lié" styleClass="user-field-label"/>
+                <ComboBox fx:id="objectifCombo" styleClass="user-field" maxWidth="Infinity"/>
+            </VBox>
+        </GridPane>
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label fx:id="msgLabel" text="" HBox.hgrow="ALWAYS" style="-fx-font-size:12px;"/>
+            <HBox fx:id="btnAjouterBox" spacing="8">
+                <Button text="✓  Enregistrer" styleClass="user-btn-primary" onAction="#ajouter"/>
+                <Button text="Annuler"         styleClass="user-btn-ghost"   onAction="#annuler"/>
+            </HBox>
+            <HBox fx:id="btnModifierBox" spacing="8" visible="false" managed="false">
+                <Button text="✓  Modifier" styleClass="user-btn-primary" onAction="#modifier"/>
+                <Button text="Annuler"     styleClass="user-btn-ghost"   onAction="#annuler"/>
+            </HBox>
+        </HBox>
+    </VBox>
+
+    <!-- ── CARD GRID (populated by controller) ─────────── -->
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <Label text="Mes activités" styleClass="user-section-title" HBox.hgrow="ALWAYS"/>
+        <Button text="↻ Actualiser" styleClass="user-btn-ghost" onAction="#charger"/>
+    </HBox>
+
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;">
+        <FlowPane fx:id="cardGrid"
+                  hgap="16" vgap="16"
+                  prefWrapLength="880"
+                  style="-fx-background-color: transparent; -fx-padding: 2 0 8 0;"/>
+    </ScrollPane>
+
+    <!-- Empty state label shown when no cards -->
+    <Label fx:id="emptyLabel"
+           text="Aucune activité enregistrée. Cliquez sur « Ajouter » pour commencer !"
+           styleClass="user-empty-label"
+           wrapText="true"
+           visible="false" managed="false"/>
+
+</VBox>
