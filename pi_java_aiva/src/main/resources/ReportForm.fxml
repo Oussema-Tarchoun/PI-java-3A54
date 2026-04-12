@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="15" prefWidth="400.0" 
+      xmlns="http://javafx.com/javafx/21" 
+      xmlns:fx="http://javafx.com/fxml/1" 
+      fx:controller="Controllers.ReportFormController"
+      stylesheets="@styles.css"
+      styleClass="form-body">
+    
+    <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+
+    <Label fx:id="lblTitle" text="Nouveau Rapport" styleClass="page-title" style="-fx-font-size: 18;"/>
+    
+    <VBox spacing="5">
+        <Label text="Titre *" styleClass="form-label"/>
+        <TextField fx:id="tfTitle" promptText="Titre du rapport" styleClass="form-field"/>
+    </VBox>
+
+    <VBox spacing="5" VBox.vgrow="ALWAYS">
+        <Label text="Description *" styleClass="form-label"/>
+        <TextArea fx:id="taDescription" promptText="Détails du rapport..." 
+                  prefHeight="150" wrapText="true" styleClass="form-field"/>
+    </VBox>
+
+    <Label fx:id="lblError" text="Veuillez remplir tous les champs." 
+           style="-fx-text-fill: #ef4444; -fx-font-size: 11;" visible="false"/>
+
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button text="Annuler" onAction="#handleCancel" styleClass="btn-secondary"/>
+        <Button fx:id="btnSave" text="Enregistrer" onAction="#handleSave" styleClass="btn-primary"/>
+    </HBox>
+</VBox>

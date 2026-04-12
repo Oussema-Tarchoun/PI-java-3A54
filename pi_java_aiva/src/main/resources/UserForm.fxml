@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+
+<AnchorPane prefWidth="560.0"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controllers.UserFormController"
+            stylesheets="@styles.css">
+
+    <VBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+          AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
+          styleClass="dialog-root" spacing="0">
+
+        <!-- Dialog Header -->
+        <HBox styleClass="dialog-header" alignment="CENTER_LEFT" prefHeight="64">
+            <padding><Insets left="24" right="24"/></padding>
+            <Label fx:id="lblFormTitle" text="Ajouter un Utilisateur" styleClass="dialog-title"/>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <Label fx:id="lblFormIcon" text="&#128100;" styleClass="dialog-icon"/>
+        </HBox>
+
+        <!-- Scrollable Form -->
+        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="dialog-scroll">
+            <VBox spacing="16" styleClass="form-body">
+                <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
+
+                <!-- Row: Nom + Email -->
+                <HBox spacing="16">
+                    <VBox HBox.hgrow="ALWAYS" spacing="4">
+                        <Label text="Nom complet *" styleClass="form-label"/>
+                        <TextField fx:id="tfName" promptText="ex: Jean Dupont" styleClass="form-field" id="tfName"/>
+                    </VBox>
+                    <VBox HBox.hgrow="ALWAYS" spacing="4">
+                        <Label text="Email *" styleClass="form-label"/>
+                        <TextField fx:id="tfEmail" promptText="ex: jean@mail.com" styleClass="form-field" id="tfEmail"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Password -->
+                <VBox spacing="4">
+                    <Label text="Mot de passe *" styleClass="form-label"/>
+                    <PasswordField fx:id="pfPassword" promptText="••••••••" styleClass="form-field" id="pfPassword"/>
+                </VBox>
+
+                <!-- Roles -->
+                <VBox spacing="4">
+                    <Label text="Rôle" styleClass="form-label"/>
+                    <ComboBox fx:id="cmbRoles" prefWidth="999" styleClass="form-field" id="cmbRoles">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value='["ROLE_USER"]'/>
+                                <String fx:value='["ROLE_ADMIN"]'/>
+                                <String fx:value='["ROLE_MODERATOR"]'/>
+                            </FXCollections>
+                        </items>
+                    </ComboBox>
+                </VBox>
+
+                <!-- Row: Is Blocked + Is Verified -->
+                <HBox spacing="16">
+                    <VBox HBox.hgrow="ALWAYS" spacing="4">
+                        <Label text="Statut Blocage" styleClass="form-label"/>
+                        <ComboBox fx:id="cmbBlocked" prefWidth="999" styleClass="form-field" id="cmbBlocked">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="0 - Actif"/>
+                                    <String fx:value="1 - Bloqué"/>
+                                </FXCollections>
+                            </items>
+                        </ComboBox>
+                    </VBox>
+                    <VBox HBox.hgrow="ALWAYS" spacing="4">
+                        <Label text="Compte Vérifié" styleClass="form-label"/>
+                        <ComboBox fx:id="cmbVerified" prefWidth="999" styleClass="form-field" id="cmbVerified">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="Non vérifié"/>
+                                    <String fx:value="Vérifié"/>
+                                </FXCollections>
+                            </items>
+                        </ComboBox>
+                    </VBox>
+                </HBox>
+
+                <!-- Row: 2FA + XP -->
+                <HBox spacing="16">
+                    <VBox HBox.hgrow="ALWAYS" spacing="4">
+                        <Label text="2FA Activé" styleClass="form-label"/>
+                        <ComboBox fx:id="cmb2FA" prefWidth="999" styleClass="form-field" id="cmb2FA">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="Non"/>
+                                    <String fx:value="Oui"/>
+                                </FXCollections>
+                            </items>
+                        </ComboBox>
+                    </VBox>
+                    <VBox HBox.hgrow="ALWAYS" spacing="4">
+                        <Label text="Points XP" styleClass="form-label"/>
+                        <TextField fx:id="tfXP" promptText="0" text="0" styleClass="form-field" id="tfXP"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Error message -->
+                <Label fx:id="lblError" text="" styleClass="error-label" wrapText="true"/>
+            </VBox>
+        </ScrollPane>
+
+        <!-- Dialog Footer -->
+        <HBox styleClass="dialog-footer" alignment="CENTER_RIGHT" spacing="12" prefHeight="72">
+            <padding><Insets left="24" right="24"/></padding>
+            <Button text="Annuler" styleClass="btn-secondary" onAction="#cancel" id="btnCancel"/>
+            <Button fx:id="btnSave" text="Enregistrer" styleClass="btn-primary" onAction="#save" id="btnSave"
+                    defaultButton="true"/>
+        </HBox>
+    </VBox>
+</AnchorPane>

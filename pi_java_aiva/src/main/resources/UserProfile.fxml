@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.shape.Circle?>
+
+<AnchorPane prefHeight="720.0" prefWidth="1080.0"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controllers.UserProfileController"
+            stylesheets="@styles.css">
+
+    <!-- Sidebar (copied structure for consistency) -->
+    <VBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0"
+          prefWidth="220" spacing="0" styleClass="sidebar">
+        <Button text="&#127968;  Dashboard" maxWidth="Infinity" styleClass="nav-btn" onAction="#goBack"/>
+        <Button text="&#128100;  User Management" maxWidth="Infinity" styleClass="nav-btn, nav-btn-active"
+                onAction="#goBack"/>
+        <Button text="&#128203;  Global Reports" maxWidth="Infinity" styleClass="nav-btn"
+                onAction="#handleManageReports" id="btnReportsNavProfile"/>
+        <Pane VBox.vgrow="ALWAYS"/>
+        <Button text="&#8592; Tableau de Bord" maxWidth="Infinity" styleClass="nav-btn"
+                onAction="#goBack"/>
+    </VBox>
+
+    <VBox AnchorPane.leftAnchor="220" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+          styleClass="main-content">
+        
+        <!-- Header / Top Bar -->
+        <HBox alignment="CENTER_LEFT" styleClass="topbar" spacing="20">
+            <Button text="&#8592; Retour" onAction="#goBack" styleClass="btn-secondary"/>
+            <Label text="Profil Utilisateur" styleClass="page-title"/>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <Label fx:id="lblHeaderName" text="Nom de l'utilisateur" styleClass="topbar-user"/>
+        </HBox>
+
+        <ScrollPane fitToWidth="true" styleClass="dialog-scroll" VBox.vgrow="ALWAYS">
+            <VBox spacing="30" styleClass="form-body">
+                <padding><Insets top="40" right="60" bottom="40" left="60"/></padding>
+
+                <!-- Profile Hero Section -->
+                <HBox spacing="40" alignment="CENTER_LEFT">
+                    <StackPane>
+                        <Circle radius="50" fill="#6c63ff"/>
+                        <Label text="&#128100;" style="-fx-font-size: 48; -fx-text-fill: white;"/>
+                    </StackPane>
+                    <VBox spacing="8">
+                        <Label fx:id="lblName" text="Jean Dupont" styleClass="auth-title"/>
+                        <Label fx:id="lblEmail" text="jean@exemple.com" styleClass="auth-subtitle"/>
+                        <Label fx:id="lblRoleBadge" text="ADMINISTRATEUR" 
+                               style="-fx-background-color: #6c63ff; -fx-text-fill: white; -fx-padding: 4 12; -fx-background-radius: 20; -fx-font-weight: bold; -fx-font-size: 10;"/>
+                    </VBox>
+                </HBox>
+
+                <Separator style="-fx-opacity: 0.1;"/>
+
+                <!-- Information Grid -->
+                <GridPane hgap="40" vgap="30">
+                    <columnConstraints>
+                        <ColumnConstraints percentWidth="50"/>
+                        <ColumnConstraints percentWidth="50"/>
+                    </columnConstraints>
+
+                    <!-- Identity Card -->
+                    <VBox spacing="15" styleClass="stat-card" alignment="TOP_LEFT" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                        <Label text="IDENTITÉ" styleClass="section-title"/>
+                        <VBox spacing="5">
+                            <Label text="ID Utilisateur" styleClass="form-label"/>
+                            <Label fx:id="lblId" text="#12345" styleClass="stat-number" style="-fx-font-size: 18;"/>
+                        </VBox>
+                        <VBox spacing="5">
+                            <Label text="Nom Complet" styleClass="form-label"/>
+                            <Label fx:id="lblFullName" text="Jean Dupont" styleClass="page-title" style="-fx-font-size: 16;"/>
+                        </VBox>
+                    </VBox>
+
+                    <!-- Account Status Card -->
+                    <VBox spacing="15" styleClass="stat-card" alignment="TOP_LEFT" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                        <Label text="STATUT DU COMPTE" styleClass="section-title"/>
+                        <HBox spacing="40">
+                            <VBox spacing="5">
+                                <Label text="État" styleClass="form-label"/>
+                                <Label fx:id="lblStatus" text="✔ ACTIF" style="-fx-text-fill: #22c55e; -fx-font-weight: bold;"/>
+                            </VBox>
+                            <VBox spacing="5">
+                                <Label text="Vérification" styleClass="form-label"/>
+                                <Label fx:id="lblVerified" text="✅ VÉRIFIÉ" style="-fx-text-fill: #6c63ff; -fx-font-weight: bold;"/>
+                            </VBox>
+                        </HBox>
+                        <VBox spacing="5">
+                            <Label text="Sécurité 2FA" styleClass="form-label"/>
+                            <Label fx:id="lbl2FA" text="DÉSACTIVÉ" styleClass="status-text"/>
+                        </VBox>
+                    </VBox>
+
+                    <!-- Statistics Card -->
+                    <VBox spacing="15" styleClass="stat-card" alignment="TOP_LEFT" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                        <Label text="POINTS &amp; EXPÉRIENCE" styleClass="section-title"/>
+                        <HBox spacing="40" alignment="CENTER_LEFT">
+                            <VBox spacing="5">
+                                <Label text="Points XP" styleClass="form-label"/>
+                                <Label fx:id="lblXP" text="1,250" styleClass="stat-number" style="-fx-text-fill: #f59e0b;"/>
+                            </VBox>
+                            <ProgressIndicator fx:id="progressXP" progress="0.6" prefWidth="50" style="-fx-progress-color: #f59e0b;"/>
+                        </HBox>
+                    </VBox>
+
+                    <!-- Security Details Card -->
+                    <VBox spacing="15" styleClass="stat-card" alignment="TOP_LEFT" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                        <Label text="DÉTAILS DE CONNEXION" styleClass="section-title"/>
+                        <VBox spacing="5">
+                            <Label text="Dernières IPs Connues" styleClass="form-label"/>
+                            <Label fx:id="lblIPs" text="127.0.0.1, 192.168.1.1" styleClass="status-text" wrapText="true"/>
+                        </VBox>
+                        <VBox spacing="5">
+                            <Label text="Tentatives de réinitialisation" styleClass="form-label"/>
+                            <Label fx:id="lblResetAttempts" text="0" styleClass="status-text"/>
+                        </VBox>
+                    </VBox>
+                </GridPane>
+
+                <HBox spacing="15" alignment="CENTER_RIGHT">
+                    <padding><Insets top="20"/></padding>
+                    <Button fx:id="btnBlock" text="🔒 Bloquer" onAction="#handleBlock" styleClass="btn-secondary" prefHeight="44"/>
+                    <Button text="🗑 Supprimer" onAction="#handleDelete" style="-fx-background-color: #ef4444; -fx-text-fill: white;" prefHeight="44"/>
+                    <Button text="📄 Exporter PDF" onAction="#handleExport" styleClass="btn-secondary" prefHeight="44"/>
+                    <Button text="📝 Gérer les Rapports" onAction="#handleManageReports" style="-fx-background-color: #f59e0b; -fx-text-fill: white;" prefHeight="44"/>
+                    <Button text="✏️ Modifier le profil" onAction="#handleEdit" styleClass="btn-primary" prefWidth="180" prefHeight="44"/>
+                </HBox>
+            </VBox>
+        </ScrollPane>
+    </VBox>
+</AnchorPane>

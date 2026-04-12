@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<AnchorPane prefWidth="1080.0" prefHeight="680.0"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controllers.LoginController"
+            stylesheets="@styles.css">
+
+    <!-- Left decorative panel -->
+    <VBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+          AnchorPane.leftAnchor="0" prefWidth="480"
+          styleClass="auth-left-panel" alignment="CENTER" spacing="24">
+        <Label text="&#9670; AIVA" styleClass="auth-brand-logo"/>
+        <Label text="Admin Portal" styleClass="auth-brand-sub"/>
+        <Label text="Gérez vos utilisateurs,&#10;vos cours et bien plus." styleClass="auth-brand-desc"
+               wrapText="true" textAlignment="CENTER"/>
+        <Label text="&#128272;" styleClass="auth-brand-icon"/>
+    </VBox>
+
+    <!-- Right login form -->
+    <VBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+          AnchorPane.leftAnchor="480" AnchorPane.rightAnchor="0"
+          styleClass="auth-right-panel" alignment="CENTER" spacing="0">
+
+        <VBox maxWidth="380" spacing="28">
+
+            <!-- Header -->
+            <VBox spacing="6">
+                <Label text="Bon retour !" styleClass="auth-title"/>
+                <Label text="Connectez-vous à votre compte administrateur." styleClass="auth-subtitle"/>
+            </VBox>
+
+            <!-- Form -->
+            <VBox spacing="16">
+
+                <VBox spacing="6">
+                    <Label text="Adresse Email" styleClass="form-label"/>
+                    <TextField fx:id="tfEmail" promptText="admin@exemple.com"
+                               styleClass="form-field" id="tfLoginEmail"/>
+                </VBox>
+
+                <VBox spacing="6">
+                    <Label text="Mot de passe" styleClass="form-label"/>
+                    <PasswordField fx:id="pfPassword" promptText="••••••••"
+                                  styleClass="form-field" id="pfLoginPassword"
+                                  onAction="#handleLogin"/>
+                </VBox>
+
+                <!-- Error label -->
+                <Label fx:id="lblError" text="" styleClass="error-label"
+                       wrapText="true" managed="false" visible="false"/>
+
+                <!-- Login button -->
+                <Button text="Se connecter &#8594;" styleClass="btn-primary"
+                        maxWidth="Infinity" prefHeight="44"
+                        onAction="#handleLogin" id="btnLoginSubmit"
+                        defaultButton="true"/>
+
+            </VBox>
+
+            <!-- Separator -->
+            <HBox alignment="CENTER" spacing="12">
+                <Separator HBox.hgrow="ALWAYS"/>
+                <Label text="ou" styleClass="auth-or-label"/>
+                <Separator HBox.hgrow="ALWAYS"/>
+            </HBox>
+
+            <!-- Register link -->
+            <HBox alignment="CENTER" spacing="8">
+                <Label text="Pas encore de compte ?" styleClass="auth-subtitle"/>
+                <Button text="Créer un compte" styleClass="btn-link"
+                        onAction="#goToRegister" id="btnGoRegister"/>
+            </HBox>
+
+        </VBox>
+    </VBox>
+</AnchorPane>

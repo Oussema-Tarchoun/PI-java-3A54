@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<AnchorPane prefHeight="600.0" prefWidth="900.0"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controllers.ReportListController"
+            stylesheets="@styles.css">
+
+    <VBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
+          styleClass="main-content">
+        
+        <HBox alignment="CENTER_LEFT" styleClass="topbar">
+            <Button text="&#8592; Retour au Profil" onAction="#goBackToProfile" styleClass="btn-secondary"/>
+            <Label text="Gestion des Rapports Utilisateur" styleClass="page-title" style="-fx-padding: 0 0 0 20;"/>
+        </HBox>
+
+        <VBox spacing="15" VBox.vgrow="ALWAYS" style="-fx-padding: 24;">
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Button text="&#10010;  Nouveau Rapport" onAction="#handleAddReport" styleClass="btn-primary"/>
+                <Button fx:id="btnEdit" text="&#9998;  Modifier" onAction="#handleEditReport" styleClass="btn-warning"/>
+                <Button fx:id="btnDelete" text="&#128465;  Supprimer" onAction="#handleDeleteReport" 
+                        styleClass="btn-danger"/>
+                <Pane HBox.hgrow="ALWAYS"/>
+            </HBox>
+
+            <TableView fx:id="tableReports" VBox.vgrow="ALWAYS" styleClass="data-table">
+                <columns>
+                    <TableColumn fx:id="colId" text="ID" prefWidth="60"/>
+                    <TableColumn fx:id="colTitle" text="Titre" prefWidth="200"/>
+                    <TableColumn fx:id="colDate" text="Date de création" prefWidth="180"/>
+                    <TableColumn fx:id="colDescription" text="Description" prefWidth="350"/>
+                </columns>
+                <placeholder>
+                    <Label text="Aucun rapport trouvé pour cet utilisateur." styleClass="table-placeholder"/>
+                </placeholder>
+            </TableView>
+        </VBox>
+    </VBox>
+</AnchorPane>

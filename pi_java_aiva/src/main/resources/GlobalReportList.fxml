@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+
+<AnchorPane prefHeight="720.0" prefWidth="1080.0"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controllers.GlobalReportListController"
+            stylesheets="@styles.css">
+
+    <!-- Left Sidebar -->
+    <VBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0"
+          prefWidth="220" spacing="0" styleClass="sidebar">
+        <VBox alignment="CENTER" styleClass="sidebar-logo" prefHeight="100">
+            <Label text="&#9670; AIVA" styleClass="logo-text"/>
+            <Label text="Admin Portal" styleClass="logo-sub"/>
+        </VBox>
+        <Button text="&#128100;  User Management" maxWidth="Infinity" styleClass="nav-btn"
+                onAction="#openUserManagement" id="btnUsersNavList"/>
+        <Button text="&#128203;  Global Reports" maxWidth="Infinity" styleClass="nav-btn, nav-btn-active"
+                id="btnReportsNavList"/>
+        <Button text="&#127919;  Objectifs" maxWidth="Infinity" styleClass="nav-btn"
+                onAction="#goHome" id="btnObjectifsNav"/>
+        <Button text="&#127974;  Cours" maxWidth="Infinity" styleClass="nav-btn"
+                onAction="#goHome" id="btnCoursNav"/>
+        <Pane VBox.vgrow="ALWAYS"/>
+        <Button text="&#8592; Tableau de Bord" maxWidth="Infinity" styleClass="nav-btn"
+                onAction="#goHome" id="btnBackDash"/>
+        <Button text="&#128274;  Déconnexion" maxWidth="Infinity" styleClass="nav-btn, nav-btn-danger"
+                onAction="#goHome"/>
+    </VBox>
+
+    <!-- Main Content -->
+    <VBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+          AnchorPane.leftAnchor="220" AnchorPane.rightAnchor="0"
+          styleClass="main-content">
+
+        <!-- Top Bar -->
+        <HBox alignment="CENTER_LEFT" styleClass="topbar">
+            <Label text="Gestion Globale des Rapports" styleClass="page-title"/>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <Label text="Bienvenue, Admin" styleClass="topbar-user"/>
+        </HBox>
+
+        <!-- Search + Sort Row -->
+        <HBox alignment="CENTER_LEFT" spacing="12">
+            <VBox.margin><Insets top="20" right="24" bottom="6" left="24"/></VBox.margin>
+            <TextField fx:id="txtSearch" promptText="&#128269;  Rechercher par titre, description ou auteur..."
+                       styleClass="search-field" prefWidth="440" id="txtSearchGlobal"/>
+            <Label text="Trier par :" styleClass="form-label" style="-fx-padding: 0 0 0 8;"/>
+            <ComboBox fx:id="comboSort" prefWidth="200" styleClass="form-field">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Date (Plus récent)"/>
+                        <String fx:value="Date (Plus ancien)"/>
+                        <String fx:value="Titre (A-Z)"/>
+                        <String fx:value="Auteur (A-Z)"/>
+                    </FXCollections>
+                </items>
+            </ComboBox>
+            <Pane HBox.hgrow="ALWAYS"/>
+        </HBox>
+
+        <!-- Action Buttons Row -->
+        <HBox alignment="CENTER_LEFT" spacing="10">
+            <VBox.margin><Insets right="24" bottom="12" left="24"/></VBox.margin>
+            <Button text="&#10010;  Nouveau" styleClass="btn-primary" onAction="#handleAddReport"/>
+            <Button fx:id="btnEdit" text="&#9998;  Modifier" styleClass="btn-warning" onAction="#handleEditButton"/>
+            <Button fx:id="btnDelete" text="&#128465;  Supprimer" styleClass="btn-danger" onAction="#handleDeleteButton"/>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <Button text="&#8635;  Actualiser" styleClass="btn-secondary" onAction="#initialize"/>
+        </HBox>
+
+        <!-- Table -->
+        <TableView fx:id="tableReports" VBox.vgrow="ALWAYS" styleClass="data-table">
+            <VBox.margin><Insets right="24" bottom="20" left="24"/></VBox.margin>
+            <columns>
+                <TableColumn fx:id="colId" text="ID" prefWidth="60"/>
+                <TableColumn fx:id="colTitle" text="Titre" prefWidth="200"/>
+                <TableColumn fx:id="colUser" text="Auteur" prefWidth="180"/>
+                <TableColumn fx:id="colDate" text="Date" prefWidth="180"/>
+                <TableColumn fx:id="colDescription" text="Description" prefWidth="350"/>
+            </columns>
+            <placeholder>
+                <Label text="Aucun rapport trouvé" styleClass="table-placeholder"/>
+            </placeholder>
+        </TableView>
+    </VBox>
+</AnchorPane>

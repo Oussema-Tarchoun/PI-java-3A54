@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.geometry.Insets?>
+
+<AnchorPane prefHeight="720.0" prefWidth="1080.0"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controllers.DashboardController"
+            stylesheets="@styles.css">
+
+    <!-- Left Sidebar -->
+    <VBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0"
+          prefWidth="220" spacing="0" styleClass="sidebar">
+        <!-- Logo Area -->
+        <VBox alignment="CENTER" styleClass="sidebar-logo" prefHeight="100">
+            <Label text="&#9670; AIVA" styleClass="logo-text"/>
+            <Label text="Admin Portal" styleClass="logo-sub"/>
+        </VBox>
+
+        <!-- Nav Buttons -->
+        <Button text="&#127968;  Dashboard" maxWidth="Infinity" styleClass="nav-btn, nav-btn-active" id="btnDashNav"/>
+        <Button text="&#128100;  User Management" maxWidth="Infinity" styleClass="nav-btn"
+                onAction="#openUserManagement" id="btnUsersNav"/>
+        <Button text="&#128203;  Global Reports" maxWidth="Infinity" styleClass="nav-btn"
+                onAction="#openReportManagement" id="btnReportsNav"/>
+        
+        <Pane VBox.vgrow="ALWAYS"/>
+        
+        <Button text="&#128274;  Déconnexion" maxWidth="Infinity" styleClass="nav-btn, nav-btn-danger"
+                onAction="#handleLogout" id="btnLogout"/>
+    </VBox>
+
+    <!-- Main Content -->
+    <VBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+          AnchorPane.leftAnchor="220" AnchorPane.rightAnchor="0"
+          styleClass="main-content">
+
+        <!-- Top Bar -->
+        <HBox alignment="CENTER_LEFT" styleClass="topbar">
+            <Label text="Administration Dashboard" styleClass="page-title"/>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <Label text="Bienvenue, Administrateur" styleClass="topbar-user"/>
+        </HBox>
+
+        <!-- Stats Cards Row -->
+        <HBox spacing="20" styleClass="stats-row">
+            <VBox.margin>
+                <Insets top="30" right="30" bottom="0" left="30"/>
+            </VBox.margin>
+            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+                <Label text="&#128100;" styleClass="stat-icon"/>
+                <Label fx:id="lblTotalUsers" text="—" styleClass="stat-number"/>
+                <Label text="Utilisateurs" styleClass="stat-label"/>
+            </VBox>
+            <VBox styleClass="stat-card, stat-card-green" HBox.hgrow="ALWAYS">
+                <Label text="&#9989;" styleClass="stat-icon"/>
+                <Label fx:id="lblVerifiedUsers" text="—" styleClass="stat-number"/>
+                <Label text="Vérifiés" styleClass="stat-label"/>
+            </VBox>
+            <VBox styleClass="stat-card, stat-card-red" HBox.hgrow="ALWAYS">
+                <Label text="&#128683;" styleClass="stat-icon" style="-fx-text-fill: #ef4444;"/>
+                <Label fx:id="lblBlockedUsers" text="—" styleClass="stat-number" style="-fx-text-fill: #ef4444;"/>
+                <Label text="Bloqués" styleClass="stat-label"/>
+            </VBox>
+            <VBox styleClass="stat-card, stat-card-purple" HBox.hgrow="ALWAYS">
+                <Label text="&#128274;" styleClass="stat-icon" style="-fx-text-fill: #a855f7;"/>
+                <Label fx:id="lblAdminUsers" text="—" styleClass="stat-number" style="-fx-text-fill: #a855f7;"/>
+                <Label text="Admins" styleClass="stat-label"/>
+            </VBox>
+        </HBox>
+
+        <!-- Quick Access Section -->
+        <Label text="Raccourcis de Gestion" styleClass="section-title">
+            <VBox.margin><Insets top="40" left="30" bottom="15" right="30"/></VBox.margin>
+        </Label>
+        
+        <HBox spacing="20">
+            <VBox.margin><Insets left="30" right="30"/></VBox.margin>
+            
+            <VBox styleClass="quick-card" onMouseClicked="#openUserManagement" HBox.hgrow="ALWAYS" alignment="CENTER" prefHeight="200">
+                <Label text="&#128100;" styleClass="quick-icon"/>
+                <Label text="Comptes Utilisateurs" styleClass="quick-title"/>
+                <Label text="Gérer les accès, modifier les profils&#10;et visualiser les statistiques." styleClass="quick-desc" alignment="CENTER" textAlignment="CENTER"/>
+                <Button text="Gérer les Utilisateurs →" styleClass="quick-btn" onAction="#openUserManagement"/>
+            </VBox>
+
+            <VBox styleClass="quick-card" onMouseClicked="#openReportManagement" HBox.hgrow="ALWAYS" alignment="CENTER" prefHeight="200" style="-fx-border-color: rgba(168, 85, 247, 0.3);">
+                <Label text="&#128203;" styleClass="quick-icon" style="-fx-text-fill: #a855f7;"/>
+                <Label text="Rapports d'Activité" styleClass="quick-title"/>
+                <Label text="Consulter l'historique complet,&#10;filtrer par auteur et exporter." styleClass="quick-desc" alignment="CENTER" textAlignment="CENTER"/>
+                <Button text="Ouvrir les Rapports →" styleClass="quick-btn" onAction="#openReportManagement" style="-fx-background-color: #a855f7;"/>
+            </VBox>
+        </HBox>
+
+    </VBox>
+</AnchorPane>

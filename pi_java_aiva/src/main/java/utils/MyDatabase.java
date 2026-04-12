@@ -23,12 +23,18 @@ public class MyDatabase {
     }
 
     private MyDatabase() {
-
         try {
-            connection = DriverManager.getConnection(URl,USERNAME,PASSWORD);
-            System.out.println("Connected to database successfully");
+            System.out.println("Attempting to connect to database at: " + URl);
+            connection = DriverManager.getConnection(URl, USERNAME, PASSWORD);
+            if (connection != null) {
+                System.out.println("✅ Connected to database successfully.");
+            } else {
+                System.out.println("❌ Connection failed: connection object is null.");
+            }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("❌ Database Connection Error: " + e.getMessage());
+            System.out.println("State: " + e.getSQLState());
+            System.out.println("Error Code: " + e.getErrorCode());
         }
     }
 }
