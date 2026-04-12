@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controller.CoursController"
+            fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+            style="-fx-background: transparent; -fx-background-color: transparent;">
+
+    <VBox spacing="24" style="-fx-background-color: #0a0e1a; -fx-padding: 0;">
+
+        <!-- ── Page Header ──────────────────────────────────────────────────── -->
+        <HBox styleClass="card-header" alignment="CENTER_LEFT">
+            <StackPane styleClass="card-icon, card-icon-purple">
+                <Label text="🧠" style="-fx-font-size: 20px;"/>
+            </StackPane>
+            <VBox spacing="2">
+                <Label text="Learning" styleClass="card-title"/>
+                <Label text="BROWSE &amp; MANAGE YOUR COURSES" styleClass="card-subtitle"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="btnAdd" text="＋  Add Course" onAction="#handleAdd" styleClass="btn-primary"/>
+        </HBox>
+
+        <!-- ── Search + Filter Bar ──────────────────────────────────────────── -->
+        <HBox spacing="12" alignment="CENTER_LEFT"
+              style="-fx-background-color: #161b2e; -fx-background-radius: 12;
+                     -fx-padding: 14 20 14 20; -fx-border-radius: 12;
+                     -fx-border-width: 1; -fx-border-color: #2a3142;">
+
+            <TextField fx:id="txtSearch" promptText="🔍   Search by title, level or category…"
+                       HBox.hgrow="ALWAYS"
+                       style="-fx-background-color: #111827; -fx-text-fill: #ffffff;
+                              -fx-prompt-text-fill: #64748b; -fx-background-radius: 8;
+                              -fx-border-radius: 8; -fx-border-width: 1;
+                              -fx-border-color: #2a3142; -fx-padding: 10 14;"/>
+
+            <ComboBox fx:id="comboFilterCategorie" promptText="All Categories" prefWidth="160"
+                      style="-fx-background-color: #111827; -fx-border-color: #2a3142;
+                             -fx-border-radius: 8; -fx-background-radius: 8;"/>
+
+            <ComboBox fx:id="comboFilterNiveau" promptText="All Levels" prefWidth="140"
+                      style="-fx-background-color: #111827; -fx-border-color: #2a3142;
+                             -fx-border-radius: 8; -fx-background-radius: 8;"/>
+
+            <ComboBox fx:id="comboFilterStatus" promptText="All Statuses" prefWidth="140"
+                      style="-fx-background-color: #111827; -fx-border-color: #2a3142;
+                             -fx-border-radius: 8; -fx-background-radius: 8;"/>
+
+            <Button text="Reset" onAction="#handleResetFilters" styleClass="btn-secondary"
+                    style="-fx-padding: 10 16;"/>
+        </HBox>
+
+        <!-- ── Result count ─────────────────────────────────────────────────── -->
+        <Label fx:id="lblResultCount" text="" styleClass="progress-meta"/>
+
+        <!-- ── Course Cards Grid ────────────────────────────────────────────── -->
+        <FlowPane fx:id="courseGrid" hgap="20" vgap="20" prefWrapLength="1200"/>
+
+        <!-- ── Empty State ───────────────────────────────────────────────────── -->
+        <VBox fx:id="emptyState" alignment="CENTER" spacing="12"
+              style="-fx-padding: 60 0;" visible="false" managed="false">
+            <Label text="📭" style="-fx-font-size: 48px;"/>
+            <Label text="No courses found" styleClass="card-title"
+                   style="-fx-text-fill: #64748b;"/>
+            <Label text="Try adjusting your filters or add a new course."
+                   styleClass="progress-meta"/>
+        </VBox>
+
+        <!-- ── Stats Row ─────────────────────────────────────────────────────── -->
+        <HBox spacing="20" alignment="TOP_LEFT">
+            <VBox styleClass="card" spacing="8" HBox.hgrow="ALWAYS" alignment="CENTER">
+                <Label text="Total Courses" styleClass="stat-label"/>
+                <Label fx:id="lblTotalCours" text="—" styleClass="stat-value" textFill="#8b5cf6"/>
+            </VBox>
+            <VBox styleClass="card" spacing="8" HBox.hgrow="ALWAYS" alignment="CENTER">
+                <Label text="Beginner" styleClass="stat-label"/>
+                <Label fx:id="lblDebutant" text="—" styleClass="stat-value" textFill="#00d4ff"/>
+            </VBox>
+            <VBox styleClass="card" spacing="8" HBox.hgrow="ALWAYS" alignment="CENTER">
+                <Label text="Intermediate" styleClass="stat-label"/>
+                <Label fx:id="lblIntermediaire" text="—" styleClass="stat-value" textFill="#10b981"/>
+            </VBox>
+            <VBox styleClass="card" spacing="8" HBox.hgrow="ALWAYS" alignment="CENTER">
+                <Label text="Advanced" styleClass="stat-label"/>
+                <Label fx:id="lblAvance" text="—" styleClass="stat-value" textFill="#f59e0b"/>
+            </VBox>
+        </HBox>
+
+    </VBox>
+</ScrollPane>

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+            style="-fx-background: transparent; -fx-background-color: transparent;">
+
+    <VBox spacing="24" style="-fx-background-color: #0a0e1a; -fx-padding: 0;">
+
+        <HBox styleClass="card-header" alignment="CENTER_LEFT">
+            <StackPane styleClass="card-icon, card-icon-orange">
+                <Label text="🎯" style="-fx-font-size: 20px;"/>
+            </StackPane>
+            <Label text="Goals &amp; Objectives" styleClass="card-title"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="+ New Goal" styleClass="btn-primary"/>
+        </HBox>
+
+        <HBox spacing="24" alignment="TOP_LEFT">
+            <VBox styleClass="card" spacing="16" HBox.hgrow="ALWAYS">
+                <HBox alignment="CENTER_LEFT">
+                    <StackPane>
+                        <Circle radius="20" fill="#ec4899" opacity="0.2"/>
+                        <Label text="🏃" textFill="#ec4899"/>
+                    </StackPane>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label text="IN PROGRESS" styleClass="badge, badge-active"/>
+                </HBox>
+
+                <Label text="Run 5K without stopping" styleClass="progress-label" style="-fx-font-weight: bold;"/>
+                <Label text="Health &amp; Fitness" styleClass="progress-meta"/>
+
+                <VBox spacing="6">
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="Progress" styleClass="progress-meta" HBox.hgrow="ALWAYS"/>
+                        <Label text="75%" styleClass="progress-label" textFill="#ec4899"/>
+                    </HBox>
+                    <ProgressBar progress="0.75" styleClass="progress-bar, progress-bar-pink"/>
+                </VBox>
+
+                <Label text="Due: Feb 28, 2026" styleClass="progress-meta"/>
+            </VBox>
+
+            <VBox styleClass="card" spacing="16" HBox.hgrow="ALWAYS">
+                <HBox alignment="CENTER_LEFT">
+                    <StackPane>
+                        <Circle radius="20" fill="#00d4ff" opacity="0.2"/>
+                        <Label text="💰" textFill="#00d4ff"/>
+                    </StackPane>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label text="IN PROGRESS" styleClass="badge, badge-active"/>
+                </HBox>
+
+                <Label text="Save $5,000 emergency fund" styleClass="progress-label" style="-fx-font-weight: bold;"/>
+                <Label text="Financial Security" styleClass="progress-meta"/>
+
+                <VBox spacing="6">
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="Progress" styleClass="progress-meta" HBox.hgrow="ALWAYS"/>
+                        <Label text="64%" styleClass="progress-label" textFill="#00d4ff"/>
+                    </HBox>
+                    <ProgressBar progress="0.64" styleClass="progress-bar, progress-bar-cyan"/>
+                </VBox>
+
+                <Label text="Due: Mar 31, 2026" styleClass="progress-meta"/>
+            </VBox>
+
+            <VBox styleClass="card" spacing="16" HBox.hgrow="ALWAYS">
+                <HBox alignment="CENTER_LEFT">
+                    <StackPane>
+                        <Circle radius="20" fill="#8b5cf6" opacity="0.2"/>
+                        <Label text="🧠" textFill="#8b5cf6"/>
+                    </StackPane>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label text="IN PROGRESS" styleClass="badge, badge-active"/>
+                </HBox>
+
+                <Label text="Complete Python AI Course" styleClass="progress-label" style="-fx-font-weight: bold;"/>
+                <Label text="Professional Development" styleClass="progress-meta"/>
+
+                <VBox spacing="6">
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="Progress" styleClass="progress-meta" HBox.hgrow="ALWAYS"/>
+                        <Label text="45%" styleClass="progress-label" textFill="#8b5cf6"/>
+                    </HBox>
+                    <ProgressBar progress="0.45" styleClass="progress-bar, progress-bar-purple"/>
+                </VBox>
+
+                <Label text="Due: Apr 15, 2026" styleClass="progress-meta"/>
+            </VBox>
+        </HBox>
+
+        <VBox styleClass="card" spacing="16">
+            <HBox alignment="CENTER_LEFT">
+                <Label text="Completed Goals" styleClass="card-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label text="12 completed this year" styleClass="progress-meta"/>
+            </HBox>
+
+            <VBox spacing="12">
+                <HBox styleClass="course-item" spacing="12" alignment="CENTER_LEFT">
+                    <StackPane>
+                        <Circle radius="16" fill="#10b981" opacity="0.2"/>
+                        <Label text="✓" textFill="#10b981"/>
+                    </StackPane>
+                    <VBox spacing="2" HBox.hgrow="ALWAYS">
+                        <Label text="Read 24 books this year" styleClass="progress-label"/>
+                        <Label text="Completed on Dec 28, 2025" styleClass="progress-meta"/>
+                    </VBox>
+                    <Label text="COMPLETED" styleClass="badge, badge-completed"/>
+                </HBox>
+
+                <HBox styleClass="course-item" spacing="12" alignment="CENTER_LEFT">
+                    <StackPane>
+                        <Circle radius="16" fill="#10b981" opacity="0.2"/>
+                        <Label text="✓" textFill="#10b981"/>
+                    </StackPane>
+                    <VBox spacing="2" HBox.hgrow="ALWAYS">
+                        <Label text="Reduce sugar intake by 50%" styleClass="progress-label"/>
+                        <Label text="Completed on Jan 15, 2026" styleClass="progress-meta"/>
+                    </VBox>
+                    <Label text="COMPLETED" styleClass="badge, badge-completed"/>
+                </HBox>
+
+                <HBox styleClass="course-item" spacing="12" alignment="CENTER_LEFT">
+                    <StackPane>
+                        <Circle radius="16" fill="#10b981" opacity="0.2"/>
+                        <Label text="✓" textFill="#10b981"/>
+                    </StackPane>
+                    <VBox spacing="2" HBox.hgrow="ALWAYS">
+                        <Label text="Meditate 10 minutes daily for 30 days" styleClass="progress-label"/>
+                        <Label text="Completed on Jan 30, 2026" styleClass="progress-meta"/>
+                    </VBox>
+                    <Label text="COMPLETED" styleClass="badge, badge-completed"/>
+                </HBox>
+            </VBox>
+        </VBox>
+
+        <HBox spacing="24" alignment="TOP_LEFT">
+            <VBox styleClass="card" spacing="12" HBox.hgrow="ALWAYS" alignment="CENTER">
+                <Label text="Health Goals" styleClass="stat-label"/>
+                <Label text="3/5" styleClass="stat-value" textFill="#ec4899"/>
+                <Label text="Active / Total" styleClass="progress-meta"/>
+            </VBox>
+
+            <VBox styleClass="card" spacing="12" HBox.hgrow="ALWAYS" alignment="CENTER">
+                <Label text="Finance Goals" styleClass="stat-label"/>
+                <Label text="2/4" styleClass="stat-value" textFill="#00d4ff"/>
+                <Label text="Active / Total" styleClass="progress-meta"/>
+            </VBox>
+
+            <VBox styleClass="card" spacing="12" HBox.hgrow="ALWAYS" alignment="CENTER">
+                <Label text="Learning Goals" styleClass="stat-label"/>
+                <Label text="4/6" styleClass="stat-value" textFill="#8b5cf6"/>
+                <Label text="Active / Total" styleClass="progress-meta"/>
+            </VBox>
+
+            <VBox styleClass="card" spacing="12" HBox.hgrow="ALWAYS" alignment="CENTER">
+                <Label text="Success Rate" styleClass="stat-label"/>
+                <Label text="87%" styleClass="stat-value" textFill="#10b981"/>
+                <Label text="Goals achieved" styleClass="progress-meta"/>
+            </VBox>
+        </HBox>
+
+    </VBox>
+</ScrollPane>

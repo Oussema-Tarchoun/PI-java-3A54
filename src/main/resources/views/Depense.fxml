@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.geometry.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+            style="-fx-background: transparent; -fx-background-color: transparent;">
+
+    <VBox spacing="24" style="-fx-background-color: #0a0e1a; -fx-padding: 0;">
+
+        <HBox styleClass="card-header" alignment="CENTER_LEFT">
+            <StackPane styleClass="card-icon, card-icon-cyan">
+                <Label text="💰" style="-fx-font-size: 20px;"/>
+            </StackPane>
+            <Label text="Finance" styleClass="card-title"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="⋯" styleClass="card-menu"/>
+        </HBox>
+
+        <HBox spacing="24" alignment="TOP_LEFT">
+            <VBox styleClass="card" spacing="16" HBox.hgrow="ALWAYS">
+                <Label text="Total Balance" styleClass="stat-label"/>
+
+                <Label text="↗ +12.5%" styleClass="stat-change-positive"/>
+            </VBox>
+
+            <VBox styleClass="card" spacing="16" HBox.hgrow="ALWAYS">
+                <Label text="Monthly Spending" styleClass="stat-label"/>
+
+                <Label text="↘ +2.4%" styleClass="stat-change-negative"/>
+            </VBox>
+
+            <VBox styleClass="card" spacing="16" HBox.hgrow="ALWAYS">
+                <Label text="Savings Goal" styleClass="stat-label"/>
+
+                <ProgressBar progress="0.64" styleClass="progress-bar, progress-bar-cyan"/>
+            </VBox>
+
+            <VBox styleClass="card" spacing="16" HBox.hgrow="ALWAYS">
+                <Label text="Investments" styleClass="stat-label"/>
+
+                <Label text="↗ +5.2%" styleClass="stat-change-positive"/>
+            </VBox>
+        </HBox>
+
+        <HBox spacing="24" alignment="TOP_LEFT">
+            <VBox styleClass="card" spacing="16" HBox.hgrow="ALWAYS" minWidth="500">
+                <HBox alignment="CENTER_LEFT">
+                    <Label text="Spending Overview" styleClass="card-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <HBox spacing="8">
+                        <Button text="Week" styleClass="btn-secondary" style="-fx-padding: 6 12;"/>
+                        <Button text="Month" styleClass="btn-primary" style="-fx-padding: 6 12;"/>
+                        <Button text="Year" styleClass="btn-secondary" style="-fx-padding: 6 12;"/>
+                    </HBox>
+                </HBox>
+                <AreaChart prefHeight="300" createSymbols="false" legendVisible="false">
+                    <xAxis>
+                        <CategoryAxis side="BOTTOM" tickLabelsVisible="true"
+                                      tickMarkVisible="false" style="-fx-tick-label-fill: #64748b;"/>
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis side="LEFT" tickLabelsVisible="true"
+                                    tickMarkVisible="false" style="-fx-tick-label-fill: #64748b;"
+                                    lowerBound="0" upperBound="1000" tickUnit="250"/>
+                    </yAxis>
+                </AreaChart>
+            </VBox>
+
+            <VBox styleClass="card" spacing="16" HBox.hgrow="ALWAYS" minWidth="350">
+                <Label text="Spending by Category" styleClass="card-title"/>
+
+                <VBox spacing="12">
+                    <HBox alignment="CENTER_LEFT" spacing="12">
+                        <Circle radius="6" fill="#00d4ff"/>
+                        <Label text="Housing" styleClass="nutrient-label" HBox.hgrow="ALWAYS"/>
+
+                        <Label text="36%" styleClass="progress-meta"/>
+                    </HBox>
+                    <ProgressBar progress="0.36" styleClass="progress-bar, progress-bar-cyan"/>
+
+                    <HBox alignment="CENTER_LEFT" spacing="12">
+                        <Circle radius="6" fill="#8b5cf6"/>
+                        <Label text="Food &amp; Dining" styleClass="nutrient-label" HBox.hgrow="ALWAYS"/>
+
+                        <Label text="26%" styleClass="progress-meta"/>
+                    </HBox>
+                    <ProgressBar progress="0.26" styleClass="progress-bar, progress-bar-purple"/>
+
+                    <HBox alignment="CENTER_LEFT" spacing="12">
+                        <Circle radius="6" fill="#ec4899"/>
+                        <Label text="Transportation" styleClass="nutrient-label" HBox.hgrow="ALWAYS"/>
+
+                        <Label text="15%" styleClass="progress-meta"/>
+                    </HBox>
+                    <ProgressBar progress="0.15" styleClass="progress-bar, progress-bar-pink"/>
+
+                    <HBox alignment="CENTER_LEFT" spacing="12">
+                        <Circle radius="6" fill="#f59e0b"/>
+                        <Label text="Entertainment" styleClass="nutrient-label" HBox.hgrow="ALWAYS"/>
+
+                        <Label text="12%" styleClass="progress-meta"/>
+                    </HBox>
+                    <ProgressBar progress="0.12" style="-fx-accent: #f59e0b;"/>
+
+                    <HBox alignment="CENTER_LEFT" spacing="12">
+                        <Circle radius="6" fill="#10b981"/>
+                        <Label text="Shopping" styleClass="nutrient-label" HBox.hgrow="ALWAYS"/>
+
+                        <Label text="11%" styleClass="progress-meta"/>
+                    </HBox>
+                    <ProgressBar progress="0.11" style="-fx-accent: #10b981;"/>
+                </VBox>
+            </VBox>
+        </HBox>
+
+        <VBox styleClass="card" spacing="16">
+            <HBox alignment="CENTER_LEFT">
+                <Label text="Recent Transactions" styleClass="card-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="+ Add Transaction" styleClass="btn-primary"/>
+            </HBox>
+
+            <VBox spacing="8">
+                <HBox styleClass="course-item" spacing="12" alignment="CENTER_LEFT">
+                    <StackPane>
+                        <Circle radius="24" fill="#00d4ff" opacity="0.15"/>
+                        <Label text="🛒" textFill="#00d4ff"/>
+                    </StackPane>
+                    <VBox spacing="2" HBox.hgrow="ALWAYS">
+                        <Label text="Grocery Store" styleClass="progress-label"/>
+                        <Label text="Today, 2:30 PM" styleClass="progress-meta"/>
+                    </VBox>
+                    <Label text="-$85.40" styleClass="nutrient-value" textFill="#ef4444"/>
+                </HBox>
+
+                <HBox styleClass="course-item" spacing="12" alignment="CENTER_LEFT">
+                    <StackPane>
+                        <Circle radius="24" fill="#8b5cf6" opacity="0.15"/>
+                        <Label text="💵" textFill="#8b5cf6"/>
+                    </StackPane>
+                    <VBox spacing="2" HBox.hgrow="ALWAYS">
+                        <Label text="Salary Deposit" styleClass="progress-label"/>
+                        <Label text="Yesterday" styleClass="progress-meta"/>
+                    </VBox>
+                    <Label text="+$3,500.00" styleClass="nutrient-value" textFill="#10b981"/>
+                </HBox>
+
+                <HBox styleClass="course-item" spacing="12" alignment="CENTER_LEFT">
+                    <StackPane>
+                        <Circle radius="24" fill="#f59e0b" opacity="0.15"/>
+                        <Label text="⚡" textFill="#f59e0b"/>
+                    </StackPane>
+                    <VBox spacing="2" HBox.hgrow="ALWAYS">
+                        <Label text="Electric Bill" styleClass="progress-label"/>
+                        <Label text="Jan 28, 2026" styleClass="progress-meta"/>
+                    </VBox>
+                    <Label text="-$120.00" styleClass="nutrient-value" textFill="#ef4444"/>
+                </HBox>
+
+                <HBox styleClass="course-item" spacing="12" alignment="CENTER_LEFT">
+                    <StackPane>
+                        <Circle radius="24" fill="#ec4899" opacity="0.15"/>
+                        <Label text="🎬" textFill="#ec4899"/>
+                    </StackPane>
+                    <VBox spacing="2" HBox.hgrow="ALWAYS">
+                        <Label text="Netflix Subscription" styleClass="progress-label"/>
+                        <Label text="Jan 25, 2026" styleClass="progress-meta"/>
+                    </VBox>
+                    <Label text="-$15.99" styleClass="nutrient-value" textFill="#ef4444"/>
+                </HBox>
+            </VBox>
+        </VBox>
+
+        <HBox spacing="24" alignment="TOP_LEFT">
+            <VBox styleClass="notification" spacing="8" HBox.hgrow="ALWAYS">
+                <Label text="💰 BUDGET ALERT" styleClass="notification-title"/>
+                <Label text="You've used 75% of your Food &amp; Dining budget. Consider reducing expenses for the rest of the month."
+                       styleClass="notification-text" wrapText="true"/>
+            </VBox>
+
+            <VBox styleClass="achievement-card" spacing="12" HBox.hgrow="ALWAYS">
+                <StackPane>
+                    <Circle radius="24" fill="rgba(16, 185, 129, 0.2)"/>
+                    <Label text="💰" textFill="#10b981"/>
+                </StackPane>
+                <VBox spacing="4">
+                    <Label text="SAVINGS MILESTONE" styleClass="achievement-title" style="-fx-text-fill: #10b981;"/>
+                    <Label text="You've saved $500 this month! Keep it up!" styleClass="achievement-text"/>
+                </VBox>
+            </VBox>
+        </HBox>
+
+    </VBox>
+</ScrollPane>

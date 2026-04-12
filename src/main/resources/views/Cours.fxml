@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controller.CoursController"
+            fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+            style="-fx-background: transparent; -fx-background-color: transparent;">
+
+    <VBox spacing="24" style="-fx-background-color: #0a0e1a; -fx-padding: 0;">
+
+        <HBox styleClass="card-header" alignment="CENTER_LEFT">
+            <StackPane styleClass="card-icon, card-icon-purple">
+                <Label text="📚" style="-fx-font-size: 20px;"/>
+            </StackPane>
+            <Label text="Course Management" styleClass="card-title"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="⋯" styleClass="card-menu"/>
+        </HBox>
+
+        <VBox styleClass="card" spacing="16">
+            <Label text="Course Details" styleClass="card-title"/>
+
+            <GridPane vgap="12" hgap="16">
+                <columnConstraints>
+                    <ColumnConstraints minWidth="120" prefWidth="150"/>
+                    <ColumnConstraints hgrow="ALWAYS"/>
+                    <ColumnConstraints minWidth="120" prefWidth="150"/>
+                    <ColumnConstraints hgrow="ALWAYS"/>
+                </columnConstraints>
+
+                <Label text="Title:" styleClass="form-label" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                <TextField fx:id="txtTitre" promptText="Enter course title"
+                           GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.columnSpan="3"/>
+
+                <Label text="Level:" styleClass="form-label" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                <ComboBox fx:id="comboNiveau" promptText="Select level"
+                          GridPane.columnIndex="1" GridPane.rowIndex="1" maxWidth="Infinity"/>
+
+                <Label text="Category:" styleClass="form-label" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+                <ComboBox fx:id="comboCategorie" promptText="Select category"
+                          GridPane.columnIndex="3" GridPane.rowIndex="1" maxWidth="Infinity"/>
+
+                <Label text="Duration (hours):" styleClass="form-label" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                <TextField fx:id="txtDuree" promptText="Enter estimated duration"
+                           GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+                <Label text="Description:" styleClass="form-label" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                <TextArea fx:id="txtDescription" promptText="Enter course description"
+                          GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.columnSpan="3"
+                          prefRowCount="3" wrapText="true"/>
+            </GridPane>
+
+            <HBox spacing="12" alignment="CENTER_RIGHT">
+                <Button fx:id="btnClear" text="Clear" onAction="#handleClear" styleClass="btn-secondary"/>
+                <Button fx:id="btnAdd" text="Add Course" onAction="#handleAdd" styleClass="btn-primary"/>
+                <Button fx:id="btnUpdate" text="Update" onAction="#handleUpdate" styleClass="btn-primary"/>
+                <Button fx:id="btnDelete" text="Delete" onAction="#handleDelete" styleClass="btn-danger"/>
+            </HBox>
+        </VBox>
+
+        <VBox styleClass="card" spacing="16" VBox.vgrow="ALWAYS">
+            <HBox alignment="CENTER_LEFT">
+                <Label text="All Courses" styleClass="card-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+
+
+            <TableView fx:id="tableCours" VBox.vgrow="ALWAYS" prefHeight="400">
+                <columns>
+                    <TableColumn fx:id="colId" text="ID" prefWidth="60"/>
+                    <TableColumn fx:id="colTitre" text="Title" prefWidth="200"/>
+                    <TableColumn fx:id="colDescription" text="Description" prefWidth="250"/>
+                    <TableColumn fx:id="colNiveau" text="Level" prefWidth="100"/>
+                    <TableColumn fx:id="colCategorie" text="Category" prefWidth="120"/>
+                    <TableColumn fx:id="colDuree" text="Duration" prefWidth="80"/>
+                    <TableColumn fx:id="colStatus" text="Status" prefWidth="100"/>
+                </columns>
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                </columnResizePolicy>
+            </TableView>
+        </VBox>
+
+    </VBox>
+</ScrollPane>

@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+            style="-fx-background: transparent; -fx-background-color: transparent;">
+
+    <VBox spacing="24" style="-fx-background-color: #0a0e1a; -fx-padding: 0;">
+
+        <HBox styleClass="card-header" alignment="CENTER_LEFT">
+            <StackPane styleClass="card-icon, card-icon-cyan">
+                <Label text="✨" style="-fx-font-size: 20px;"/>
+            </StackPane>
+            <Label text="AI Recommendations" styleClass="card-title"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label text="✦ Powered by AIVA" styleClass="notification-title"/>
+        </HBox>
+
+        <HBox spacing="24" alignment="TOP_LEFT">
+            <VBox styleClass="notification" spacing="12" HBox.hgrow="ALWAYS">
+                <HBox alignment="CENTER_LEFT" spacing="8">
+                    <Label text="⚡ HIGH PRIORITY" styleClass="notification-title" style="-fx-text-fill: #f59e0b;"/>
+                </HBox>
+                <Label text="Your energy consumption has increased 15% this week. Consider adjusting your thermostat by 2°C to save approximately $20/month."
+                       styleClass="notification-text" wrapText="true"/>
+                <HBox spacing="8">
+                    <Button text="Apply Setting" styleClass="btn-primary" style="-fx-padding: 6 16;"/>
+                    <Button text="Dismiss" styleClass="btn-secondary" style="-fx-padding: 6 16;"/>
+                </HBox>
+            </VBox>
+
+            <VBox styleClass="notification" spacing="12" HBox.hgrow="ALWAYS">
+                <HBox alignment="CENTER_LEFT" spacing="8">
+                    <Label text="💰 FINANCE TIP" styleClass="notification-title" style="-fx-text-fill: #10b981;"/>
+                </HBox>
+                <Label text="You've spent 80% of your dining budget. Based on your patterns, cooking at home 2 more days this week could save you $45."
+                       styleClass="notification-text" wrapText="true"/>
+                <HBox spacing="8">
+                    <Button text="View Budget" styleClass="btn-primary" style="-fx-padding: 6 16;"/>
+                    <Button text="Got it" styleClass="btn-secondary" style="-fx-padding: 6 16;"/>
+                </HBox>
+            </VBox>
+        </HBox>
+
+        <VBox styleClass="card" spacing="16">
+            <HBox alignment="CENTER_LEFT">
+                <Label text="Recommended for You" styleClass="card-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="View All" styleClass="btn-secondary"/>
+            </HBox>
+
+            <HBox spacing="16">
+                <VBox styleClass="stat-card" spacing="12" HBox.hgrow="ALWAYS">
+                    <StackPane>
+                        <Rectangle width="50" height="50" arcWidth="12" arcHeight="12" fill="#8b5cf6" opacity="0.2"/>
+                        <Label text="🧠" textFill="#8b5cf6"/>
+                    </StackPane>
+                    <Label text="Machine Learning Basics" styleClass="progress-label" style="-fx-font-weight: bold;"/>
+                    <Label text="Based on your Python AI progress" styleClass="progress-meta"/>
+                    <Label text="12 hours • Beginner friendly" styleClass="progress-meta"/>
+                    <Button text="Start Learning" styleClass="btn-primary" maxWidth="Infinity"/>
+                </VBox>
+
+                <VBox styleClass="stat-card" spacing="12" HBox.hgrow="ALWAYS">
+                    <StackPane>
+                        <Rectangle width="50" height="50" arcWidth="12" arcHeight="12" fill="#00d4ff" opacity="0.2"/>
+                        <Label text="💰" textFill="#00d4ff"/>
+                    </StackPane>
+                    <Label text="Personal Finance Mastery" styleClass="progress-label" style="-fx-font-weight: bold;"/>
+                    <Label text="Aligned with your savings goals" styleClass="progress-meta"/>
+                    <Label text="8 hours • Practical tips" styleClass="progress-meta"/>
+                    <Button text="Start Learning" styleClass="btn-primary" maxWidth="Infinity"/>
+                </VBox>
+
+                <VBox styleClass="stat-card" spacing="12" HBox.hgrow="ALWAYS">
+                    <StackPane>
+                        <Rectangle width="50" height="50" arcWidth="12" arcHeight="12" fill="#ec4899" opacity="0.2"/>
+                        <Label text="🧘" textFill="#ec4899"/>
+                    </StackPane>
+                    <Label text="Stress Management" styleClass="progress-label" style="-fx-font-weight: bold;"/>
+                    <Label text="Your sleep data suggests high stress" styleClass="progress-meta"/>
+                    <Label text="6 hours • Meditation focus" styleClass="progress-meta"/>
+                    <Button text="Start Learning" styleClass="btn-primary" maxWidth="Infinity"/>
+                </VBox>
+            </HBox>
+        </VBox>
+
+        <VBox styleClass="card" spacing="16">
+            <Label text="Health Insights" styleClass="card-title"/>
+
+            <VBox spacing="12">
+                <HBox styleClass="course-item" spacing="12" alignment="CENTER_LEFT">
+                    <StackPane>
+                        <Circle radius="24" fill="#ec4899" opacity="0.2"/>
+                        <Label text="👟" textFill="#ec4899"/>
+                    </StackPane>
+                    <VBox spacing="2" HBox.hgrow="ALWAYS">
+                        <Label text="Increase Daily Steps" styleClass="progress-label" style="-fx-font-weight: bold;"/>
+                        <Label text="Your average is 7,500 steps. Increasing to 10,000 could improve your cardiovascular health by 15%."
+                               styleClass="progress-meta" wrapText="true"/>
+                    </VBox>
+                    <Button text="Set Goal" styleClass="btn-primary" style="-fx-padding: 6 16;"/>
+                </HBox>
+
+                <HBox styleClass="course-item" spacing="12" alignment="CENTER_LEFT">
+                    <StackPane>
+                        <Circle radius="24" fill="#8b5cf6" opacity="0.2"/>
+                        <Label text="🌙" textFill="#8b5cf6"/>
+                    </StackPane>
+                    <VBox spacing="2" HBox.hgrow="ALWAYS">
+                        <Label text="Improve Sleep Quality" styleClass="progress-label" style="-fx-font-weight: bold;"/>
+                        <Label text="Your deep sleep is only 15% of total sleep. Try avoiding screens 1 hour before bed."
+                               styleClass="progress-meta" wrapText="true"/>
+                    </VBox>
+                    <Button text="Learn More" styleClass="btn-primary" style="-fx-padding: 6 16;"/>
+                </HBox>
+            </VBox>
+        </VBox>
+
+        <VBox styleClass="card" spacing="16">
+            <Label text="This Week's Summary" styleClass="card-title"/>
+
+            <HBox spacing="16">
+                <VBox styleClass="stat-card" spacing="8" HBox.hgrow="ALWAYS" alignment="CENTER">
+                    <Label text="🎯" style="-fx-font-size: 24px;"/>
+                    <Label text="5 Goals" styleClass="nutrient-value"/>
+                    <Label text="On track" styleClass="progress-meta"/>
+                </VBox>
+
+                <VBox styleClass="stat-card" spacing="8" HBox.hgrow="ALWAYS" alignment="CENTER">
+                    <Label text="📚" style="-fx-font-size: 24px;"/>
+                    <Label text="8.5 Hours" styleClass="nutrient-value"/>
+                    <Label text="Learning time" styleClass="progress-meta"/>
+                </VBox>
+
+                <VBox styleClass="stat-card" spacing="8" HBox.hgrow="ALWAYS" alignment="CENTER">
+                    <Label text="💰" style="-fx-font-size: 24px;"/>
+
+                    <Label text="Under budget" styleClass="progress-meta"/>
+                </VBox>
+
+                <VBox styleClass="stat-card" spacing="8" HBox.hgrow="ALWAYS" alignment="CENTER">
+                    <Label text="⚡" style="-fx-font-size: 24px;"/>
+                    <Label text="12% Less" styleClass="nutrient-value"/>
+                    <Label text="Energy used" styleClass="progress-meta"/>
+                </VBox>
+
+                <VBox styleClass="stat-card" spacing="8" HBox.hgrow="ALWAYS" alignment="CENTER">
+                    <Label text="❤️" style="-fx-font-size: 24px;"/>
+                    <Label text="72 BPM" styleClass="nutrient-value"/>
+                    <Label text="Avg heart rate" styleClass="progress-meta"/>
+                </VBox>
+            </HBox>
+        </VBox>
+
+        <HBox alignment="CENTER" spacing="12" style="-fx-padding: 20;">
+            <Button styleClass="voice-button">
+                <graphic>
+                    <Label text="🎤" textFill="#0a0e1a"/>
+                </graphic>
+            </Button>
+        </HBox>
+
+    </VBox>
+</ScrollPane>

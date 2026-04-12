@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.geometry.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+            style="-fx-background: transparent; -fx-background-color: transparent;">
+
+    <VBox spacing="24" style="-fx-background-color: #0a0e1a; -fx-padding: 0;">
+
+        <HBox spacing="24" alignment="TOP_LEFT">
+            <VBox styleClass="card" spacing="20" HBox.hgrow="ALWAYS" minWidth="500">
+                <HBox styleClass="card-header" alignment="CENTER_LEFT">
+                    <StackPane styleClass="card-icon, card-icon-cyan">
+                        <Label text="💰" style="-fx-font-size: 20px;"/>
+                    </StackPane>
+                    <VBox spacing="2">
+                        <Label text="Finance" styleClass="card-title"/>
+                        <Label text="WEALTH MANAGEMENT" styleClass="card-subtitle"/>
+                    </VBox>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="⋯" styleClass="card-menu"/>
+                </HBox>
+
+                <HBox spacing="20">
+                    <VBox spacing="16" minWidth="200">
+                        <VBox spacing="4">
+                            <Label text="Total Assets" styleClass="stat-label"/>
+
+                            <Label text="↗ +2.4% this month" styleClass="stat-change-positive"/>
+                        </VBox>
+
+                        <VBox spacing="4">
+                            <Label text="Monthly Budget" styleClass="stat-label"/>
+                            <Label text="Spending Limit" styleClass="stat-label"/>
+
+                            <ProgressBar progress="0.64" prefWidth="180" styleClass="progress-bar, progress-bar-cyan"/>
+                        </VBox>
+                    </VBox>
+
+                    <VBox HBox.hgrow="ALWAYS" spacing="8">
+                        <LineChart prefHeight="200" styleClass="chart-container"
+                                   createSymbols="false" legendVisible="false">
+                            <xAxis>
+                                <CategoryAxis side="BOTTOM" tickLabelsVisible="true"
+                                              tickMarkVisible="false" style="-fx-tick-label-fill: #64748b;"/>
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis side="LEFT" tickLabelsVisible="true"
+                                            tickMarkVisible="false" style="-fx-tick-label-fill: #64748b;"
+                                            lowerBound="0" upperBound="10000" tickUnit="2500"/>
+                            </yAxis>
+                        </LineChart>
+                        <HBox spacing="20" alignment="CENTER">
+                            <Label text="Mon" styleClass="progress-meta"/>
+                            <Label text="Tue" styleClass="progress-meta"/>
+                            <Label text="Wed" styleClass="progress-meta"/>
+                            <Label text="Thu" styleClass="progress-meta"/>
+                            <Label text="Fri" styleClass="progress-meta"/>
+                            <Label text="Sat" styleClass="progress-meta"/>
+                            <Label text="Sun" styleClass="progress-meta"/>
+                        </HBox>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <VBox styleClass="card" spacing="20" HBox.hgrow="ALWAYS" minWidth="350">
+                <HBox styleClass="card-header" alignment="CENTER_LEFT">
+                    <StackPane styleClass="card-icon, card-icon-purple">
+                        <Label text="🧠" style="-fx-font-size: 20px;"/>
+                    </StackPane>
+                    <VBox spacing="2">
+                        <Label text="Learning" styleClass="card-title"/>
+                        <Label text="SKILL ACQUISITION" styleClass="card-subtitle"/>
+                    </VBox>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="⋯" styleClass="card-menu"/>
+                </HBox>
+
+                <VBox styleClass="stat-card" spacing="12">
+                    <HBox alignment="CENTER_LEFT" spacing="12">
+                        <VBox spacing="4" HBox.hgrow="ALWAYS">
+                            <Label text="Advanced Python AI" styleClass="progress-label" style="-fx-font-weight: bold;"/>
+                            <Label text="Module 4: Neural Networks" styleClass="progress-meta"/>
+                        </VBox>
+                        <Label text="ACTIVE" styleClass="badge, badge-active"/>
+                    </HBox>
+
+                    <VBox spacing="6">
+                        <HBox alignment="CENTER_LEFT">
+                            <Label text="Progress" styleClass="progress-meta" HBox.hgrow="ALWAYS"/>
+                            <Label text="45%" styleClass="progress-label" textFill="#00d4ff"/>
+                        </HBox>
+                        <ProgressBar progress="0.45" styleClass="progress-bar, progress-bar-cyan"/>
+                    </VBox>
+                </VBox>
+
+                <VBox spacing="12">
+                    <Label text="RECOMMENDED" styleClass="recommended-title"/>
+
+                    <HBox styleClass="course-item" spacing="12">
+                        <StackPane>
+                            <Rectangle width="32" height="32" arcWidth="6" arcHeight="6" fill="#2a3142"/>
+                            <Label text="▶" textFill="#64748b"/>
+                        </StackPane>
+                        <Label text="Cognitive Psychology" styleClass="course-name-small"/>
+                    </HBox>
+
+                    <HBox styleClass="course-item" spacing="12">
+                        <StackPane>
+                            <Rectangle width="32" height="32" arcWidth="6" arcHeight="6" fill="#2a3142"/>
+                            <Label text="▶" textFill="#64748b"/>
+                        </StackPane>
+                        <Label text="Market Analysis 101" styleClass="course-name-small"/>
+                    </HBox>
+                </VBox>
+            </VBox>
+        </HBox>
+
+        <HBox spacing="24" alignment="TOP_LEFT">
+            <VBox styleClass="card" spacing="20" HBox.hgrow="ALWAYS" minWidth="300">
+                <HBox styleClass="card-header" alignment="CENTER_LEFT">
+                    <StackPane styleClass="card-icon, card-icon-pink">
+                        <Label text="❤️" style="-fx-font-size: 20px;"/>
+                    </StackPane>
+                    <Label text="Health &amp; Activity" styleClass="card-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="⋯" styleClass="card-menu"/>
+                </HBox>
+
+                <HBox spacing="12">
+                    <VBox styleClass="stat-card" spacing="6" HBox.hgrow="ALWAYS">
+                        <HBox spacing="8" alignment="CENTER_LEFT">
+                            <Label text="⭐" textFill="#10b981"/>
+                            <Label text="Steps" styleClass="stat-label"/>
+                        </HBox>
+                        <Label text="8,432" styleClass="stat-value" style="-fx-font-size: 24px;"/>
+                        <Label text="Goal: 10,000" styleClass="steps-goal"/>
+                        <ProgressBar progress="0.84" styleClass="progress-bar, progress-bar-cyan"/>
+                    </VBox>
+
+                    <VBox styleClass="stat-card" spacing="6" HBox.hgrow="ALWAYS">
+                        <HBox spacing="8" alignment="CENTER_LEFT">
+                            <Label text="🌙" textFill="#8b5cf6"/>
+                            <Label text="Sleep" styleClass="stat-label"/>
+                        </HBox>
+                        <Label text="7h 24m" styleClass="stat-value" style="-fx-font-size: 24px;"/>
+                        <Label text="Deep Sleep: 2h" styleClass="sleep-deep"/>
+                        <ProgressBar progress="0.75" styleClass="progress-bar, progress-bar-purple"/>
+                    </VBox>
+                </HBox>
+
+                <VBox styleClass="heart-rate-container" spacing="8">
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <Label text="❤️" textFill="#ef4444"/>
+                        <Label text="Heart Rate" styleClass="stat-label"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <HBox spacing="4" alignment="CENTER_RIGHT">
+                            <Label text="72" styleClass="heart-rate-value"/>
+                            <Label text="BPM" styleClass="heart-rate-unit"/>
+                        </HBox>
+                    </HBox>
+                    <Pane prefHeight="60" style="-fx-background-color: rgba(236, 72, 153, 0.1); -fx-background-radius: 8;"/>
+                </VBox>
+            </VBox>
+
+            <VBox styleClass="card" spacing="20" HBox.hgrow="ALWAYS" minWidth="300">
+                <HBox styleClass="card-header" alignment="CENTER_LEFT">
+                    <StackPane styleClass="card-icon, card-icon-green">
+                        <Label text="🍴" style="-fx-font-size: 20px;"/>
+                    </StackPane>
+                    <Label text="Smart Nutrition" styleClass="card-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="⋯" styleClass="card-menu"/>
+                </HBox>
+
+                <HBox spacing="20" alignment="CENTER">
+                    <StackPane styleClass="donut-chart">
+                        <Circle radius="60" fill="transparent" stroke="#1e2538" strokeWidth="12"/>
+                        <Circle radius="60" fill="transparent" stroke="#00d4ff" strokeWidth="12"
+                                strokeDashArray="113377" rotate="90"/>
+                        <Circle radius="60" fill="transparent" stroke="#8b5cf6" strokeWidth="12"
+                                strokeDashArray="75377" rotate="-30"/>
+                        <Circle radius="60" fill="transparent" stroke="#ec4899" strokeWidth="12"
+                                strokeDashArray="38377" rotate="-100"/>
+                        <VBox alignment="CENTER" spacing="2">
+                            <Label text="1,850" styleClass="donut-center"/>
+                            <Label text="KCAL" styleClass="donut-label"/>
+                        </VBox>
+                    </StackPane>
+
+                    <VBox spacing="16" alignment="CENTER_LEFT">
+                        <HBox spacing="8" alignment="CENTER_LEFT">
+                            <Circle radius="4" fill="#00d4ff"/>
+                            <Label text="Carbs" styleClass="nutrient-label"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label text="124g" styleClass="nutrient-value"/>
+                        </HBox>
+                        <HBox spacing="8" alignment="CENTER_LEFT">
+                            <Circle radius="4" fill="#8b5cf6"/>
+                            <Label text="Protein" styleClass="nutrient-label"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label text="140g" styleClass="nutrient-value"/>
+                        </HBox>
+                        <HBox spacing="8" alignment="CENTER_LEFT">
+                            <Circle radius="4" fill="#ec4899"/>
+                            <Label text="Fats" styleClass="nutrient-label"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label text="65g" styleClass="nutrient-value"/>
+                        </HBox>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <VBox styleClass="card" spacing="20" HBox.hgrow="ALWAYS" minWidth="300">
+                <HBox styleClass="card-header" alignment="CENTER_LEFT">
+                    <StackPane styleClass="card-icon, card-icon-orange">
+                        <Label text="⚡" style="-fx-font-size: 20px;"/>
+                    </StackPane>
+                    <Label text="Home &amp; Energy" styleClass="card-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="⋯" styleClass="card-menu"/>
+                </HBox>
+
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <VBox spacing="4">
+                        <HBox spacing="4" alignment="BASELINE_LEFT">
+                            <Label text="2.4" styleClass="energy-usage"/>
+                            <Label text="kW" styleClass="energy-unit"/>
+                        </HBox>
+                        <Label text="Current Usage" styleClass="stat-label"/>
+                    </VBox>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <StackPane>
+                        <Circle radius="30" fill="transparent" stroke="#1e2538" strokeWidth="4"/>
+                        <Circle radius="30" fill="transparent" stroke="#00d4ff" strokeWidth="4"
+                                strokeDashArray="94188" rotate="90"/>
+                        <Label text="⚡" textFill="#00d4ff"/>
+                    </StackPane>
+                </HBox>
+
+                <HBox spacing="12">
+                    <VBox styleClass="device-card, device-card-active" spacing="8" HBox.hgrow="ALWAYS">
+                        <Label text="💡" textFill="#f59e0b"/>
+                        <Label text="Lights On" styleClass="device-status"/>
+                    </VBox>
+
+                    <VBox styleClass="device-card" spacing="8" HBox.hgrow="ALWAYS">
+                        <HBox styleClass="temp-control">
+                            <Button text="−" styleClass="temp-button"/>
+                            <Label text="22°C" styleClass="temp-value"/>
+                            <Button text="+" styleClass="temp-button"/>
+                        </HBox>
+                        <Label text="Living" styleClass="device-name"/>
+                    </VBox>
+                </HBox>
+
+                <HBox spacing="12">
+                    <VBox styleClass="device-card" spacing="8" HBox.hgrow="ALWAYS">
+                        <Label text="📶" textFill="#64748b"/>
+                        <Label text="Network" styleClass="device-name"/>
+                    </VBox>
+
+                    <VBox styleClass="device-card" spacing="8" HBox.hgrow="ALWAYS">
+                        <Label text="🔒" textFill="#64748b"/>
+                        <Label text="Security" styleClass="device-name"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+        </HBox>
+
+        <HBox spacing="24" alignment="TOP_LEFT">
+            <VBox styleClass="achievement-card" spacing="12" HBox.hgrow="ALWAYS">
+                <StackPane>
+                    <Circle radius="24" fill="rgba(139, 92, 246, 0.2)"/>
+                    <Label text="🏆" textFill="#8b5cf6"/>
+                </StackPane>
+                <VBox spacing="4">
+                    <Label text="ACHIEVEMENT UNLOCKED" styleClass="achievement-title"/>
+                    <Label text="Energy Master: 7 days efficient!" styleClass="achievement-text"/>
+                </VBox>
+            </VBox>
+
+            <VBox styleClass="notification" spacing="8" HBox.hgrow="ALWAYS">
+                <Label text="✦ AIVA SUGGESTION" styleClass="notification-title"/>
+                <Label text="Your energy consumption is 12% lower than last week. Great job maintaining efficiency."
+                       styleClass="notification-text" wrapText="true"/>
+            </VBox>
+        </HBox>
+
+        <VBox styleClass="add-widget-card" maxWidth="Infinity">
+            <Label text="+" textFill="#64748b" style="-fx-font-size: 32px;"/>
+            <Label text="Add Widget" styleClass="add-widget-text"/>
+        </VBox>
+
+    </VBox>
+</ScrollPane>
