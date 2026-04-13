@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controller.MainController"
+            styleClass="main-container"
+            stylesheets="@../styles/aiva-theme.css"
+            prefHeight="900" prefWidth="1400">
+
+    <!-- ══════════════════════════════════════
+         SIDEBAR
+    ══════════════════════════════════════ -->
+    <left>
+        <VBox styleClass="sidebar" spacing="8">
+
+            <!-- Logo -->
+            <HBox styleClass="sidebar-logo" alignment="CENTER_LEFT" spacing="12">
+                <StackPane>
+                    <Circle radius="20" fill="#00d4ff" opacity="0.2"/>
+                    <Label text="▲" textFill="#00d4ff" style="-fx-font-size: 20px;"/>
+                </StackPane>
+                <Label text="AIVA" styleClass="logo-text"/>
+            </HBox>
+
+            <Separator/>
+
+            <VBox spacing="4" VBox.vgrow="ALWAYS">
+
+                <!-- GENERAL -->
+                <Label text="GÉNÉRAL"
+                       style="-fx-text-fill: #64748b; -fx-font-size: 10px;
+                              -fx-font-weight: bold; -fx-padding: 12 20 4 20;"/>
+
+                <Button fx:id="btnDashboard"
+                        text="📊  Dashboard"
+                        styleClass="nav-button, nav-button-active"
+                        onAction="#openDashboard"
+                        maxWidth="Infinity"
+                        alignment="CENTER_LEFT"/>
+
+                <!-- NUTRITION -->
+                <Label text="NUTRITION"
+                       style="-fx-text-fill: #64748b; -fx-font-size: 10px;
+                              -fx-font-weight: bold; -fx-padding: 16 20 4 20;"/>
+
+                <Button fx:id="btnRepas"
+                        text="🍽  Mes Repas"
+                        styleClass="nav-button"
+                        onAction="#openRepas"
+                        maxWidth="Infinity"
+                        alignment="CENTER_LEFT"/>
+
+                <Button fx:id="btnAliments"
+                        text="🥗  Mes Aliments"
+                        styleClass="nav-button"
+                        onAction="#openAliments"
+                        maxWidth="Infinity"
+                        alignment="CENTER_LEFT"/>
+
+                <!-- Add more sections/buttons here as needed -->
+
+            </VBox>
+
+            <!-- Footer -->
+            <VBox styleClass="sidebar-footer" spacing="8">
+                <Separator/>
+                <Button text="⚙  Paramètres" styleClass="nav-button"
+                        maxWidth="Infinity" alignment="CENTER_LEFT"/>
+                <Button text="⬅  Déconnexion" styleClass="nav-button"
+                        onAction="#handleLogout"
+                        maxWidth="Infinity" alignment="CENTER_LEFT"/>
+                <Label fx:id="labelUser" text="● Utilisateur" styleClass="topbar-user"/>
+            </VBox>
+
+        </VBox>
+    </left>
+
+    <!-- ══════════════════════════════════════
+         CENTER
+    ══════════════════════════════════════ -->
+    <center>
+        <VBox spacing="0" style="-fx-background-color: #0a0e1a;">
+
+            <!-- Top bar -->
+            <HBox styleClass="topbar" alignment="CENTER_LEFT">
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label fx:id="topbarTitle"    text="Dashboard"    styleClass="topbar-title"/>
+                    <Label fx:id="topbarSubtitle" text="Vue d'ensemble" styleClass="topbar-subtitle"/>
+                </VBox>
+                <HBox spacing="12" alignment="CENTER_RIGHT">
+                    <Label fx:id="topbarUser" text="Bienvenue" styleClass="topbar-user"/>
+                    <Circle radius="18" fill="#2a3142" stroke="#00d4ff" strokeWidth="2"/>
+                </HBox>
+            </HBox>
+
+            <!-- Content area -->
+            <StackPane fx:id="contentArea" VBox.vgrow="ALWAYS"
+                       style="-fx-padding: 0 30 30 30;"/>
+
+        </VBox>
+    </center>
+
+</BorderPane>

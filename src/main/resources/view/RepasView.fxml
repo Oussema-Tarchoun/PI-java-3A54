@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<!--
+    Controller : Controllers.repas.RepasFrontController
+    Place at   : src/main/resources/views/RepasView.fxml
+    Loads inside MainController contentArea (StackPane)
+-->
+<ScrollPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controllers.repas.RepasFrontController"
+            fitToWidth="true"
+            style="-fx-background: transparent; -fx-background-color: transparent;">
+
+    <VBox spacing="24" style="-fx-background-color: #0a0e1a; -fx-padding: 8 0 32 0;">
+
+        <!-- ══════════════════════════════════════
+             HEADER
+        ══════════════════════════════════════ -->
+        <HBox alignment="CENTER_LEFT" spacing="16"
+              style="-fx-padding: 0 0 8 0;">
+            <VBox spacing="4" HBox.hgrow="ALWAYS">
+                <Label text="Mes Repas"
+                       style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #ffffff;"/>
+                <Label text="Gérez et suivez vos repas quotidiens"
+                       style="-fx-font-size: 13px; -fx-text-fill: #64748b;"/>
+            </VBox>
+            <Button text="➕ Nouveau Repas"
+                    onAction="#openAddForm"
+                    style="-fx-background-color: #00d4ff; -fx-text-fill: #0a0e1a;
+                           -fx-font-weight: bold; -fx-font-size: 13px;
+                           -fx-background-radius: 8; -fx-padding: 10 20 10 20; -fx-cursor: hand;"/>
+        </HBox>
+
+        <!-- ══════════════════════════════════════
+             STAT CARDS
+        ══════════════════════════════════════ -->
+        <HBox spacing="16">
+            <!-- Total -->
+            <VBox styleClass="card" HBox.hgrow="ALWAYS" spacing="8">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <StackPane style="-fx-background-color: rgba(0,212,255,0.15);
+                                     -fx-background-radius: 10;
+                                     -fx-min-width: 40; -fx-min-height: 40;
+                                     -fx-max-width: 40; -fx-max-height: 40;">
+                        <Label text="🍽" style="-fx-font-size: 18px;"/>
+                    </StackPane>
+                    <Label text="TOTAL REPAS" styleClass="card-subtitle"/>
+                </HBox>
+                <Label fx:id="statTotal" text="—"
+                       style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #ffffff;"/>
+                <Label text="repas enregistrés" styleClass="card-subtitle"/>
+            </VBox>
+
+            <!-- Avg calories -->
+            <VBox styleClass="card" HBox.hgrow="ALWAYS" spacing="8">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <StackPane style="-fx-background-color: rgba(245,158,11,0.15);
+                                     -fx-background-radius: 10;
+                                     -fx-min-width: 40; -fx-min-height: 40;
+                                     -fx-max-width: 40; -fx-max-height: 40;">
+                        <Label text="🔥" style="-fx-font-size: 18px;"/>
+                    </StackPane>
+                    <Label text="MOY. CALORIES" styleClass="card-subtitle"/>
+                </HBox>
+                <Label fx:id="statAvgCal" text="—"
+                       style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #ffffff;"/>
+                <Label text="par repas" styleClass="card-subtitle"/>
+            </VBox>
+
+            <!-- This month -->
+            <VBox styleClass="card" HBox.hgrow="ALWAYS" spacing="8">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <StackPane style="-fx-background-color: rgba(139,92,246,0.15);
+                                     -fx-background-radius: 10;
+                                     -fx-min-width: 40; -fx-min-height: 40;
+                                     -fx-max-width: 40; -fx-max-height: 40;">
+                        <Label text="📅" style="-fx-font-size: 18px;"/>
+                    </StackPane>
+                    <Label text="CE MOIS" styleClass="card-subtitle"/>
+                </HBox>
+                <Label fx:id="statCeMois" text="—"
+                       style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #ffffff;"/>
+                <Label text="repas ce mois-ci" styleClass="card-subtitle"/>
+            </VBox>
+
+            <!-- Score -->
+            <VBox styleClass="card" HBox.hgrow="ALWAYS" spacing="8">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <StackPane style="-fx-background-color: rgba(16,185,129,0.15);
+                                     -fx-background-radius: 10;
+                                     -fx-min-width: 40; -fx-min-height: 40;
+                                     -fx-max-width: 40; -fx-max-height: 40;">
+                        <Label text="⭐" style="-fx-font-size: 18px;"/>
+                    </StackPane>
+                    <Label text="SCORE MOYEN" styleClass="card-subtitle"/>
+                </HBox>
+                <Label fx:id="statScore" text="—"
+                       style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #10b981;"/>
+                <Label text="qualité nutritionnelle" styleClass="card-subtitle"/>
+            </VBox>
+        </HBox>
+
+        <!-- ══════════════════════════════════════
+             SEARCH + FILTER
+        ══════════════════════════════════════ -->
+        <HBox spacing="12" alignment="CENTER_LEFT">
+            <TextField fx:id="searchField"
+                       promptText="🔍 Rechercher un repas..."
+                       onKeyReleased="#handleSearch"
+                       HBox.hgrow="ALWAYS"
+                       style="-fx-background-color: #161b2e; -fx-text-fill: #ffffff;
+                              -fx-prompt-text-fill: #64748b;
+                              -fx-background-radius: 8; -fx-border-radius: 8;
+                              -fx-border-color: #2a3142; -fx-border-width: 1;
+                              -fx-padding: 10 16 10 16; -fx-font-size: 13px;"/>
+            <ComboBox fx:id="filterType"
+                      promptText="Type"
+                      style="-fx-background-color: #161b2e; -fx-text-fill: #ffffff;
+                             -fx-background-radius: 8; -fx-border-radius: 8;
+                             -fx-border-color: #2a3142; -fx-border-width: 1;
+                             -fx-padding: 4 8 4 8; -fx-font-size: 13px;"
+                      prefWidth="160"/>
+        </HBox>
+
+        <!-- ══════════════════════════════════════
+             ADD / EDIT FORM PANEL
+        ══════════════════════════════════════ -->
+        <VBox fx:id="formPanel" styleClass="card" spacing="18"
+              visible="false" managed="false">
+
+            <Label fx:id="formTitle" text="Nouveau Repas"
+                   style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #00d4ff;"/>
+
+            <HBox spacing="16">
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <Label text="NOM DU REPAS" styleClass="form-label"/>
+                    <TextField fx:id="nomField" promptText="Ex: Déjeuner du lundi"
+                               style="-fx-background-color: #0a0e1a; -fx-text-fill: #ffffff;
+                                      -fx-background-radius: 8; -fx-border-radius: 8;
+                                      -fx-border-color: #2a3142; -fx-border-width: 1;
+                                      -fx-padding: 10 16 10 16;"/>
+                </VBox>
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <Label text="TYPE" styleClass="form-label"/>
+                    <ComboBox fx:id="typeCombo" maxWidth="Infinity"
+                              style="-fx-background-color: #0a0e1a; -fx-text-fill: #ffffff;
+                                     -fx-background-radius: 8; -fx-border-radius: 8;
+                                     -fx-border-color: #2a3142; -fx-border-width: 1;
+                                     -fx-padding: 4 8 4 8;"/>
+                </VBox>
+            </HBox>
+
+            <HBox spacing="16">
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <Label text="DATE" styleClass="form-label"/>
+                    <DatePicker fx:id="datePicker" maxWidth="Infinity"/>
+                </VBox>
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <Label text="HEURE (HH:mm)" styleClass="form-label"/>
+                    <TextField fx:id="heureField" promptText="Ex: 12:30"
+                               style="-fx-background-color: #0a0e1a; -fx-text-fill: #ffffff;
+                                      -fx-background-radius: 8; -fx-border-radius: 8;
+                                      -fx-border-color: #2a3142; -fx-border-width: 1;
+                                      -fx-padding: 10 16 10 16;"/>
+                </VBox>
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <Label text="CALORIES (KCAL)" styleClass="form-label"/>
+                    <TextField fx:id="caloriesField" promptText="0"
+                               style="-fx-background-color: #0a0e1a; -fx-text-fill: #ffffff;
+                                      -fx-background-radius: 8; -fx-border-radius: 8;
+                                      -fx-border-color: #2a3142; -fx-border-width: 1;
+                                      -fx-padding: 10 16 10 16;"/>
+                </VBox>
+            </HBox>
+
+            <VBox spacing="6">
+                <Label text="DESCRIPTION (OPTIONNELLE)" styleClass="form-label"/>
+                <TextArea fx:id="descriptionArea" promptText="Notes sur ce repas..."
+                          prefRowCount="3" wrapText="true"
+                          style="-fx-background-color: #0a0e1a; -fx-text-fill: #ffffff;
+                                 -fx-background-radius: 8; -fx-border-radius: 8;
+                                 -fx-border-color: #2a3142; -fx-border-width: 1;
+                                 -fx-padding: 10 16 10 16;"/>
+            </VBox>
+
+            <Label fx:id="errorLabel" text=""
+                   style="-fx-text-fill: #ef4444; -fx-font-size: 13px;"
+                   wrapText="true" visible="false" managed="false"/>
+
+            <HBox spacing="12">
+                <Button text="✔  Enregistrer" onAction="#handleSave"
+                        style="-fx-background-color: #00d4ff; -fx-text-fill: #0a0e1a;
+                               -fx-font-weight: bold; -fx-background-radius: 8;
+                               -fx-padding: 10 24 10 24; -fx-cursor: hand;"/>
+                <Button text="Annuler" onAction="#handleCancel"
+                        style="-fx-background-color: #2a3142; -fx-text-fill: #94a3b8;
+                               -fx-background-radius: 8; -fx-padding: 10 20 10 20; -fx-cursor: hand;"/>
+            </HBox>
+        </VBox>
+
+        <!-- ══════════════════════════════════════
+             REPAS CARDS GRID
+        ══════════════════════════════════════ -->
+        <FlowPane fx:id="cardsPane"
+                  hgap="16" vgap="16"
+                  style="-fx-padding: 4 0 0 0;"/>
+
+    </VBox>
+</ScrollPane>
