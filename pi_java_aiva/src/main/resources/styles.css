@@ -477,6 +477,21 @@
     -fx-effect: dropshadow(gaussian, rgba(108,99,255,0.25), 6, 0, 0, 0);
 }
 
+/* Specific styling for TextArea */
+.text-area {
+    -fx-text-fill: white;
+}
+
+.text-area .content {
+    -fx-background-color: #13151f;
+    -fx-text-fill: white;
+}
+
+.text-area .text {
+    -fx-fill: white;
+}
+
+
 .combo-box-popup .list-view {
     -fx-background-color: #1a1d2e;
     -fx-border-color: #2a2d3e;

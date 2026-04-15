@@ -1,99 +1,85 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefWidth="1080.0" prefHeight="680.0"
-            xmlns="http://javafx.com/javafx/21"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="Controllers.RegisterController"
-            stylesheets="@styles.css">
+<AnchorPane prefHeight="680.0" prefWidth="1080.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.RegisterController">
 
     <!-- Left decorative panel -->
-    <VBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
-          AnchorPane.leftAnchor="0" prefWidth="480"
-          styleClass="auth-left-panel" alignment="CENTER" spacing="24">
-        <Label text="&#9670; AIVA" styleClass="auth-brand-logo"/>
-        <Label text="Admin Portal" styleClass="auth-brand-sub"/>
-        <Label text="Rejoignez la plateforme&#10;d'administration AIVA." styleClass="auth-brand-desc"
-               wrapText="true" textAlignment="CENTER"/>
-        <Label text="&#127919;" styleClass="auth-brand-icon"/>
+    <VBox alignment="CENTER" prefWidth="480" spacing="24" styleClass="auth-left-panel" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.topAnchor="0">
+        <Label styleClass="auth-brand-logo" text="◆ AIVA" />
+        <Label styleClass="auth-brand-sub" text="Admin Portal" />
+        <Label styleClass="auth-brand-desc" text="Rejoignez la plateforme&#10;d'administration AIVA." textAlignment="CENTER" wrapText="true" />
+        <Label styleClass="auth-brand-icon" text="🎯" />
     </VBox>
 
     <!-- Right register form -->
-    <VBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
-          AnchorPane.leftAnchor="480" AnchorPane.rightAnchor="0"
-          styleClass="auth-right-panel" alignment="CENTER" spacing="0">
+    <VBox alignment="CENTER" spacing="0" styleClass="auth-right-panel" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="480" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
 
         <VBox maxWidth="380" spacing="28">
 
             <!-- Header -->
             <VBox spacing="6">
-                <Label text="Créer un compte" styleClass="auth-title"/>
-                <Label text="Remplissez les champs pour vous inscrire." styleClass="auth-subtitle"/>
+                <Label styleClass="auth-title" text="Créer un compte" />
+                <Label styleClass="auth-subtitle" text="Remplissez les champs pour vous inscrire." />
             </VBox>
 
             <!-- Form -->
             <VBox spacing="14">
 
                 <HBox spacing="12">
-                    <VBox HBox.hgrow="ALWAYS" spacing="6">
-                        <Label text="Nom complet *" styleClass="form-label"/>
-                        <TextField fx:id="tfName" promptText="Jean Dupont"
-                                   styleClass="form-field" id="tfRegisterName"/>
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label styleClass="form-label" text="Nom complet *" />
+                        <TextField id="tfRegisterName" fx:id="tfName" promptText="Jean Dupont" styleClass="form-field" />
                     </VBox>
                 </HBox>
 
                 <VBox spacing="6">
-                    <Label text="Adresse Email *" styleClass="form-label"/>
-                    <TextField fx:id="tfEmail" promptText="jean@exemple.com"
-                               styleClass="form-field" id="tfRegisterEmail"/>
+                    <Label styleClass="form-label" text="Adresse Email *" />
+                    <TextField id="tfRegisterEmail" fx:id="tfEmail" promptText="jean@exemple.com" styleClass="form-field" />
                 </VBox>
 
                 <VBox spacing="6">
-                    <Label text="Rôle *" styleClass="form-label"/>
-                    <ComboBox fx:id="cbRole" promptText="Choisir un rôle"
-                              maxWidth="Infinity" styleClass="form-field" id="cbRegisterRole"/>
+                    <Label styleClass="form-label" text="Rôle *" />
+                    <ComboBox id="cbRegisterRole" fx:id="cbRole" maxWidth="Infinity" promptText="Choisir un rôle" styleClass="form-field" />
                 </VBox>
 
                 <VBox spacing="6">
-                    <Label text="Mot de passe *" styleClass="form-label"/>
-                    <PasswordField fx:id="pfPassword" promptText="••••••••"
-                                  styleClass="form-field" id="pfRegisterPassword"/>
+                    <Label styleClass="form-label" text="Mot de passe *" />
+                    <PasswordField id="pfRegisterPassword" fx:id="pfPassword" promptText="••••••••" styleClass="form-field" />
                 </VBox>
 
                 <VBox spacing="6">
-                    <Label text="Confirmer le mot de passe *" styleClass="form-label"/>
-                    <PasswordField fx:id="pfConfirm" promptText="••••••••"
-                                  styleClass="form-field" id="pfRegisterConfirm"
-                                  onAction="#handleRegister"/>
+                    <Label styleClass="form-label" text="Confirmer le mot de passe *" />
+                    <PasswordField id="pfRegisterConfirm" fx:id="pfConfirm" onAction="#handleRegister" promptText="••••••••" styleClass="form-field" />
                 </VBox>
 
                 <!-- Error / success label -->
-                <Label fx:id="lblError" text="" styleClass="error-label"
-                       wrapText="true" managed="false" visible="false"/>
+                <Label fx:id="lblError" managed="false" styleClass="error-label" text="" visible="false" wrapText="true" />
 
                 <!-- Register button -->
-                <Button text="S'inscrire &#8594;" styleClass="btn-primary"
-                        maxWidth="Infinity" prefHeight="44"
-                        onAction="#handleRegister" id="btnRegisterSubmit"
-                        defaultButton="true"/>
+                <Button id="btnRegisterSubmit" defaultButton="true" maxWidth="Infinity" onAction="#handleRegister" prefHeight="44" styleClass="btn-primary" text="S'inscrire →" />
 
             </VBox>
 
             <!-- Separator -->
             <HBox alignment="CENTER" spacing="12">
-                <Separator HBox.hgrow="ALWAYS"/>
-                <Label text="ou" styleClass="auth-or-label"/>
-                <Separator HBox.hgrow="ALWAYS"/>
+                <Separator HBox.hgrow="ALWAYS" />
+                <Label styleClass="auth-or-label" text="ou" />
+                <Separator HBox.hgrow="ALWAYS" />
             </HBox>
 
             <!-- Login link -->
             <HBox alignment="CENTER" spacing="8">
-                <Label text="Déjà un compte ?" styleClass="auth-subtitle"/>
-                <Button text="Se connecter" styleClass="btn-link"
-                        onAction="#goToLogin" id="btnGoLogin"/>
+                <Label styleClass="auth-subtitle" text="Déjà un compte ?" />
+                <Button id="btnGoLogin" onAction="#goToLogin" styleClass="btn-link" text="Se connecter" />
             </HBox>
 
         </VBox>

@@ -16,7 +16,6 @@
           AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
           styleClass="dialog-root" spacing="0">
 
-        <!-- Dialog Header -->
         <HBox styleClass="dialog-header" alignment="CENTER_LEFT" prefHeight="64">
             <padding><Insets left="24" right="24"/></padding>
             <Label fx:id="lblFormTitle" text="Ajouter un Utilisateur" styleClass="dialog-title"/>
@@ -24,12 +23,10 @@
             <Label fx:id="lblFormIcon" text="&#128100;" styleClass="dialog-icon"/>
         </HBox>
 
-        <!-- Scrollable Form -->
         <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="dialog-scroll">
             <VBox spacing="16" styleClass="form-body">
                 <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
 
-                <!-- Row: Nom + Email -->
                 <HBox spacing="16">
                     <VBox HBox.hgrow="ALWAYS" spacing="4">
                         <Label text="Nom complet *" styleClass="form-label"/>
@@ -41,13 +38,11 @@
                     </VBox>
                 </HBox>
 
-                <!-- Password -->
                 <VBox spacing="4">
                     <Label text="Mot de passe *" styleClass="form-label"/>
                     <PasswordField fx:id="pfPassword" promptText="••••••••" styleClass="form-field" id="pfPassword"/>
                 </VBox>
 
-                <!-- Roles -->
                 <VBox spacing="4">
                     <Label text="Rôle" styleClass="form-label"/>
                     <ComboBox fx:id="cmbRoles" prefWidth="999" styleClass="form-field" id="cmbRoles">
@@ -61,7 +56,6 @@
                     </ComboBox>
                 </VBox>
 
-                <!-- Row: Is Blocked + Is Verified -->
                 <HBox spacing="16">
                     <VBox HBox.hgrow="ALWAYS" spacing="4">
                         <Label text="Statut Blocage" styleClass="form-label"/>
@@ -87,7 +81,6 @@
                     </VBox>
                 </HBox>
 
-                <!-- Row: 2FA + XP -->
                 <HBox spacing="16">
                     <VBox HBox.hgrow="ALWAYS" spacing="4">
                         <Label text="2FA Activé" styleClass="form-label"/>
@@ -106,12 +99,10 @@
                     </VBox>
                 </HBox>
 
-                <!-- Error message -->
                 <Label fx:id="lblError" text="" styleClass="error-label" wrapText="true"/>
             </VBox>
         </ScrollPane>
 
-        <!-- Dialog Footer -->
         <HBox styleClass="dialog-footer" alignment="CENTER_RIGHT" spacing="12" prefHeight="72">
             <padding><Insets left="24" right="24"/></padding>
             <Button text="Annuler" styleClass="btn-secondary" onAction="#cancel" id="btnCancel"/>

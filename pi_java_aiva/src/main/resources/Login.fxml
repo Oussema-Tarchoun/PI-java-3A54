@@ -50,6 +50,12 @@
                                   onAction="#handleLogin"/>
                 </VBox>
 
+                <!-- Forgot password link -->
+                <HBox alignment="CENTER_RIGHT">
+                    <Button text="Mot de passe oublié ?" styleClass="btn-link"
+                            onAction="#handleForgotPassword" id="btnForgotPassword"/>
+                </HBox>
+
                 <!-- Error label -->
                 <Label fx:id="lblError" text="" styleClass="error-label"
                        wrapText="true" managed="false" visible="false"/>

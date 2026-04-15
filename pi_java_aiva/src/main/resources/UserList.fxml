@@ -12,7 +12,6 @@
             fx:controller="Controllers.UserListController"
             stylesheets="@styles.css">
 
-    <!-- Left Sidebar -->
     <VBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0"
           prefWidth="220" spacing="0" styleClass="sidebar">
         <VBox alignment="CENTER" styleClass="sidebar-logo" prefHeight="100">
@@ -38,28 +37,24 @@
                 onAction="#handleLogout" id="btnLogoutList"/>
     </VBox>
 
-    <!-- Main Content -->
     <VBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
           AnchorPane.leftAnchor="220" AnchorPane.rightAnchor="0"
           styleClass="main-content">
 
-        <!-- Top Bar -->
         <HBox alignment="CENTER_LEFT" styleClass="topbar">
             <Label text="Gestion des Utilisateurs" styleClass="page-title"/>
             <Pane HBox.hgrow="ALWAYS"/>
             <Label text="Bienvenue, Admin" styleClass="topbar-user"/>
         </HBox>
 
-        <!-- Search + Sort Row -->
         <HBox alignment="CENTER_LEFT" spacing="12">
             <VBox.margin><Insets top="20" right="24" bottom="6" left="24"/></VBox.margin>
-            <!-- Dynamic search: fires on every key press -->
             <TextField fx:id="tfSearch" promptText="&#128269;  Rechercher (nom, email, id, rôle)..."
                        styleClass="search-field" prefWidth="340" onKeyReleased="#handleSearch"
                        id="tfSearchUsers"/>
             <Label text="Trier par :" styleClass="form-label" style="-fx-padding: 0 0 0 8;"/>
             <ComboBox fx:id="cmbSort" prefWidth="160" styleClass="form-field" id="cmbSortUsers"
-                      onAction="#handleSort">
+                       onAction="#handleSort">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
                         <String fx:value="ID"/>
@@ -72,7 +67,6 @@
             <Pane HBox.hgrow="ALWAYS"/>
         </HBox>
 
-        <!-- Action Buttons Row -->
         <HBox alignment="CENTER_LEFT" spacing="10">
             <VBox.margin><Insets right="24" bottom="12" left="24"/></VBox.margin>
             <Button text="&#10010;  Ajouter" styleClass="btn-primary" onAction="#openAddUser"
@@ -90,7 +84,6 @@
                     id="btnExportPdf"/>
         </HBox>
 
-        <!-- Table -->
         <TableView fx:id="tableUsers" VBox.vgrow="ALWAYS" styleClass="data-table">
             <VBox.margin><Insets right="24" bottom="0" left="24"/></VBox.margin>
             <columns>
@@ -108,7 +101,6 @@
             </placeholder>
         </TableView>
 
-        <!-- Status bar -->
         <HBox alignment="CENTER_LEFT" styleClass="statusbar">
             <VBox.margin><Insets top="0" right="0" bottom="0" left="0"/></VBox.margin>
             <Label fx:id="lblStatus" text="Chargement..." styleClass="status-text"/>

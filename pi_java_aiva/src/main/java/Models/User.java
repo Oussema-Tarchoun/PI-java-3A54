@@ -3,59 +3,39 @@ package Models;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.persistence.*;
 
-@Entity
-@Table(name = "user")
 public class User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(columnDefinition = "JSON")
     private String roles;
 
-    @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
     private String name;
 
-    @Column(name = "is_blocked")
     private int isBlocked;
 
-    @Column(name = "totp_secret")
     private String totpSecret;
 
-    @Column(name = "reset_password_attempts")
     private int resetPasswordAttempts;
 
-    @Column(name = "known_ips", columnDefinition = "JSON")
     private String knownIps;
 
-    @Column(name = "is_verified")
     private boolean isVerified;
 
-    @Column(name = "verification_token")
     private String verificationToken;
 
-    @Column(name = "token_expires_at")
     private LocalDateTime tokenExpiresAt;
 
-    @Column(name = "experience_points")
     private int experiencePoints;
 
-    @Column(name = "last_points_awarded_at")
     private LocalDateTime lastPointsAwardedAt;
 
-    @Column(name = "is2fa_enabled")
     private boolean is2faEnabled;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Report> reports = new ArrayList<>();
 
     public User() {}

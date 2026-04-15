@@ -4,15 +4,16 @@ module pi_java_aiva {
     requires java.sql;
     requires mysql.connector.j;
     requires itextpdf;
-    requires jakarta.persistence;
-    requires org.hibernate.orm.core;
+
     requires java.naming;
+    requires jakarta.mail;
+    requires org.eclipse.angus.mail;
 
     // Open packages for reflection
     opens Controllers to javafx.fxml;
     opens utils to javafx.fxml;
     opens Test to javafx.fxml;
-    opens Models to org.hibernate.orm.core, javafx.fxml;
+    opens Models to javafx.fxml;
 
     // Export packages for access
     exports utils;

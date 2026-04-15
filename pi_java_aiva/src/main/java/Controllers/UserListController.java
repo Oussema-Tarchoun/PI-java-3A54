@@ -68,14 +68,10 @@ public class UserListController {
         setupColumns();
         setupSelectionListener();
         setupDoubleClickNavigation();
-        // Default sort selection
         cmbSort.getSelectionModel().selectFirst();
         loadUsers();
     }
 
-    // -------------------------------------------------------
-    // Column Setup
-    // -------------------------------------------------------
     private void setupColumns() {
         colId.setCellValueFactory(c -> new SimpleStringProperty(String.valueOf(c.getValue().getId())));
         colName.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getName()));
@@ -126,9 +122,6 @@ public class UserListController {
         });
     }
 
-    // -------------------------------------------------------
-    // Load / Search / Sort
-    // -------------------------------------------------------
     @FXML
     public void loadUsers() {
         try {
@@ -142,26 +135,19 @@ public class UserListController {
         }
     }
 
-    /** Dynamic search — triggered on every key release */
     @FXML
     private void handleSearch() {
         applySearchAndSort();
     }
 
-    /** Sort combo changed */
     @FXML
     private void handleSort() {
         applySearchAndSort();
     }
 
-    /**
-     * Applies both the current search query and sort order,
-     * then pushes the result into the TableView.
-     */
     private void applySearchAndSort() {
         String query = tfSearch.getText() == null ? "" : tfSearch.getText().toLowerCase().trim();
 
-        // 1. Filter
         List<User> filtered = allUsers.stream()
                 .filter(u -> {
                     if (query.isEmpty()) return true;
@@ -176,14 +162,13 @@ public class UserListController {
                 })
                 .collect(Collectors.toList());
 
-        // 2. Sort
         String sortBy = cmbSort.getValue();
         if (sortBy != null) {
             switch (sortBy) {
                 case "Nom"   -> filtered.sort(Comparator.comparing(u -> u.getName()  != null ? u.getName()  : ""));
                 case "Email" -> filtered.sort(Comparator.comparing(u -> u.getEmail() != null ? u.getEmail() : ""));
                 case "XP"    -> filtered.sort(Comparator.comparingInt(User::getExperiencePoints).reversed());
-                default      -> filtered.sort(Comparator.comparingInt(User::getId));  // ID (default)
+                default      -> filtered.sort(Comparator.comparingInt(User::getId));
             }
         }
 
@@ -195,9 +180,6 @@ public class UserListController {
         updateStatus(statusMsg, filtered.size());
     }
 
-    // -------------------------------------------------------
-    // CRUD Actions
-    // -------------------------------------------------------
     @FXML
     private void openAddUser() {
         openForm(null);
@@ -241,7 +223,6 @@ public class UserListController {
         }
     }
 
-    /** Toggle block / unblock the selected user */
     @FXML
     private void blockUser() {
         User selected = tableUsers.getSelectionModel().getSelectedItem();
@@ -278,9 +259,6 @@ public class UserListController {
         }
     }
 
-    // -------------------------------------------------------
-    // PDF Export
-    // -------------------------------------------------------
     @FXML
     private void exportPdf() {
         FileChooser chooser = new FileChooser();
@@ -298,7 +276,6 @@ public class UserListController {
             PdfWriter.getInstance(doc, new FileOutputStream(file));
             doc.open();
 
-            // — Title —
             Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18,
                     new BaseColor(108, 99, 255));
             Paragraph title = new Paragraph("◆ AIVA — Liste des Utilisateurs", titleFont);
@@ -306,7 +283,6 @@ public class UserListController {
             title.setSpacingAfter(16);
             doc.add(title);
 
-            // — Subtitle / date —
             Font subFont = FontFactory.getFont(FontFactory.HELVETICA, 10, BaseColor.GRAY);
             Paragraph sub = new Paragraph(
                     "Exporté le : " + java.time.LocalDate.now()
@@ -315,7 +291,6 @@ public class UserListController {
             sub.setSpacingAfter(20);
             doc.add(sub);
 
-            // — Table —
             PdfPTable table = new PdfPTable(8);
             table.setWidthPercentage(100);
             table.setWidths(new float[]{1f, 2.5f, 3f, 2f, 1.5f, 1.5f, 1.2f, 1.2f});
@@ -365,7 +340,6 @@ public class UserListController {
             }
             doc.add(table);
 
-            // — Footer —
             Font footerFont = FontFactory.getFont(FontFactory.HELVETICA_OBLIQUE, 8, BaseColor.LIGHT_GRAY);
             Paragraph footer = new Paragraph("AIVA Admin Portal — Document généré automatiquement", footerFont);
             footer.setAlignment(Element.ALIGN_CENTER);
@@ -386,9 +360,6 @@ public class UserListController {
         }
     }
 
-    // -------------------------------------------------------
-    // Navigation
-    // -------------------------------------------------------
     @FXML
     private void goToDashboard() {
         try {
@@ -415,9 +386,6 @@ public class UserListController {
         }
     }
 
-    // -------------------------------------------------------
-    // Form modal
-    // -------------------------------------------------------
     private void openForm(User userToEdit) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/UserForm.fxml"));
@@ -457,9 +425,6 @@ public class UserListController {
         }
     }
 
-    // -------------------------------------------------------
-    // Helpers
-    // -------------------------------------------------------
     private void updateStatus(String message, int count) {
         lblStatus.setText(message);
         lblCount.setText(count + " utilisateur(s)");

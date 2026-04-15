@@ -126,16 +126,10 @@ public class GlobalReportListController {
 
     @FXML
     private void handleAddReport() {
-        // Since it's a global view, we need to pick a user. 
-        // For simplicity, we'll pick the first admin or a placeholder, 
-        // OR better: show a user selection dialog.
-        // For this task, we'll assume the admin wants to add a report for the system or themselves.
         try {
             List<User> users = serviceUser.recuperer();
             if (users.isEmpty()) return;
 
-            // In a real app, you'd show a user picker.
-            // Here, we'll just open the form and let the user know we're using the first user found.
             openReportForm(users.get(0), null);
         } catch (SQLException e) {
             e.printStackTrace();

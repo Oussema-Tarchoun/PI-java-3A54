@@ -12,7 +12,6 @@
             fx:controller="Controllers.GlobalReportListController"
             stylesheets="@styles.css">
 
-    <!-- Left Sidebar -->
     <VBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0"
           prefWidth="220" spacing="0" styleClass="sidebar">
         <VBox alignment="CENTER" styleClass="sidebar-logo" prefHeight="100">
@@ -34,19 +33,16 @@
                 onAction="#goHome"/>
     </VBox>
 
-    <!-- Main Content -->
     <VBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
           AnchorPane.leftAnchor="220" AnchorPane.rightAnchor="0"
           styleClass="main-content">
 
-        <!-- Top Bar -->
         <HBox alignment="CENTER_LEFT" styleClass="topbar">
             <Label text="Gestion Globale des Rapports" styleClass="page-title"/>
             <Pane HBox.hgrow="ALWAYS"/>
             <Label text="Bienvenue, Admin" styleClass="topbar-user"/>
         </HBox>
 
-        <!-- Search + Sort Row -->
         <HBox alignment="CENTER_LEFT" spacing="12">
             <VBox.margin><Insets top="20" right="24" bottom="6" left="24"/></VBox.margin>
             <TextField fx:id="txtSearch" promptText="&#128269;  Rechercher par titre, description ou auteur..."
@@ -65,7 +61,6 @@
             <Pane HBox.hgrow="ALWAYS"/>
         </HBox>
 
-        <!-- Action Buttons Row -->
         <HBox alignment="CENTER_LEFT" spacing="10">
             <VBox.margin><Insets right="24" bottom="12" left="24"/></VBox.margin>
             <Button text="&#10010;  Nouveau" styleClass="btn-primary" onAction="#handleAddReport"/>
@@ -75,7 +70,6 @@
             <Button text="&#8635;  Actualiser" styleClass="btn-secondary" onAction="#initialize"/>
         </HBox>
 
-        <!-- Table -->
         <TableView fx:id="tableReports" VBox.vgrow="ALWAYS" styleClass="data-table">
             <VBox.margin><Insets right="24" bottom="20" left="24"/></VBox.margin>
             <columns>

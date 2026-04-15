@@ -40,7 +40,6 @@ public class LoginController {
         }
 
         try {
-            // Hash the input password to compare with the stored hash
             String hashedPassword = PasswordUtils.hashPassword(password);
             User user = serviceUser.login(email, hashedPassword);
             if (user != null) {
@@ -48,7 +47,6 @@ public class LoginController {
                     showError("Votre compte est bloqué. Contactez l'administrateur.");
                     return;
                 }
-                // Success! Navigate to Dashboard
                 navigateTo("/Dashboard.fxml", "AIVA — Tableau de Bord");
             } else {
                 showError("Email ou mot de passe incorrect.");
@@ -62,6 +60,11 @@ public class LoginController {
     @FXML
     private void goToRegister() {
         navigateTo("/Register.fxml", "AIVA — Créer un compte");
+    }
+
+    @FXML
+    private void handleForgotPassword() {
+        navigateTo("/ResetPassword.fxml", "AIVA — Réinitialiser le mot de passe");
     }
 
     private void navigateTo(String fxmlPath, String title) {

@@ -44,17 +44,11 @@ public class ReportFormController {
         }
 
         if (reportToEdit == null) {
-            // New Report
             Report newReport = new Report(title, description, user);
             serviceReport.addReport(user, newReport);
         } else {
-            // Update Existing (Note: ServiceReport needs an update method, 
-            // but for now we'll assume addReport handles it or we'll bypass)
             reportToEdit.setTitle(title);
             reportToEdit.setDescription(description);
-            // Updating a persistent object in Hibernate doesn't always need 
-            // a special 'update' call if it's in the same session, 
-            // but our service opens/closes sessions.
             serviceReport.addReport(user, reportToEdit); 
         }
 

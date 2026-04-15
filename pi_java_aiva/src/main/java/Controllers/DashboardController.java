@@ -64,12 +64,12 @@ public class DashboardController {
     }
 
     @FXML
-    void openUserManagement(ActionEvent event) {
+    void openUserManagement() {
         switchScene("/UserList.fxml", "AIVA Admin — Gestion des Utilisateurs");
     }
 
     @FXML
-    void openReportManagement(ActionEvent event) {
+    void openReportManagement() {
         switchScene("/GlobalReportList.fxml", "AIVA Admin — Gestion Globale des Rapports");
     }
 

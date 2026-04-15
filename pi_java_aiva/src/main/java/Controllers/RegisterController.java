@@ -31,7 +31,6 @@ public class RegisterController {
         lblError.setVisible(false);
         lblError.setManaged(false);
         
-        // Initialize role selection
         cbRole.getItems().addAll("Utilisateur", "Administrateur");
         cbRole.setValue("Utilisateur");
     }
@@ -74,11 +73,9 @@ public class RegisterController {
             newUser.setName(name);
             newUser.setEmail(email);
             
-            // Hash the password before saving
             String hashedPassword = PasswordUtils.hashPassword(password);
             newUser.setPassword(hashedPassword);
             
-            // Set role based on selection
             String roleJson = roleSelection.equals("Administrateur") ? "[\"ROLE_ADMIN\"]" : "[\"ROLE_USER\"]";
             newUser.setRoles(roleJson);
             
@@ -88,16 +85,13 @@ public class RegisterController {
             newUser.setExperiencePoints(0);
             newUser.setResetPasswordAttempts(0);
 
-            // New: Initialize security fields to satisfy database constraints (NOT NULL)
-            newUser.setKnownIps("[\"127.0.0.1\"]"); // Default IP array
-            newUser.setTotpSecret("");             // Empty secret for now
-            newUser.setVerificationToken("");      // Empty token for now
+            newUser.setKnownIps("[\"127.0.0.1\"]");
+            newUser.setTotpSecret("");
+            newUser.setVerificationToken("");
 
             serviceUser.ajouter(newUser);
 
-            // Success: navigate to login
             showSuccess("Compte créé avec succès ! Connectez-vous.");
-            // We could delay this or just go immediately
             goToLogin();
 
         } catch (Exception e) {
