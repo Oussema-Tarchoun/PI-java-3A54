@@ -167,4 +167,38 @@ public class ServiceUser implements Iservice<User> {
         u.setIs2faEnabled(rs.getBoolean("is2fa_enabled"));
         return u;
     }
+
+    public void updateVerificationToken(int userId, String token, java.time.LocalDateTime expiry) throws SQLException {
+        checkConnection();
+        String sql = "UPDATE user SET verification_token = ?, token_expires_at = ? WHERE id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, token);
+            ps.setTimestamp(2, Timestamp.valueOf(expiry));
+            ps.setInt(3, userId);
+            ps.executeUpdate();
+        }
+    }
+
+    public boolean verifyAccount(String email, String token) throws SQLException {
+        checkConnection();
+        // Check if token matches and is not expired
+        String sql = "SELECT id FROM user WHERE email = ? AND verification_token = ? AND token_expires_at > NOW()";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ps.setString(2, token);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    int userId = rs.getInt("id");
+                    // Update is_verified and clear token
+                    String updateSql = "UPDATE user SET is_verified = 1, verification_token = NULL, token_expires_at = NULL WHERE id = ?";
+                    try (PreparedStatement psUpdate = connection.prepareStatement(updateSql)) {
+                        psUpdate.setInt(1, userId);
+                        psUpdate.executeUpdate();
+                    }
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

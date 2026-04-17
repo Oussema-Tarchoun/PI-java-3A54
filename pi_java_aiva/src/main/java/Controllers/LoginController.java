@@ -47,12 +47,36 @@ public class LoginController {
                     showError("Votre compte est bloqué. Contactez l'administrateur.");
                     return;
                 }
+                
+                if (!user.getIsVerified()) {
+                    showError("Votre compte n'est pas vérifié. Vérifiez votre email.");
+                    goToVerification(user.getEmail());
+                    return;
+                }
+                
                 navigateTo("/Dashboard.fxml", "AIVA — Tableau de Bord");
             } else {
                 showError("Email ou mot de passe incorrect.");
             }
         } catch (SQLException e) {
             showError("Erreur de connexion à la base de données.");
+            e.printStackTrace();
+        }
+    }
+
+    private void goToVerification(String email) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/VerifyAccount.fxml"));
+            Parent root = loader.load();
+            
+            VerifyAccountController controller = loader.getController();
+            controller.setUserEmail(email);
+            
+            Stage stage = (Stage) tfEmail.getScene().getWindow();
+            stage.getScene().setRoot(root);
+            stage.setTitle("AIVA — Vérification du compte");
+        } catch (IOException e) {
+            showError("Erreur de navigation : " + e.getMessage());
             e.printStackTrace();
         }
     }

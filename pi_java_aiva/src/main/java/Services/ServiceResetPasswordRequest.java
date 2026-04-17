@@ -17,11 +17,6 @@ import java.util.UUID;
 public class ServiceResetPasswordRequest {
     private Connection connection;
 
-    private final String SMTP_HOST = "smtp.gmail.com";
-    private final String SMTP_PORT = "587";
-    private final String SMTP_USER = "oussematarchoun2001@gmail.com";
-    private final String SMTP_PASS = "xdpd znrt xuja aepg";
-
     public ServiceResetPasswordRequest() {
         connection = MyDatabase.getInstance().getConnection();
     }
@@ -46,32 +41,13 @@ public class ServiceResetPasswordRequest {
     }
 
     public void sendEmail(String recipientEmail, String code) throws MessagingException {
-        Properties props = new Properties();
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.host", SMTP_HOST);
-        props.put("mail.smtp.port", SMTP_PORT);
-        props.put("mail.smtp.ssl.protocols", "TLSv1.2");
-
-        Session session = Session.getInstance(props, new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(SMTP_USER, SMTP_PASS);
-            }
-        });
-
-        Message message = new MimeMessage(session);
-        message.setFrom(new InternetAddress(SMTP_USER));
-        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientEmail));
-        message.setSubject("Réinitialisation de votre mot de passe - AIVA");
-        
+        String subject = "Réinitialisation de votre mot de passe - AIVA";
         String content = "Bonjour,\n\n"
                 + "Votre code de réinitialisation est : " + code + "\n\n"
                 + "Ce code expirera dans 15 minutes.\n\n"
                 + "L'équipe AIVA.";
         
-        message.setText(content);
-        Transport.send(message);
+        utils.MailUtils.sendEmail(recipientEmail, subject, content);
     }
 
     public boolean validateCode(int userId, String code) throws SQLException {

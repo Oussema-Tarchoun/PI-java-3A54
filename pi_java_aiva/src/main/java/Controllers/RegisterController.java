@@ -87,15 +87,59 @@ public class RegisterController {
 
             newUser.setKnownIps("[\"127.0.0.1\"]");
             newUser.setTotpSecret("");
-            newUser.setVerificationToken("");
+            
+            // Generate verification token
+            String vToken = String.format("%06d", new java.util.Random().nextInt(999999));
+            newUser.setVerificationToken(vToken);
+            newUser.setTokenExpiresAt(java.time.LocalDateTime.now().plusHours(24));
 
             serviceUser.ajouter(newUser);
-
-            showSuccess("Compte créé avec succès ! Connectez-vous.");
-            goToLogin();
+            
+            // Send verification email in a background thread to avoid UI freeze
+            new Thread(() -> {
+                try {
+                    String subject = "Bienvenue sur AIVA - Vérifier votre compte";
+                    String content = "Bonjour " + name + ",\n\n"
+                            + "Merci de vous être inscrit sur AIVA. Veuillez utiliser le code suivant pour vérifier votre compte :\n\n"
+                            + "Code de vérification : " + vToken + "\n\n"
+                            + "Ce code expirera dans 24 heures.\n\n"
+                            + "L'équipe AIVA.";
+                    
+                    utils.MailUtils.sendEmail(email, subject, content);
+                    
+                    javafx.application.Platform.runLater(() -> {
+                        showSuccess("Compte créé ! Veuillez vérifier votre email (" + email + ").");
+                        goToVerification(email);
+                    });
+                } catch (Exception mailEx) {
+                    javafx.application.Platform.runLater(() -> {
+                        showError("Compte créé, mais l'envoi de l'email a échoué : " + mailEx.getMessage());
+                        // Still go to verification, user might be able to resend or admin can verify
+                        goToVerification(email);
+                    });
+                    mailEx.printStackTrace();
+                }
+            }).start();
 
         } catch (Exception e) {
             showError("Erreur lors de l'inscription : " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void goToVerification(String email) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/VerifyAccount.fxml"));
+            Parent root = loader.load();
+            
+            VerifyAccountController controller = loader.getController();
+            controller.setUserEmail(email);
+            
+            Stage stage = (Stage) tfName.getScene().getWindow();
+            stage.getScene().setRoot(root);
+            stage.setTitle("AIVA — Vérification du compte");
+        } catch (Exception e) {
+            showError("Erreur de navigation : " + e.getMessage());
             e.printStackTrace();
         }
     }
