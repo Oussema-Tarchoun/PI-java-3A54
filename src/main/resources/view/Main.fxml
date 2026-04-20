@@ -6,7 +6,7 @@
 <?import javafx.geometry.*?>
 
 <BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="Controller.MainController"
+            fx:controller="Controllers.MainController"
             styleClass="main-container"
             stylesheets="@../styles/aiva-theme.css"
             prefHeight="900" prefWidth="1400">

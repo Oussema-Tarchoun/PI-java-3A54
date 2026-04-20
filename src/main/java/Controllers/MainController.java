@@ -1,5 +1,6 @@
 package Controllers;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -26,12 +27,13 @@ public class MainController {
     @FXML
     public void initialize() {
         activeButton = btnDashboard;
-        openDashboard();
+        openDashboard(); // démarre sur Repas par défaut
     }
 
+    // ✅ Ajouté — appelé par le bouton Dashboard dans le FXML
     @FXML
     public void openDashboard() {
-        loadPage("Dashboard.fxml", "Dashboard", "Vue d'ensemble", btnDashboard);
+        loadPage("RepasView.fxml", "Dashboard", "Vue d'ensemble", btnDashboard);
     }
 
     @FXML
@@ -46,12 +48,7 @@ public class MainController {
 
     @FXML
     public void handleLogout() {
-        try {
-            Parent login = FXMLLoader.load(getClass().getResource("/views/Login.fxml"));
-            contentArea.getScene().setRoot(login);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Platform.exit();
     }
 
     public void setUsername(String username) {
@@ -61,14 +58,22 @@ public class MainController {
 
     private void loadPage(String fxmlFile, String title, String subtitle, Button navBtn) {
         try {
-            Parent page = FXMLLoader.load(getClass().getResource("/views/" + fxmlFile));
+            java.net.URL resource = getClass().getResource("/view/" + fxmlFile);
+
+            if (resource == null) {
+                System.err.println("❌ FXML introuvable : /view/" + fxmlFile);
+                return;
+            }
+
+            Parent page = FXMLLoader.load(resource);
             contentArea.getChildren().setAll(page);
             if (topbarTitle    != null) topbarTitle.setText(title);
             if (topbarSubtitle != null) topbarSubtitle.setText(subtitle);
             setActiveButton(navBtn);
+
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Could not load: " + fxmlFile + " — " + e.getMessage());
+            System.err.println("❌ Erreur chargement : " + fxmlFile + " — " + e.getMessage());
         }
     }
 
