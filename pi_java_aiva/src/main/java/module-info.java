@@ -9,6 +9,10 @@ module pi_java_aiva {
     requires jakarta.mail;
     requires org.eclipse.angus.mail;
 
+    requires totp;
+    requires com.google.zxing;
+    requires com.google.zxing.javase;
+
     // Open packages for reflection
     opens Controllers to javafx.fxml;
     opens utils to javafx.fxml;

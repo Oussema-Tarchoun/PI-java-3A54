@@ -41,6 +41,7 @@ public class UserProfileController {
     @FXML private Label lblResetAttempts;
     @FXML private ProgressIndicator progressXP;
     @FXML private Button btnBlock;
+    @FXML private Button btn2FA;
 
     private User user;
     private final ServiceUser serviceUser = new ServiceUser();
@@ -89,6 +90,7 @@ public class UserProfileController {
         lblVerified.setStyle(user.getIsVerified() ? "-fx-text-fill: #6c63ff; -fx-font-weight: bold;" : "-fx-text-fill: #9ca3b0;");
 
         lbl2FA.setText(user.getIs2faEnabled() ? "ACTIVÉ" : "DÉSACTIVÉ");
+        btn2FA.setText(user.getIs2faEnabled() ? "Désactiver" : "Configurer");
         
         // XP
         int xp = user.getExperiencePoints();
@@ -244,6 +246,45 @@ public class UserProfileController {
         c2.setPadding(10);
         c2.setBorder(Rectangle.NO_BORDER);
         table.addCell(c2);
+    }
+
+    @FXML
+    private void handleSetup2FA() {
+        if (user.getIs2faEnabled()) {
+            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+            confirm.setTitle("Désactiver 2FA");
+            confirm.setHeaderText("Voulez-vous désactiver la double authentification ?");
+            confirm.getDialogPane().setStyle("-fx-background-color: #1a1d2e;");
+
+            if (confirm.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
+                try {
+                    user.setIs2faEnabled(false);
+                    user.setTotpSecret(null);
+                    serviceUser.modifier(user);
+                    populateData();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/TwoFactorSetup.fxml"));
+                Parent root = loader.load();
+
+                TwoFactorSetupController controller = loader.getController();
+                controller.init(user, this::populateData);
+
+                Stage dialog = new Stage();
+                dialog.setTitle("Configurer 2FA");
+                dialog.initModality(Modality.APPLICATION_MODAL);
+                dialog.initOwner(lbl2FA.getScene().getWindow());
+                dialog.setScene(new Scene(root));
+                dialog.setResizable(false);
+                dialog.showAndWait();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @FXML

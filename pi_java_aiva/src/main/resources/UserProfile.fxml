@@ -90,7 +90,10 @@
                         </HBox>
                         <VBox spacing="5">
                             <Label text="Sécurité 2FA" styleClass="form-label"/>
-                            <Label fx:id="lbl2FA" text="DÉSACTIVÉ" styleClass="status-text"/>
+                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                <Label fx:id="lbl2FA" text="DÉSACTIVÉ" styleClass="status-text"/>
+                                <Button fx:id="btn2FA" text="Configurer" onAction="#handleSetup2FA" styleClass="btn-link" style="-fx-font-size: 11;"/>
+                            </HBox>
                         </VBox>
                     </VBox>
 

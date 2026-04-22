@@ -53,6 +53,11 @@ public class LoginController {
                     goToVerification(user.getEmail());
                     return;
                 }
+
+                if (user.getIs2faEnabled()) {
+                    goTo2faVerification(user);
+                    return;
+                }
                 
                 navigateTo("/Dashboard.fxml", "AIVA — Tableau de Bord");
             } else {
@@ -60,6 +65,23 @@ public class LoginController {
             }
         } catch (SQLException e) {
             showError("Erreur de connexion à la base de données.");
+            e.printStackTrace();
+        }
+    }
+
+    private void goTo2faVerification(User user) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/TwoFactorVerify.fxml"));
+            Parent root = loader.load();
+            
+            TwoFactorVerifyController controller = loader.getController();
+            controller.setUser(user);
+            
+            Stage stage = (Stage) tfEmail.getScene().getWindow();
+            stage.getScene().setRoot(root);
+            stage.setTitle("AIVA — Vérification 2FA");
+        } catch (IOException e) {
+            showError("Erreur de navigation : " + e.getMessage());
             e.printStackTrace();
         }
     }
