@@ -10,7 +10,7 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/viewsBack/DepenseView.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/fxml/MainView.fxml"));
         if (root == null) throw new RuntimeException("FXML introuvable");
         Scene scene = new Scene(root, 1280, 800);
         stage.setTitle("AIVA — Gestion Financiere");

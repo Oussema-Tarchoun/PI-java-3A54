@@ -27,9 +27,10 @@ public class DepenseController {
     @FXML private VBox formPane;
     @FXML private HBox btnAjouterBox;
     @FXML private HBox btnModifierBox;
-    @FXML private TextField descField, montantField, statutField;
+    @FXML private TextField descField, montantField;
     @FXML private TextField montantMinField, montantMaxField;
     @FXML private DatePicker datePicker;
+    @FXML private ComboBox<String>    statutCombo;  // ✅ remplace statutField
     @FXML private ComboBox<Categorie> catCombo;
     @FXML private TableView<Depense> table;
     @FXML private TableColumn<Depense, Integer> colId, colCat;
@@ -38,6 +39,10 @@ public class DepenseController {
     @FXML private TableColumn<Depense, Void>    colActions;
     @FXML private Label msgLabel;
 
+    private static final String STATUT_PAYE     = "Payé";
+    private static final String STATUT_ATTENTE  = "En attente";
+    private static final String STATUT_NON_PAYE = "Non payé";
+
     private final DepenseService   service    = new DepenseService();
     private final CategorieService catService = new CategorieService();
     private FilteredList<Depense>  filteredData;
@@ -45,6 +50,11 @@ public class DepenseController {
 
     @FXML
     public void initialize() {
+        // ✅ Options statut
+        statutCombo.setItems(FXCollections.observableArrayList(
+                STATUT_PAYE, STATUT_ATTENTE, STATUT_NON_PAYE
+        ));
+
         colId.setCellValueFactory(d ->
                 new SimpleIntegerProperty(d.getValue().getIdDepense()).asObject());
         colDesc.setCellValueFactory(d ->
@@ -52,16 +62,32 @@ public class DepenseController {
         colMontant.setCellValueFactory(d ->
                 new SimpleDoubleProperty(d.getValue().getMontant()).asObject());
         colDate.setCellValueFactory(d ->
-                new SimpleStringProperty(
-                        d.getValue().getDateDepense() != null
-                                ? d.getValue().getDateDepense().toString() : ""));
+                new SimpleStringProperty(d.getValue().getDateDepense() != null
+                        ? d.getValue().getDateDepense().toString() : ""));
+        // ✅ Affiche le statut normalisé dans le tableau
         colStatut.setCellValueFactory(d ->
-                new SimpleStringProperty(d.getValue().getStatut()));
+                new SimpleStringProperty(normaliserStatut(d.getValue().getStatut())));
         colCat.setCellValueFactory(d ->
                 new SimpleIntegerProperty(d.getValue().getIdCategorie()).asObject());
 
+        // ✅ Cellule statut colorée dans le tableau
+        colStatut.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) { setText(null); setStyle(""); return; }
+                setText(item);
+                if (item.equals(STATUT_PAYE))
+                    setStyle("-fx-text-fill:#22c55e; -fx-font-weight:bold;");
+                else if (item.equals(STATUT_ATTENTE))
+                    setStyle("-fx-text-fill:#f59e0b; -fx-font-weight:bold;");
+                else
+                    setStyle("-fx-text-fill:#ef4444; -fx-font-weight:bold;");
+            }
+        });
+
         colActions.setCellFactory(col -> new TableCell<>() {
-            private final Button btnEdit  = new Button("Editer");
+            private final Button btnEdit  = new Button("Éditer");
             private final Button btnSuppr = new Button("Suppr");
             private final HBox   box      = new HBox(4, btnEdit, btnSuppr);
             {
@@ -84,10 +110,10 @@ public class DepenseController {
                     Depense d = getTableView().getItems().get(getIndex());
                     try {
                         service.supprimer(d.getIdDepense());
-                        msg("Supprimee avec succes", false);
+                        msg("Dépense supprimée avec succès", false);
                         charger();
                     } catch (SQLException ex) {
-                        msg("Erreur: " + ex.getMessage(), true);
+                        msg("Erreur : " + ex.getMessage(), true);
                     }
                 });
             }
@@ -104,132 +130,107 @@ public class DepenseController {
         charger();
     }
 
-    // ── Validation à la soumission uniquement ──────────────
+    // ── Normalisation statut ──────────────────────────────
+
+    private String normaliserStatut(String statut) {
+        if (statut == null) return STATUT_NON_PAYE;
+        String s = statut.trim().toLowerCase()
+                .replace("é", "e").replace("è", "e").replace("ê", "e");
+        if (s.equals("paye") || s.equals("pay") || s.equals("payed")) return STATUT_PAYE;
+        if (s.contains("attente") || s.contains("cours") || s.contains("progress")) return STATUT_ATTENTE;
+        if (s.contains("non") || s.contains("impaye")) return STATUT_NON_PAYE;
+        return statut;
+    }
+
+    // ── Validation ───────────────────────────────────────
 
     private boolean validerFormulaire() {
         boolean valide = true;
         resetStyles();
 
-        // Description
         if (descField.getText() == null || descField.getText().trim().isEmpty()) {
-            setFieldError(descField, "La description est obligatoire");
-            valide = false;
+            setFieldError(descField, "La description est obligatoire"); valide = false;
         } else if (descField.getText().trim().length() < 3) {
-            setFieldError(descField, "La description doit contenir au moins 3 caracteres");
-            valide = false;
+            setFieldError(descField, "La description doit contenir au moins 3 caractères"); valide = false;
         } else if (descField.getText().trim().length() > 100) {
-            setFieldError(descField, "La description ne peut pas depasser 100 caracteres");
-            valide = false;
+            setFieldError(descField, "La description ne peut pas dépasser 100 caractères"); valide = false;
         }
 
-        // Montant
         if (montantField.getText() == null || montantField.getText().trim().isEmpty()) {
-            setFieldError(montantField, "Le montant est obligatoire");
-            valide = false;
+            setFieldError(montantField, "Le montant est obligatoire"); valide = false;
         } else {
             try {
                 double val = Double.parseDouble(montantField.getText().trim());
-                if (val <= 0) {
-                    setFieldError(montantField, "Le montant doit etre superieur a 0");
-                    valide = false;
-                } else if (val > 1_000_000) {
-                    setFieldError(montantField, "Le montant ne peut pas depasser 1 000 000");
-                    valide = false;
-                }
+                if (val <= 0) { setFieldError(montantField, "Le montant doit être supérieur à 0"); valide = false; }
+                else if (val > 1_000_000) { setFieldError(montantField, "Le montant ne peut pas dépasser 1 000 000"); valide = false; }
             } catch (NumberFormatException e) {
-                setFieldError(montantField, "Le montant doit etre un nombre valide");
-                valide = false;
+                setFieldError(montantField, "Le montant doit être un nombre valide"); valide = false;
             }
         }
 
-        // Date
         if (datePicker.getValue() == null) {
-            datePicker.setStyle("-fx-border-color: #e05050; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-border-width: 1px;");
-            msg("La date est obligatoire", true);
-            valide = false;
+            datePicker.setStyle("-fx-border-color:#e05050; -fx-border-radius:10px; -fx-background-radius:10px; -fx-border-width:1px;");
+            msg("La date est obligatoire", true); valide = false;
         }
 
-        // Statut
-        if (statutField.getText() == null || statutField.getText().trim().isEmpty()) {
-            setFieldError(statutField, "Le statut est obligatoire");
-            valide = false;
-        } else if (statutField.getText().trim().length() < 2) {
-            setFieldError(statutField, "Le statut doit contenir au moins 2 caracteres");
-            valide = false;
+        if (statutCombo.getValue() == null) {
+            statutCombo.setStyle("-fx-border-color:#e05050; -fx-border-radius:10px; -fx-background-radius:10px; -fx-border-width:1px;");
+            msg("Sélectionnez un statut", true); valide = false;
         }
 
-        // Categorie
         if (catCombo.getValue() == null) {
-            catCombo.setStyle("-fx-border-color: #e05050; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-border-width: 1px;");
-            msg("Selectionnez une categorie", true);
-            valide = false;
+            catCombo.setStyle("-fx-border-color:#e05050; -fx-border-radius:10px; -fx-background-radius:10px; -fx-border-width:1px;");
+            msg("Sélectionnez une catégorie", true); valide = false;
         }
 
         return valide;
     }
 
-    // ── Vérification budget max de la catégorie ────────────
-
     private boolean verifierBudgetMax(double montant) {
         Categorie cat = catCombo.getValue();
         if (cat != null && montant > cat.getBudgetMax()) {
-            setFieldError(montantField,
-                    "Le montant depasse le budget max de cette categorie ("
-                            + cat.getBudgetMax() + ")");
+            setFieldError(montantField, "Le montant dépasse le budget max (" + cat.getBudgetMax() + ")");
             return false;
         }
         return true;
     }
 
     private void setFieldError(TextField field, String message) {
-        field.setStyle(
-                "-fx-border-color: #e05050;" +
-                        "-fx-border-radius: 10px;" +
-                        "-fx-background-radius: 10px;" +
-                        "-fx-border-width: 1px;" +
-                        "-fx-background-color: #2a1a1a;");
+        field.setStyle("-fx-border-color:#e05050; -fx-border-radius:10px;" +
+                "-fx-background-radius:10px; -fx-border-width:1px; -fx-background-color:#2a1a1a;");
         msg(message, true);
     }
 
     private void resetStyles() {
         descField.setStyle("");
         montantField.setStyle("");
-        statutField.setStyle("");
         datePicker.setStyle("");
+        statutCombo.setStyle("");
         catCombo.setStyle("");
         if (msgLabel != null) msgLabel.setText("");
     }
 
-    // ── Chargement ─────────────────────────────────────────
+    // ── Chargement ───────────────────────────────────────
 
     private void chargerCategories() {
         try {
-            List<Categorie> cats = catService.afficher();
-            catCombo.getItems().setAll(cats);
+            catCombo.getItems().setAll(catService.afficher());
             catCombo.setConverter(new StringConverter<Categorie>() {
                 @Override public String toString(Categorie c) {
                     return c == null ? "" : c.getIdCategorie() + " - " + c.getNomCategorie();
                 }
                 @Override public Categorie fromString(String s) { return null; }
             });
-        } catch (SQLException e) {
-            msg("Erreur chargement categories: " + e.getMessage(), true);
-        }
+        } catch (SQLException e) { msg("Erreur catégories : " + e.getMessage(), true); }
     }
 
     private void setModeEdition(boolean edition) {
         modeEdition = edition;
-        if (btnAjouterBox != null) {
-            btnAjouterBox.setVisible(!edition);
-            btnAjouterBox.setManaged(!edition);
-        }
-        if (btnModifierBox != null) {
-            btnModifierBox.setVisible(edition);
-            btnModifierBox.setManaged(edition);
-        }
+        if (btnAjouterBox != null) { btnAjouterBox.setVisible(!edition); btnAjouterBox.setManaged(!edition); }
+        if (btnModifierBox != null) { btnModifierBox.setVisible(edition); btnModifierBox.setManaged(edition); }
     }
 
-    // ── Navigation ─────────────────────────────────────────
+    // ── Navigation ───────────────────────────────────────
 
     @FXML
     public void showCategories() {
@@ -238,90 +239,64 @@ public class DepenseController {
             Stage stage = (Stage) table.getScene().getWindow();
             stage.setScene(new Scene(root, 1280, 800));
             stage.setMaximized(true);
-        } catch (IOException e) {
-            msg("Erreur navigation: " + e.getMessage(), true);
-        }
+        } catch (IOException e) { msg("Erreur navigation : " + e.getMessage(), true); }
     }
 
-    @FXML public void ouvrirFormulaire() {
-        viderFormulaire();
-        setModeEdition(false);
-        showForm(true);
-    }
-
-    @FXML public void annuler() {
-        viderFormulaire();
-        setModeEdition(false);
-        showForm(false);
-    }
+    @FXML public void ouvrirFormulaire() { viderFormulaire(); setModeEdition(false); showForm(true); }
+    @FXML public void annuler()          { viderFormulaire(); setModeEdition(false); showForm(false); }
 
     private void showForm(boolean visible) {
         if (formPane != null) {
             formPane.setVisible(visible);
             formPane.setManaged(visible);
             formPane.setStyle(visible
-                    ? "-fx-background-color: #1e3525; -fx-background-radius: 8px; -fx-padding: 16px; -fx-border-color: #2ecc71; -fx-border-radius: 8px; -fx-border-width: 1px;"
-                    : "-fx-background-color: #1a2d20; -fx-background-radius: 8px; -fx-padding: 16px;");
+                    ? "-fx-background-color:#1e3525; -fx-background-radius:8px; -fx-padding:16px;" +
+                    "-fx-border-color:#2ecc71; -fx-border-radius:8px; -fx-border-width:1px;"
+                    : "-fx-background-color:#1a2d20; -fx-background-radius:8px; -fx-padding:16px;");
         }
     }
 
     @FXML
     public void ajouter() {
         if (!validerFormulaire()) return;
-
         double montant = Double.parseDouble(montantField.getText().trim());
-
         if (!verifierBudgetMax(montant)) return;
-
         try {
-            Depense d = new Depense(
-                    descField.getText().trim(),
-                    montant,
+            service.ajouter(new Depense(
+                    descField.getText().trim(), montant,
                     java.sql.Date.valueOf(datePicker.getValue()),
-                    statutField.getText().trim(),
-                    catCombo.getValue().getIdCategorie());
-            service.ajouter(d);
-            msg("Depense ajoutee avec succes !", false);
-            viderFormulaire();
-            showForm(false);
-            charger();
-        } catch (SQLException e) { msg("Erreur BD: " + e.getMessage(), true); }
+                    statutCombo.getValue(),
+                    catCombo.getValue().getIdCategorie()));
+            msg("Dépense ajoutée avec succès !", false);
+            viderFormulaire(); showForm(false); charger();
+        } catch (SQLException e) { msg("Erreur BD : " + e.getMessage(), true); }
     }
 
     @FXML
     public void modifier() {
         Depense sel = table.getSelectionModel().getSelectedItem();
-        if (sel == null) { msg("Selectionnez une ligne d'abord", true); return; }
+        if (sel == null) { msg("Sélectionnez une ligne d'abord", true); return; }
         if (!validerFormulaire()) return;
-
         double montant = Double.parseDouble(montantField.getText().trim());
-
         if (!verifierBudgetMax(montant)) return;
-
         try {
-            Depense d = new Depense(
+            service.modifier(new Depense(
                     sel.getIdDepense(),
-                    descField.getText().trim(),
-                    montant,
+                    descField.getText().trim(), montant,
                     java.sql.Date.valueOf(datePicker.getValue()),
-                    statutField.getText().trim(),
-                    catCombo.getValue().getIdCategorie());
-            service.modifier(d);
-            msg("Depense modifiee avec succes !", false);
-            viderFormulaire();
-            setModeEdition(false);
-            showForm(false);
-            charger();
-        } catch (SQLException e) { msg("Erreur BD: " + e.getMessage(), true); }
+                    statutCombo.getValue(),
+                    catCombo.getValue().getIdCategorie()));
+            msg("Dépense modifiée avec succès !", false);
+            viderFormulaire(); setModeEdition(false); showForm(false); charger();
+        } catch (SQLException e) { msg("Erreur BD : " + e.getMessage(), true); }
     }
 
     @FXML
     public void charger() {
         try {
-            filteredData = new FilteredList<>(
-                    FXCollections.observableArrayList(service.afficher()));
+            filteredData = new FilteredList<>(FXCollections.observableArrayList(service.afficher()));
             table.setItems(filteredData);
-        } catch (SQLException e) { msg("Erreur BD: " + e.getMessage(), true); }
+        } catch (SQLException e) { msg("Erreur BD : " + e.getMessage(), true); }
     }
 
     @FXML
@@ -333,10 +308,7 @@ public class DepenseController {
             if (!minTxt.isEmpty() && !maxTxt.isEmpty()) {
                 double min = Double.parseDouble(minTxt);
                 double max = Double.parseDouble(maxTxt);
-                if (min > max) {
-                    msg("Le montant min ne peut pas etre superieur au max", true);
-                    return;
-                }
+                if (min > max) { msg("Le montant min ne peut pas être supérieur au max", true); return; }
             }
             double min = minTxt.isEmpty() ? Double.MIN_VALUE : Double.parseDouble(minTxt);
             double max = maxTxt.isEmpty() ? Double.MAX_VALUE : Double.parseDouble(maxTxt);
@@ -357,8 +329,7 @@ public class DepenseController {
     @FXML
     public void trierMontant() {
         if (filteredData == null) return;
-        table.setItems(filteredData.sorted((a, b) ->
-                Double.compare(b.getMontant(), a.getMontant())));
+        table.setItems(filteredData.sorted((a, b) -> Double.compare(b.getMontant(), a.getMontant())));
     }
 
     public List<Depense> listerDepenses() {
@@ -374,29 +345,22 @@ public class DepenseController {
     private void remplirFormulaire(Depense d) {
         descField.setText(d.getDescription());
         montantField.setText(String.valueOf(d.getMontant()));
-        statutField.setText(d.getStatut() != null ? d.getStatut() : "");
+        statutCombo.setValue(normaliserStatut(d.getStatut())); // ✅ normalise avant de set
         catCombo.getItems().stream()
                 .filter(c -> c.getIdCategorie() == d.getIdCategorie())
-                .findFirst()
-                .ifPresent(catCombo::setValue);
+                .findFirst().ifPresent(catCombo::setValue);
         if (d.getDateDepense() != null) {
-            if (d.getDateDepense() instanceof java.sql.Date) {
+            if (d.getDateDepense() instanceof java.sql.Date)
                 datePicker.setValue(((java.sql.Date) d.getDateDepense()).toLocalDate());
-            } else {
+            else
                 datePicker.setValue(d.getDateDepense().toInstant()
                         .atZone(java.time.ZoneId.systemDefault()).toLocalDate());
-            }
-        } else {
-            datePicker.setValue(null);
-        }
+        } else datePicker.setValue(null);
     }
 
     private void viderFormulaire() {
-        descField.clear();
-        montantField.clear();
-        statutField.clear();
-        catCombo.setValue(null);
-        datePicker.setValue(null);
+        descField.clear(); montantField.clear();
+        statutCombo.setValue(null); catCombo.setValue(null); datePicker.setValue(null);
         if (montantMinField != null) montantMinField.clear();
         if (montantMaxField != null) montantMaxField.clear();
         resetStyles();
@@ -405,9 +369,8 @@ public class DepenseController {
     private void msg(String m, boolean erreur) {
         if (msgLabel != null) {
             msgLabel.setText(m);
-            msgLabel.setStyle(erreur
-                    ? "-fx-text-fill: #e05050; -fx-font-size: 12px;"
-                    : "-fx-text-fill: #2ecc71; -fx-font-size: 12px;");
+            msgLabel.setStyle(erreur ? "-fx-text-fill:#e05050; -fx-font-size:12px;"
+                    : "-fx-text-fill:#2ecc71; -fx-font-size:12px;");
         }
     }
 }

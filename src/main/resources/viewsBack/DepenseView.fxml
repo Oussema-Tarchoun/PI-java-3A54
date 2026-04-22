@@ -18,44 +18,45 @@
         <Label text="MENU PRINCIPAL" styleClass="sidebar-section-label"/>
         <Button text="Tableau de bord" styleClass="sidebar-btn"/>
         <Label text="SPORTS" styleClass="sidebar-section-label"/>
-        <Button text="Activites" styleClass="sidebar-btn"/>
+        <Button text="Activités" styleClass="sidebar-btn"/>
         <Button text="Objectifs" styleClass="sidebar-btn"/>
         <Label text="FINANCE" styleClass="sidebar-section-label"/>
-        <Button text="Depenses" styleClass="sidebar-btn sidebar-btn-active"/>
-        <Button text="Categories" styleClass="sidebar-btn" onAction="#showCategories"/>
+        <Button text="Dépenses" styleClass="sidebar-btn sidebar-btn-active"/>
+        <Button text="Catégories" styleClass="sidebar-btn" onAction="#showCategories"/>
         <Label text="ENERGIES" styleClass="sidebar-section-label"/>
         <Button text="Consommation" styleClass="sidebar-btn"/>
         <Button text="Recommandations" styleClass="sidebar-btn"/>
     </VBox>
     <VBox styleClass="main-content" HBox.hgrow="ALWAYS" spacing="20">
         <VBox spacing="4">
-            <Label text="Depenses" styleClass="page-title"/>
-            <Label text="Dashboard / Depenses" styleClass="breadcrumb"/>
+            <Label text="Dépenses" styleClass="page-title"/>
+            <Label text="Dashboard / Dépenses" styleClass="breadcrumb"/>
         </VBox>
         <VBox styleClass="card" VBox.vgrow="ALWAYS" spacing="16">
             <HBox alignment="CENTER_LEFT">
                 <VBox HBox.hgrow="ALWAYS" spacing="4">
-                    <Label text="Toutes les depenses" styleClass="card-title"/>
-                    <Label text="Liste des depenses par categorie" styleClass="card-subtitle"/>
+                    <Label text="Toutes les dépenses" styleClass="card-title"/>
+                    <Label text="Liste des dépenses par catégorie" styleClass="card-subtitle"/>
                 </VBox>
-                <Button text="+ Nouvelle depense" styleClass="btn-primary" onAction="#ouvrirFormulaire"/>
+                <Button text="+ Nouvelle dépense" styleClass="btn-primary" onAction="#ouvrirFormulaire"/>
             </HBox>
             <HBox spacing="10" alignment="CENTER_LEFT">
                 <TextField fx:id="montantMinField" promptText="Montant min" prefWidth="130"/>
                 <TextField fx:id="montantMaxField" promptText="Montant max" prefWidth="130"/>
-                <Button text="Filtrer"       styleClass="btn-primary" onAction="#filtrer"/>
-                <Button text="Reinitialiser" styleClass="btn-primary" onAction="#charger"/>
-                <Button text="Date"          styleClass="btn-primary" onAction="#trierDate"/>
-                <Button text="Montant"       styleClass="btn-primary" onAction="#trierMontant"/>
+                <Button text="Filtrer"        styleClass="btn-primary" onAction="#filtrer"/>
+                <Button text="Réinitialiser"  styleClass="btn-primary" onAction="#charger"/>
+                <Button text="Date"           styleClass="btn-primary" onAction="#trierDate"/>
+                <Button text="Montant"        styleClass="btn-primary" onAction="#trierMontant"/>
             </HBox>
             <VBox fx:id="formPane" spacing="10" managed="false" visible="false"
                   style="-fx-background-color: #1a2d20; -fx-background-radius: 8px; -fx-padding: 16px;">
                 <HBox spacing="10">
-                    <TextField fx:id="descField"    promptText="Description" HBox.hgrow="ALWAYS"/>
-                    <TextField fx:id="montantField" promptText="Montant"     prefWidth="110"/>
+                    <TextField fx:id="descField"    promptText="Description"   HBox.hgrow="ALWAYS"/>
+                    <TextField fx:id="montantField" promptText="Montant"        prefWidth="110"/>
                     <DatePicker fx:id="datePicker"  prefWidth="150"/>
-                    <TextField fx:id="statutField"  promptText="Statut"      prefWidth="120"/>
-                    <ComboBox  fx:id="catCombo"     promptText="Categorie"   prefWidth="160"/>
+                    <!-- ✅ ComboBox statut à la place du TextField -->
+                    <ComboBox  fx:id="statutCombo"  promptText="Statut"         prefWidth="130"/>
+                    <ComboBox  fx:id="catCombo"     promptText="Catégorie"      prefWidth="160"/>
                 </HBox>
                 <!-- Boutons mode Ajout -->
                 <HBox fx:id="btnAjouterBox" spacing="8">
@@ -66,7 +67,7 @@
                             prefWidth="120" minWidth="120" maxWidth="120"
                             onAction="#annuler"/>
                 </HBox>
-                <!-- Boutons mode Edition -->
+                <!-- Boutons mode Édition -->
                 <HBox fx:id="btnModifierBox" spacing="8" managed="false" visible="false">
                     <Button text="Modifier" styleClass="btn-success"
                             prefWidth="120" minWidth="120" maxWidth="120"
@@ -83,16 +84,16 @@
                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
                 </columnResizePolicy>
                 <columns>
-                    <TableColumn fx:id="colId"      text="#"           prefWidth="40"  minWidth="40"  maxWidth="40"/>
-                    <TableColumn fx:id="colDesc"    text="DESCRIPTION" prefWidth="200" minWidth="100"/>
-                    <TableColumn fx:id="colMontant" text="MONTANT"     prefWidth="90"  minWidth="80"  maxWidth="110"/>
-                    <TableColumn fx:id="colDate"    text="DATE"        prefWidth="100" minWidth="90"  maxWidth="120"/>
-                    <TableColumn fx:id="colStatut"  text="STATUT"      prefWidth="100" minWidth="90"  maxWidth="120"/>
-                    <TableColumn fx:id="colCat"     text="CATEGORIE"   prefWidth="80"  minWidth="70"  maxWidth="100"/>
-                    <TableColumn fx:id="colActions" text="ACTIONS"     prefWidth="170" minWidth="170" maxWidth="170"/>
+                    <TableColumn fx:id="colId"      text="#"            prefWidth="40"  minWidth="40"  maxWidth="40"/>
+                    <TableColumn fx:id="colDesc"    text="DESCRIPTION"  prefWidth="200" minWidth="100"/>
+                    <TableColumn fx:id="colMontant" text="MONTANT"      prefWidth="90"  minWidth="80"  maxWidth="110"/>
+                    <TableColumn fx:id="colDate"    text="DATE"         prefWidth="100" minWidth="90"  maxWidth="120"/>
+                    <TableColumn fx:id="colStatut"  text="STATUT"       prefWidth="110" minWidth="90"  maxWidth="130"/>
+                    <TableColumn fx:id="colCat"     text="CATÉGORIE"    prefWidth="80"  minWidth="70"  maxWidth="100"/>
+                    <TableColumn fx:id="colActions" text="ACTIONS"      prefWidth="170" minWidth="170" maxWidth="170"/>
                 </columns>
                 <placeholder>
-                    <Label text="Aucune depense trouvee"
+                    <Label text="Aucune dépense trouvée"
                            style="-fx-text-fill: #5a7a65;"/>
                 </placeholder>
             </TableView>

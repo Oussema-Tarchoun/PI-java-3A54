@@ -27,6 +27,11 @@ public class CategorieController {
     @FXML private FlowPane  cardsPane;
     @FXML private Label     msgLabel;
 
+    // ── Nouveaux champs pour recherche / filtre / tri ─────
+    @FXML private TextField searchField;
+    @FXML private TextField budgetMinField;
+    @FXML private TextField budgetMaxField;
+
     private final CategorieService service = new CategorieService();
     private ObservableList<Categorie> allCategories = FXCollections.observableArrayList();
     private Categorie selectedCategorie = null;
@@ -34,6 +39,19 @@ public class CategorieController {
     @FXML
     public void initialize() {
         charger();
+
+        // Recherche dynamique par nom
+        searchField.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal == null || newVal.trim().isEmpty()) {
+                afficherCartes(allCategories);
+            } else {
+                String recherche = newVal.trim().toLowerCase();
+                afficherCartes(allCategories.filtered(c ->
+                        c.getNomCategorie() != null &&
+                                c.getNomCategorie().toLowerCase().contains(recherche)
+                ));
+            }
+        });
     }
 
     // ── Cartes ───────────────────────────────────────────
@@ -55,15 +73,7 @@ public class CategorieController {
         VBox card = new VBox(12);
         card.setPrefWidth(340);
         card.setMaxWidth(340);
-        card.setStyle(
-                "-fx-background-color:#161b2e;" +
-                        "-fx-background-radius:14px;" +
-                        "-fx-border-color:#2a3142;" +
-                        "-fx-border-radius:14px;" +
-                        "-fx-border-width:1px;" +
-                        "-fx-padding:20px;" +
-                        "-fx-cursor:hand;"
-        );
+        card.setStyle(cardStyle(false));
 
         // Header
         HBox header = new HBox(10);
@@ -139,25 +149,54 @@ public class CategorieController {
         actions.getChildren().addAll(btnEdit, btnSuppr);
         card.getChildren().addAll(header, desc, budget, date, sep, actions);
 
-        card.setOnMouseEntered(e -> card.setStyle(
-                "-fx-background-color:#1e2538;" +
-                        "-fx-background-radius:14px;" +
-                        "-fx-border-color:#00d4ff;" +
-                        "-fx-border-radius:14px;" +
-                        "-fx-border-width:1px;" +
-                        "-fx-padding:20px;" +
-                        "-fx-cursor:hand;"
-        ));
-        card.setOnMouseExited(e -> card.setStyle(
-                "-fx-background-color:#161b2e;" +
-                        "-fx-background-radius:14px;" +
-                        "-fx-border-color:#2a3142;" +
-                        "-fx-border-radius:14px;" +
-                        "-fx-border-width:1px;" +
-                        "-fx-padding:20px;" +
-                        "-fx-cursor:hand;"
-        ));
+        card.setOnMouseEntered(e -> card.setStyle(cardStyle(true)));
+        card.setOnMouseExited(e  -> card.setStyle(cardStyle(false)));
         return card;
+    }
+
+    private String cardStyle(boolean hover) {
+        return "-fx-background-color:" + (hover ? "#1e2538" : "#161b2e") + ";" +
+                "-fx-background-radius:14px;" +
+                "-fx-border-color:" + (hover ? "#00d4ff" : "#2a3142") + ";" +
+                "-fx-border-radius:14px; -fx-border-width:1px;" +
+                "-fx-padding:20px; -fx-cursor:hand;";
+    }
+
+    // ── Actions barre de recherche / filtre / tri ─────────
+
+    @FXML
+    public void filtrer() {
+        try {
+            String minTxt = budgetMinField.getText().trim();
+            String maxTxt = budgetMaxField.getText().trim();
+            if (!minTxt.isEmpty() && !maxTxt.isEmpty()) {
+                double min = Double.parseDouble(minTxt);
+                double max = Double.parseDouble(maxTxt);
+                if (min > max) { msg("Budget min > max", true); return; }
+            }
+            double min = minTxt.isEmpty() ? Double.MIN_VALUE : Double.parseDouble(minTxt);
+            double max = maxTxt.isEmpty() ? Double.MAX_VALUE : Double.parseDouble(maxTxt);
+            afficherCartes(allCategories.filtered(c ->
+                    c.getBudgetMax() >= min && c.getBudgetMax() <= max));
+        } catch (NumberFormatException e) { msg("Budget invalide", true); }
+    }
+
+    @FXML
+    public void trierDate() {
+        List<Categorie> sorted = new java.util.ArrayList<>(allCategories);
+        sorted.sort((a, b) -> {
+            if (a.getDateCreation() == null) return 1;
+            if (b.getDateCreation() == null) return -1;
+            return b.getDateCreation().compareTo(a.getDateCreation());
+        });
+        afficherCartes(sorted);
+    }
+
+    @FXML
+    public void trierBudget() {
+        List<Categorie> sorted = new java.util.ArrayList<>(allCategories);
+        sorted.sort((a, b) -> Double.compare(b.getBudgetMax(), a.getBudgetMax()));
+        afficherCartes(sorted);
     }
 
     // ── Validation ───────────────────────────────────────
@@ -239,15 +278,6 @@ public class CategorieController {
         if (btnModifierBox != null) { btnModifierBox.setVisible(edition); btnModifierBox.setManaged(edition); }
     }
 
-    @FXML
-    public void showDepenses() {
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource("/fxml/ViewDepense.fxml"));
-            Stage stage = (Stage) cardsPane.getScene().getWindow();
-            stage.setScene(new Scene(root, 1200, 750));
-        } catch (IOException e) { msg("Erreur navigation: " + e.getMessage(), true); }
-    }
-
     @FXML public void ouvrirFormulaire() { viderFormulaire(); setModeEdition(false); showForm(true); }
     @FXML public void annuler()          { viderFormulaire(); setModeEdition(false); showForm(false); }
 
@@ -261,6 +291,8 @@ public class CategorieController {
                 : "-fx-background-color:#161b2e; -fx-background-radius:10px; -fx-padding:14px;" +
                 "-fx-border-color:#2a3142; -fx-border-radius:10px; -fx-border-width:1px;");
     }
+
+    // ── CRUD ─────────────────────────────────────────────
 
     @FXML
     public void ajouter() {
@@ -300,6 +332,9 @@ public class CategorieController {
         try {
             allCategories = FXCollections.observableArrayList(service.afficher());
             afficherCartes(allCategories);
+            if (searchField   != null) searchField.clear();
+            if (budgetMinField != null) budgetMinField.clear();
+            if (budgetMaxField != null) budgetMaxField.clear();
         } catch (SQLException e) { msg("Erreur BD: " + e.getMessage(), true); }
     }
 
