@@ -39,6 +39,20 @@
             <version>8.3.0</version>
         </dependency>
 
+        <!-- Email sending -->
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>jakarta.mail</artifactId>
+            <version>2.0.1</version>
+        </dependency>
+
+        <!-- JSON parsing for Ollama responses -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20240303</version>
+        </dependency>
+
         <!-- QR Code Generation - ZXing -->
         <dependency>
             <groupId>com.google.zxing</groupId>
