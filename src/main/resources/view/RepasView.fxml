@@ -27,6 +27,10 @@
                 <Label text="Gérez et suivez vos repas quotidiens"
                        style="-fx-font-size: 13px; -fx-text-fill: #64748b;"/>
             </VBox>
+            <Button text="🤖 Générer repas IA"
+                    onAction="#handleChatbotGenerate"
+                    style="-fx-background-color: #8b5cf6; -fx-text-fill: white;" />
+
             <Button text="➕ Nouveau Repas"
                     onAction="#openAddForm"
                     style="-fx-background-color: #00d4ff; -fx-text-fill: #0a0e1a;

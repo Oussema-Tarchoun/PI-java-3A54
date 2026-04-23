@@ -2,18 +2,32 @@ package Controllers.repas;
 
 import Models.Repas;
 import Services.ServiceRepas;
+import Controllers.ChatBotFrontController;
+import Services.ChatRepasParser.ParsedMeal;
+import Services.ChatRepasParser.ParsedIngredient;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import Services.GroqService;
+import Services.ChatRepasParser;
+import Services.ServiceAliment;
+import Models.Aliment;
 
 import java.net.URL;
 import java.sql.Date;
 import java.sql.SQLDataException;
 import java.sql.Time;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
@@ -46,8 +60,9 @@ public class RepasFrontController implements Initializable {
 
     private ServiceRepas serviceRepas;
     private List<Repas>  allRepas;
-    private Repas        editingRepas; // null = create, non-null = edit
+    private Repas        editingRepas;
     private static final int USER_ID = 1;
+    private ServiceAliment serviceAliment = new ServiceAliment();
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -95,10 +110,10 @@ public class RepasFrontController implements Initializable {
 
             LocalDate now = LocalDate.now();
             long thisMo = allRepas.stream()
-                .filter(r -> r.getDate() != null &&
-                    r.getDate().toLocalDate().getMonthValue() == now.getMonthValue() &&
-                    r.getDate().toLocalDate().getYear() == now.getYear())
-                .count();
+                    .filter(r -> r.getDate() != null &&
+                            r.getDate().toLocalDate().getMonthValue() == now.getMonthValue() &&
+                            r.getDate().toLocalDate().getYear() == now.getYear())
+                    .count();
             if (statCeMois != null) statCeMois.setText(String.valueOf(thisMo));
 
             double avgCal = allRepas.stream().mapToInt(Repas::getCalories).average().orElse(0);
@@ -133,7 +148,6 @@ public class RepasFrontController implements Initializable {
         card.getStyleClass().add("card");
         card.setStyle("-fx-cursor: hand;");
 
-        // ── Top row: type badge + calories ────────────────────────────────────
         HBox topRow = new HBox();
         topRow.setAlignment(Pos.CENTER_LEFT);
 
@@ -148,12 +162,10 @@ public class RepasFrontController implements Initializable {
 
         topRow.getChildren().addAll(typeBadge, spacer, calLabel);
 
-        // ── Meal name ─────────────────────────────────────────────────────────
         Label nomLabel = new Label(r.getNom());
         nomLabel.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 17px; -fx-font-weight: bold;");
         nomLabel.setWrapText(true);
 
-        // ── Date + time row ───────────────────────────────────────────────────
         HBox metaRow = new HBox(12);
         metaRow.setAlignment(Pos.CENTER_LEFT);
 
@@ -168,18 +180,16 @@ public class RepasFrontController implements Initializable {
             metaRow.getChildren().add(heureLabel);
         }
 
-        // ── Score pill ────────────────────────────────────────────────────────
         String score = r.getCalories() <= 400 ? "Excellent" : r.getCalories() <= 700 ? "Bon" : "Élevé";
         String scoreColor = r.getCalories() <= 400 ? "#10b981" : r.getCalories() <= 700 ? "#f59e0b" : "#ef4444";
         Label scoreLabel = new Label("Score : " + score);
         scoreLabel.setStyle("-fx-text-fill: " + scoreColor + "; -fx-font-size: 12px; " +
-            "-fx-background-color: " + scoreColor + "22; -fx-background-radius: 4; -fx-padding: 4 8 4 8;");
+                "-fx-background-color: " + scoreColor + "22; -fx-background-radius: 4; -fx-padding: 4 8 4 8;");
 
-        // ── Description (truncated) ───────────────────────────────────────────
         if (r.getDescription() != null && !r.getDescription().isBlank()) {
             Label desc = new Label(r.getDescription().length() > 60
-                ? r.getDescription().substring(0, 60) + "…"
-                : r.getDescription());
+                    ? r.getDescription().substring(0, 60) + "…"
+                    : r.getDescription());
             desc.setStyle("-fx-text-fill: #64748b; -fx-font-size: 12px;");
             desc.setWrapText(true);
             card.getChildren().addAll(topRow, nomLabel, metaRow, scoreLabel, desc);
@@ -187,18 +197,17 @@ public class RepasFrontController implements Initializable {
             card.getChildren().addAll(topRow, nomLabel, metaRow, scoreLabel);
         }
 
-        // ── Action buttons ────────────────────────────────────────────────────
         HBox actions = new HBox(8);
         actions.setAlignment(Pos.CENTER_RIGHT);
 
         Button btnEdit = new Button("✎ Modifier");
         btnEdit.setStyle("-fx-background-color: rgba(0,212,255,0.15); -fx-text-fill: #00d4ff; " +
-            "-fx-background-radius: 6; -fx-font-size: 12px; -fx-cursor: hand; -fx-padding: 6 12 6 12;");
+                "-fx-background-radius: 6; -fx-font-size: 12px; -fx-cursor: hand; -fx-padding: 6 12 6 12;");
         btnEdit.setOnAction(e -> openEditForm(r));
 
         Button btnDel = new Button("✕ Supprimer");
         btnDel.setStyle("-fx-background-color: rgba(239,68,68,0.15); -fx-text-fill: #ef4444; " +
-            "-fx-background-radius: 6; -fx-font-size: 12px; -fx-cursor: hand; -fx-padding: 6 12 6 12;");
+                "-fx-background-radius: 6; -fx-font-size: 12px; -fx-cursor: hand; -fx-padding: 6 12 6 12;");
         btnDel.setOnAction(e -> handleDelete(r));
 
         actions.getChildren().addAll(btnEdit, btnDel);
@@ -220,7 +229,7 @@ public class RepasFrontController implements Initializable {
             };
         }
         return "-fx-text-fill: " + color + "; -fx-background-color: " + color + "22; " +
-               "-fx-background-radius: 4; -fx-padding: 4 10 4 10; -fx-font-size: 11px; -fx-font-weight: bold;";
+                "-fx-background-radius: 4; -fx-padding: 4 10 4 10; -fx-font-size: 11px; -fx-font-weight: bold;";
     }
 
     // ── Search & Filter ───────────────────────────────────────────────────────
@@ -236,11 +245,11 @@ public class RepasFrontController implements Initializable {
         String type   = filterType  != null ? filterType.getValue() : "Tous";
 
         List<Repas> filtered = allRepas.stream()
-            .filter(r -> search.isBlank() ||
-                r.getNom().toLowerCase().contains(search) ||
-                (r.getDescription() != null && r.getDescription().toLowerCase().contains(search)))
-            .filter(r -> "Tous".equals(type) || type.equals(r.getType()))
-            .collect(Collectors.toList());
+                .filter(r -> search.isBlank() ||
+                        r.getNom().toLowerCase().contains(search) ||
+                        (r.getDescription() != null && r.getDescription().toLowerCase().contains(search)))
+                .filter(r -> "Tous".equals(type) || type.equals(r.getType()))
+                .collect(Collectors.toList());
 
         renderCards(filtered);
     }
@@ -302,12 +311,12 @@ public class RepasFrontController implements Initializable {
         }
 
         String desc = descriptionArea != null && descriptionArea.getText() != null
-            ? descriptionArea.getText().trim() : "";
+                ? descriptionArea.getText().trim() : "";
 
         try {
             if (editingRepas == null) {
                 Repas r = new Repas(USER_ID, nom, heure, calories, desc,
-                    typeCombo.getValue(), Date.valueOf(datePicker.getValue()));
+                        typeCombo.getValue(), Date.valueOf(datePicker.getValue()));
                 serviceRepas.ajouter(r);
             } else {
                 editingRepas.setNom(nom);
@@ -347,6 +356,89 @@ public class RepasFrontController implements Initializable {
                 }
             }
         });
+    }
+
+    // ── Chatbot Integration ───────────────────────────────────────────────────
+
+    @FXML
+    private void handleChatbotGenerate() {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/view/ChatbotView.fxml")
+            );
+            Parent root = loader.load();
+
+            // Get the controller and set callback
+            ChatBotFrontController chatController = loader.getController();
+            chatController.setAddRepasCallback(this::addRepasFromChatbot);
+
+            Stage stage = new Stage();
+            stage.setTitle("Assistant Repas IA");
+            stage.initModality(Modality.NONE);
+            stage.setScene(new Scene(root));
+            stage.setResizable(false);
+            stage.show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Chatbot open error: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Called by chatbot when user clicks "Ajouter ce repas"
+     * Automatically uses current PC time and today's date
+     */
+    private void addRepasFromChatbot(ParsedMeal meal) {
+        try {
+            // Use current PC time and today's date automatically
+            LocalTime now = LocalTime.now();
+            Time currentTime = Time.valueOf(now.withSecond(0).withNano(0));
+            Date today = Date.valueOf(LocalDate.now());
+
+            // Determine type based on current hour
+            String type = guessTypeFromHour(now.getHour());
+
+            // Build description from ingredients
+            StringBuilder desc = new StringBuilder();
+            if (meal.note != null && !meal.note.isEmpty()) {
+                desc.append(meal.note);
+            }
+            if (!meal.ingredients.isEmpty()) {
+                if (desc.length() > 0) desc.append(" | ");
+                desc.append("Ingrédients: ");
+                desc.append(meal.ingredients.stream()
+                        .map(i -> i.name + " (" + i.quantity + ")")
+                        .collect(Collectors.joining(", ")));
+            }
+
+            Repas repas = new Repas(
+                    USER_ID,
+                    meal.name,
+                    currentTime,
+                    meal.totalCalories,
+                    desc.toString(),
+                    type,
+                    today
+            );
+
+            serviceRepas.ajouter(repas);
+            loadData(); // Refresh the cards
+
+        } catch (Exception e) {
+            System.out.println("addRepasFromChatbot error: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Guess meal type based on current hour
+     */
+    private String guessTypeFromHour(int hour) {
+        if (hour >= 6 && hour < 10) return "Petit-déjeuner";
+        if (hour >= 11 && hour < 15) return "Déjeuner";
+        if (hour >= 19 && hour < 23) return "Dîner";
+        return "Collation";
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
