@@ -70,6 +70,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import Services.EmailService;
+
 
 public class DepenseController {
 
@@ -117,6 +119,8 @@ public class DepenseController {
     private static final java.awt.Color AWT_PAYE      = new java.awt.Color(0x22, 0xc5, 0x5e);
     private static final java.awt.Color AWT_ATTENTE   = new java.awt.Color(0xf5, 0x9e, 0x0b);
     private static final java.awt.Color AWT_NON_PAYE  = new java.awt.Color(0xef, 0x44, 0x44);
+
+    private final EmailService emailService = new EmailService();
 
     @FXML
     public void initialize() {
@@ -1392,5 +1396,234 @@ public class DepenseController {
         Scene scene = new Scene(root);
         popup.setScene(scene);
         popup.showAndWait();
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // ║  ENVOI EMAIL RAPPEL                                 ║
+    // ═══════════════════════════════════════════════════════
+
+    @FXML
+    public void envoyerRappelMail() {
+        // Filtrer les dépenses non payées et en attente
+        List<Depense> impayees = allDepenses.stream()
+                .filter(d -> {
+                    String s = normaliserStatut(d.getStatut());
+                    return s.equals(STATUT_NON_PAYE) || s.equals(STATUT_ATTENTE);
+                })
+                .collect(Collectors.toList());
+
+        if (impayees.isEmpty()) {
+            msg("Toutes les dépenses sont déjà payées !", false);
+            return;
+        }
+
+        // Popup pour saisir l'adresse destinataire
+        Stage popup = new Stage();
+        popup.initModality(Modality.APPLICATION_MODAL);
+        popup.setTitle("Envoyer un rappel par email");
+        popup.setResizable(false);
+
+        VBox root = new VBox(16);
+        root.setAlignment(Pos.CENTER);
+        root.setPrefWidth(420);
+        root.setStyle("-fx-background-color:" + COULEUR_FOND + "; -fx-padding:32px;");
+
+        Label titre = new Label("📧 Envoyer un rappel");
+        titre.setStyle("-fx-font-size:20px; -fx-font-weight:bold; -fx-text-fill:" + COULEUR_TEXTE + ";");
+
+        Label info = new Label(impayees.size() + " dépense(s) non réglée(s) · "
+                + String.format("%.2f TND", impayees.stream().mapToDouble(Depense::getMontant).sum()));
+        info.setStyle("-fx-font-size:13px; -fx-text-fill:#ef4444;");
+
+        Label lblEmail = new Label("Adresse email du destinataire :");
+        lblEmail.setStyle("-fx-font-size:13px; -fx-text-fill:" + COULEUR_SECOND + ";");
+
+        TextField emailField = new TextField();
+        emailField.setPromptText("ex: comptable@entreprise.com");
+        emailField.setPrefHeight(44);
+        emailField.setStyle("-fx-background-color:#111827; -fx-text-fill:#ffffff;" +
+                "-fx-background-radius:8px; -fx-border-color:#2a3142;" +
+                "-fx-border-radius:8px; -fx-border-width:1px;" +
+                "-fx-padding:10 12 10 12; -fx-font-size:14px;");
+
+        Label statusLabel = new Label();
+        statusLabel.setStyle("-fx-font-size:12px; -fx-text-fill:" + COULEUR_ACCENT + ";");
+
+        Button btnEnvoyer = new Button("Envoyer le rappel");
+        btnEnvoyer.setPrefHeight(44);
+        btnEnvoyer.setStyle("-fx-background-color:#00d4ff; -fx-text-fill:#0a0e1a;" +
+                "-fx-font-weight:bold; -fx-background-radius:8px;" +
+                "-fx-padding:10 28 10 28; -fx-cursor:hand; -fx-font-size:14px;");
+
+        Button btnAnnuler = new Button("Annuler");
+        btnAnnuler.setPrefHeight(44);
+        btnAnnuler.setStyle("-fx-background-color:#1e2538; -fx-text-fill:#94a3b8;" +
+                "-fx-background-radius:8px; -fx-padding:10 28 10 28;" +
+                "-fx-border-color:#2a3142; -fx-border-width:1px;" +
+                "-fx-border-radius:8px; -fx-cursor:hand; -fx-font-size:14px;");
+
+        btnAnnuler.setOnAction(e -> popup.close());
+
+        btnEnvoyer.setOnAction(e -> {
+            String dest = emailField.getText().trim();
+            if (dest.isEmpty() || !dest.contains("@")) {
+                statusLabel.setText("❌ Adresse email invalide");
+                statusLabel.setStyle("-fx-font-size:12px; -fx-text-fill:#ef4444;");
+                return;
+            }
+            btnEnvoyer.setDisable(true);
+            statusLabel.setText("⏳ Envoi en cours...");
+            statusLabel.setStyle("-fx-font-size:12px; -fx-text-fill:" + COULEUR_ACCENT + ";");
+
+            String finalDest = dest;
+            Thread t = new Thread(() -> {
+                try {
+                    emailService.envoyerRappelDepensesImpayees(finalDest, impayees);
+                    javafx.application.Platform.runLater(() -> {
+                        statusLabel.setText("✅ Email envoyé avec succès !");
+                        statusLabel.setStyle("-fx-font-size:12px; -fx-text-fill:#22c55e;");
+                        btnEnvoyer.setDisable(false);
+                    });
+                } catch (Exception ex) {
+                    javafx.application.Platform.runLater(() -> {
+                        statusLabel.setText("❌ Erreur : " + ex.getMessage());
+                        statusLabel.setStyle("-fx-font-size:12px; -fx-text-fill:#ef4444;");
+                        btnEnvoyer.setDisable(false);
+                    });
+                }
+            });
+            t.setDaemon(true);
+            t.start();
+        });
+
+        HBox btnRow = new HBox(10, btnEnvoyer, btnAnnuler);
+        btnRow.setAlignment(Pos.CENTER);
+
+        root.getChildren().addAll(titre, info, lblEmail, emailField, btnRow, statusLabel);
+        popup.setScene(new Scene(root));
+        popup.showAndWait();
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // ║  STATISTIQUES AVANCÉES                              ║
+    // ═══════════════════════════════════════════════════════
+
+    @FXML
+    public void ouvrirStatistiques() {
+        Stage popup = new Stage();
+        popup.initModality(Modality.APPLICATION_MODAL);
+        popup.setTitle("Statistiques avancées - AIVA");
+        popup.setResizable(true);
+
+        VBox root = new VBox(16);
+        root.setStyle("-fx-background-color:" + COULEUR_FOND + "; -fx-padding:28px;");
+        root.setPrefWidth(900);
+
+        // ─── Métriques en-tête ───
+        double total   = allDepenses.stream().mapToDouble(Depense::getMontant).sum();
+        double avg     = allDepenses.isEmpty() ? 0 : total / allDepenses.size();
+        long   nbPaye  = allDepenses.stream().filter(d -> normaliserStatut(d.getStatut()).equals(STATUT_PAYE)).count();
+        long   nbImpay = allDepenses.size() - nbPaye;
+
+        HBox metrics = new HBox(12);
+        metrics.getChildren().addAll(
+                creerMetricCard("Total dépensé",  String.format("%.2f TND", total),  COULEUR_ACCENT),
+                creerMetricCard("Moyenne",         String.format("%.2f TND", avg),    COULEUR_SECOND),
+                creerMetricCard("Payées",          String.valueOf(nbPaye),             COULEUR_PAYE),
+                creerMetricCard("Non réglées",     String.valueOf(nbImpay),            COULEUR_NON_PAYE)
+        );
+        HBox.setHgrow(metrics.getChildren().get(0), Priority.ALWAYS);
+
+        // ─── Graphique mensuel ───
+        Map<String, Double> parMois = new java.util.LinkedHashMap<>();
+        Map<String, Double> paidMois = new java.util.LinkedHashMap<>();
+        Map<String, Double> unpaidMois = new java.util.LinkedHashMap<>();
+        DateTimeFormatter moisFmt = DateTimeFormatter.ofPattern("MMM yyyy");
+
+        for (Depense d : allDepenses) {
+            if (d.getDateDepense() == null) continue;
+            LocalDate ld = (d.getDateDepense() instanceof java.sql.Date)
+                    ? ((java.sql.Date) d.getDateDepense()).toLocalDate()
+                    : d.getDateDepense().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+            String key = ld.format(moisFmt);
+            parMois.merge(key, d.getMontant(), Double::sum);
+            if (normaliserStatut(d.getStatut()).equals(STATUT_PAYE))
+                paidMois.merge(key, d.getMontant(), Double::sum);
+            else
+                unpaidMois.merge(key, d.getMontant(), Double::sum);
+        }
+
+        javafx.scene.chart.CategoryAxis xAxis = new javafx.scene.chart.CategoryAxis();
+        javafx.scene.chart.NumberAxis   yAxis = new javafx.scene.chart.NumberAxis();
+        xAxis.setLabel("Mois");
+        yAxis.setLabel("Montant (TND)");
+        javafx.scene.chart.LineChart<String, Number> lineChart =
+                new javafx.scene.chart.LineChart<>(xAxis, yAxis);
+        lineChart.setTitle("Évolution mensuelle des dépenses");
+        lineChart.setPrefHeight(300);
+
+        javafx.scene.chart.XYChart.Series<String, Number> sTotal = new javafx.scene.chart.XYChart.Series<>();
+        sTotal.setName("Total");
+        javafx.scene.chart.XYChart.Series<String, Number> sPaid  = new javafx.scene.chart.XYChart.Series<>();
+        sPaid.setName("Payées");
+        javafx.scene.chart.XYChart.Series<String, Number> sUnpaid = new javafx.scene.chart.XYChart.Series<>();
+        sUnpaid.setName("Non réglées");
+
+        parMois.forEach((k, v) -> sTotal.getData().add(new javafx.scene.chart.XYChart.Data<>(k, v)));
+        paidMois.forEach((k, v) -> sPaid.getData().add(new javafx.scene.chart.XYChart.Data<>(k, v)));
+        unpaidMois.forEach((k, v) -> sUnpaid.getData().add(new javafx.scene.chart.XYChart.Data<>(k, v)));
+        lineChart.getData().addAll(sTotal, sPaid, sUnpaid);
+
+        // ─── Top 5 dépenses ───
+        Label lblTop = new Label("Top 5 dépenses");
+        lblTop.setStyle("-fx-font-size:15px; -fx-font-weight:bold; -fx-text-fill:" + COULEUR_ACCENT + ";");
+        VBox topBox = new VBox(6);
+        allDepenses.stream()
+                .sorted((a, b) -> Double.compare(b.getMontant(), a.getMontant()))
+                .limit(5)
+                .forEach(d -> {
+                    HBox row = new HBox(12);
+                    row.setAlignment(Pos.CENTER_LEFT);
+                    row.setStyle("-fx-background-color:" + COULEUR_SURFACE + "; -fx-background-radius:8px; -fx-padding:8px;");
+                    Label desc = new Label(d.getDescription());
+                    desc.setStyle("-fx-text-fill:" + COULEUR_TEXTE + "; -fx-font-size:13px;");
+                    desc.setMaxWidth(300); HBox.setHgrow(desc, Priority.ALWAYS);
+                    Label amt = new Label(String.format("%.2f TND", d.getMontant()));
+                    amt.setStyle("-fx-text-fill:" + COULEUR_ACCENT + "; -fx-font-weight:bold; -fx-font-size:13px;");
+                    String[] cols = couleurStatut(d.getStatut());
+                    Label stat = new Label(normaliserStatut(d.getStatut()));
+                    stat.setStyle("-fx-text-fill:" + cols[0] + "; -fx-background-color:" + cols[1] +
+                            "; -fx-background-radius:6px; -fx-padding:3 8 3 8; -fx-font-size:11px; -fx-font-weight:bold;");
+                    row.getChildren().addAll(desc, amt, stat);
+                    topBox.getChildren().add(row);
+                });
+
+        Button btnFermer = new Button("Fermer");
+        btnFermer.setStyle("-fx-background-color:#a855f720; -fx-text-fill:#a855f7;" +
+                "-fx-background-radius:8px; -fx-padding:10 30 10 30;" +
+                "-fx-border-color:#a855f7; -fx-border-width:1px;" +
+                "-fx-border-radius:8px; -fx-cursor:hand; -fx-font-size:14px;");
+        btnFermer.setOnAction(e -> popup.close());
+
+        root.getChildren().addAll(metrics, lineChart, lblTop, topBox, btnFermer);
+        ScrollPane sp = new ScrollPane(root);
+        sp.setFitToWidth(true);
+        sp.setStyle("-fx-background:transparent; -fx-background-color:transparent;");
+
+        popup.setScene(new Scene(sp, 920, 720));
+        popup.showAndWait();
+    }
+
+    private VBox creerMetricCard(String label, String valeur, String couleur) {
+        VBox card = new VBox(6);
+        card.setPrefWidth(180);
+        card.setStyle("-fx-background-color:" + COULEUR_SURFACE + "; -fx-background-radius:10px; -fx-padding:14px;" +
+                "-fx-border-color:" + couleur + "44; -fx-border-radius:10px; -fx-border-width:1px;");
+        Label lbl = new Label(label);
+        lbl.setStyle("-fx-font-size:12px; -fx-text-fill:" + COULEUR_SECOND + ";");
+        Label val = new Label(valeur);
+        val.setStyle("-fx-font-size:20px; -fx-font-weight:bold; -fx-text-fill:" + couleur + ";");
+        card.getChildren().addAll(lbl, val);
+        return card;
     }
 }
