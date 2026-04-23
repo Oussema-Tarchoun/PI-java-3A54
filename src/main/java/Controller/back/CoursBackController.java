@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 public class CoursBackController {
 
-    // ── Table ──────────────────────────────────────────────────────────────────
+
     @FXML private TableView<Cours>            coursTable;
     @FXML private TableColumn<Cours, Integer> colId;
     @FXML private TableColumn<Cours, String>  colTitre;
@@ -37,12 +37,12 @@ public class CoursBackController {
     @FXML private TableColumn<Cours, String>  colDateCreation;
     @FXML private TableColumn<Cours, Void>    colActions;
 
-    // ── Filters & search ──────────────────────────────────────────────────────
+
     @FXML private TextField        searchField;
     @FXML private ComboBox<String> filterNiveau;
     @FXML private ComboBox<String> filterCategorie;
 
-    // ── Stats ──────────────────────────────────────────────────────────────────
+
     @FXML private Label statTotal;
     @FXML private Label statDebutant;
     @FXML private Label statIntermediaire;
@@ -66,7 +66,7 @@ public class CoursBackController {
         loadData();
     }
 
-    // ── Setup ──────────────────────────────────────────────────────────────────
+
 
     private void setupColumns() {
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -76,7 +76,7 @@ public class CoursBackController {
         colDuree.setCellValueFactory(new PropertyValueFactory<>("dureeEstimee"));
         colDateCreation.setCellValueFactory(new PropertyValueFactory<>("dateCreation"));
 
-        // Status badge
+
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
         colStatus.setCellFactory(col -> new TableCell<>() {
             @Override
@@ -97,7 +97,7 @@ public class CoursBackController {
             }
         });
 
-        // Actions column
+
         colActions.setCellFactory(col -> new TableCell<>() {
             private final Button btnEdit   = new Button("✏");
             private final Button btnDelete = new Button("🗑");
@@ -151,7 +151,7 @@ public class CoursBackController {
         searchField.textProperty().addListener((obs, o, n) -> applyFilters());
     }
 
-    // ── Data ───────────────────────────────────────────────────────────────────
+
 
     private void loadData() {
         try {
@@ -174,7 +174,7 @@ public class CoursBackController {
                 list.stream().filter(c -> "Advanced".equalsIgnoreCase(c.getNiveau())).count()));
     }
 
-    // ── Filters ────────────────────────────────────────────────────────────────
+
 
     @FXML
     private void handleFilter() { applyFilters(); }
@@ -210,7 +210,7 @@ public class CoursBackController {
         coursCountLabel.setText(filtered.size() + " cours au total");
     }
 
-    // ── CRUD ───────────────────────────────────────────────────────────────────
+
 
     @FXML
     private void handleOpenAddDialog() {
@@ -236,7 +236,6 @@ public class CoursBackController {
         });
     }
 
-    // ── Dialog ─────────────────────────────────────────────────────────────────
 
     private void openDialog(Cours cours) {
         Stage dialog = new Stage();
@@ -328,7 +327,7 @@ public class CoursBackController {
         HBox buttons = new HBox(12, btnCancel, btnSave);
         buttons.setAlignment(Pos.CENTER_RIGHT);
 
-        // Header
+
         Label dlgTitle = new Label(cours == null ? "Nouveau Cours" : "Modifier le Cours");
         dlgTitle.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #f5f5f4;");
         Button btnX = new Button("✕");
@@ -365,7 +364,7 @@ public class CoursBackController {
         dialog.show();
     }
 
-    // ── Dialog helpers ─────────────────────────────────────────────────────────
+
 
     private TextField dialogField(String prompt) {
         TextField f = new TextField();
@@ -414,7 +413,7 @@ public class CoursBackController {
         return row;
     }
 
-    // ── Navigation (wire to your team's controllers) ───────────────────────────
+
 
     @FXML private void goToDashboard()  { navigate("/views/back/Dashboard.fxml"); }
     @FXML private void goToChapitres() { navigate("/views/back/ChapitreBack.fxml"); }

@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 
 public class ChapitreBackController {
 
-    // ── Table ──────────────────────────────────────────────────────────────────
+    // Tablesss
     @FXML private TableView<Chapitre>            chapitreTable;
     @FXML private TableColumn<Chapitre, Integer> colId;
     @FXML private TableColumn<Chapitre, String>  colTitre;
@@ -37,18 +37,18 @@ public class ChapitreBackController {
     @FXML private TableColumn<Chapitre, String>  colExercice;
     @FXML private TableColumn<Chapitre, Void>    colActions;
 
-    // ── Filters & search ──────────────────────────────────────────────────────
+    //  tri w recherche
     @FXML private TextField          searchField;
     @FXML private ComboBox<Cours>    filterCours;
 
-    // ── Stats ──────────────────────────────────────────────────────────────────
+    // statsss
     @FXML private Label statTotal;
     @FXML private Label statAvecExercice;
     @FXML private Label statSansExercice;
     @FXML private Label statCoursCovered;
     @FXML private Label chapitreCountLabel;
 
-    // ── State ──────────────────────────────────────────────────────────────────
+
     private final ServiceChapitre  service;
     private final ServiceCours     serviceCours;
     private ObservableList<Chapitre> allChapitres;
@@ -68,14 +68,14 @@ public class ChapitreBackController {
         loadData();
     }
 
-    // ── Setup ──────────────────────────────────────────────────────────────────
+
 
     private void setupColumns() {
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colTitre.setCellValueFactory(new PropertyValueFactory<>("titre"));
         colOrdre.setCellValueFactory(new PropertyValueFactory<>("ordre"));
 
-        // Contenu truncated
+
         colContenu.setCellValueFactory(new PropertyValueFactory<>("contenu"));
         colContenu.setCellFactory(col -> new TableCell<>() {
             @Override
@@ -86,7 +86,7 @@ public class ChapitreBackController {
             }
         });
 
-        // Cours name — resolved from cours_id via loaded list
+
         colCours.setCellFactory(col -> new TableCell<>() {
             @Override
             protected void updateItem(String item, boolean empty) {
@@ -119,7 +119,7 @@ public class ChapitreBackController {
             }
         });
 
-        // Actions
+        // les action
         colActions.setCellFactory(col -> new TableCell<>() {
             private final Button btnEdit   = new Button("✏");
             private final Button btnDelete = new Button("🗑");
@@ -187,7 +187,7 @@ public class ChapitreBackController {
         searchField.textProperty().addListener((obs, o, n) -> applyFilters());
     }
 
-    // ── Data ───────────────────────────────────────────────────────────────────
+
 
     private void loadData() {
         try {
@@ -217,7 +217,7 @@ public class ChapitreBackController {
         statCoursCovered.setText(String.valueOf(covered));
     }
 
-    // ── Filters ────────────────────────────────────────────────────────────────
+
 
     @FXML private void handleFilter()       { applyFilters(); }
     @FXML private void handleSearch()       { applyFilters(); }
@@ -245,7 +245,7 @@ public class ChapitreBackController {
         chapitreCountLabel.setText(filtered.size() + " chapitres au total");
     }
 
-    // ── CRUD ───────────────────────────────────────────────────────────────────
+
 
     @FXML
     private void handleOpenAddDialog() {
@@ -271,7 +271,6 @@ public class ChapitreBackController {
         });
     }
 
-    // ── Dialog ─────────────────────────────────────────────────────────────────
 
     private void openDialog(Chapitre ch) {
         Stage dialog = new Stage();
@@ -409,8 +408,8 @@ public class ChapitreBackController {
         dialog.show();
     }
 
-    // ── Dialog helpers ─────────────────────────────────────────────────────────
 
+// style mta text area
     private TextField dialogField(String prompt) {
         TextField f = new TextField();
         f.setPromptText(prompt);
@@ -448,7 +447,7 @@ public class ChapitreBackController {
         return row;
     }
 
-    // ── Navigation ─────────────────────────────────────────────────────────────
+
 
     @FXML private void goToDashboard() { navigate("/views/back/Dashboard.fxml"); }
     @FXML private void goToCours()     { navigate("/views/back/CoursBack.fxml"); }

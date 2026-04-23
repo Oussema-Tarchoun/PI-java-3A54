@@ -19,7 +19,7 @@ public class ServiceCours implements Iservice<Cours> {
 
     @Override
     public void ajouter(Cours cours) throws SQLDataException {
-        String req = "INSERT INTO cours (tittre, description, niveau, duree_estimee, categorie, status, date_creation) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String req = "INSERT INTO cours (tittre, description, niveau, duree_estimee, categorie, status, date_creation, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = cnx.prepareStatement(req, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, cours.getTittre());
             ps.setString(2, cours.getDescription());
@@ -28,6 +28,7 @@ public class ServiceCours implements Iservice<Cours> {
             ps.setString(5, cours.getCategorie());
             ps.setString(6, cours.getStatus());
             ps.setString(7, cours.getDateCreation());
+            ps.setInt(8, cours.getUser_id());
             ps.executeUpdate();
 
             ResultSet rs = ps.getGeneratedKeys();

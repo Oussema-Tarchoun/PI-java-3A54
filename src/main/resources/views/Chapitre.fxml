@@ -23,17 +23,12 @@
                        styleClass="card-subtitle"/>
             </VBox>
             <Region HBox.hgrow="ALWAYS"/>
-            <!-- btnAdd and btnBack are conditionally shown via controller -->
-            <HBox fx:id="headerButtons" spacing="12" alignment="CENTER_RIGHT">
-                <Button fx:id="btnAdd" text="＋  New Chapter" onAction="#handleAdd"
-                        styleClass="btn-primary" visible="false" managed="false"/>
-                <Button fx:id="btnBack" text="← Back to Courses" onAction="#handleBack"
-                        styleClass="btn-secondary" visible="false" managed="false"/>
-            </HBox>
+            <!-- Header buttons container -->
+            <HBox fx:id="headerButtons" spacing="12" alignment="CENTER_RIGHT"/>
         </HBox>
 
         <!-- ── Course Selector Card (shown when opened from sidebar) ────────── -->
-        <VBox fx:id="courseSelectorCard" styleClass="card" spacing="16">
+        <VBox fx:id="courseSelectorCard" styleClass="card" spacing="16" visible="false" managed="false">
             <HBox alignment="CENTER_LEFT" spacing="12">
                 <Label text="Select a Course:" styleClass="form-label"
                        style="-fx-font-size: 14px; -fx-text-fill: #94a3b8;"/>

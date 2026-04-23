@@ -4,130 +4,182 @@ import Models.Chapitre;
 import Models.Cours;
 import Services.ServiceChapitre;
 import Services.ServiceCours;
+import utils.PDFExporter;
+import utils.QRCodeGenerator;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLDataException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class ChapitreController {
 
-    // ── FXML bindings ──────────────────────────────────────────────────────────
-    @FXML private Label              lblTitle;
-    @FXML private Label              lblCoursInfo;
-    @FXML private FlowPane           chapitreGrid;
-    @FXML private VBox               emptyState;
-    @FXML private VBox               promptState;
-    @FXML private VBox               courseSelectorCard;
-    @FXML private HBox               searchBar;
-    @FXML private TextField          txtSearch;
-    @FXML private Label              lblResultCount;
-    @FXML private Button             btnAdd;
-    @FXML private Button             btnBack;
-    @FXML private ComboBox<Cours>    comboCours;
+    @FXML private Label lblTitle;
+    @FXML private Label lblCoursInfo;
+    @FXML private FlowPane chapitreGrid;
+    @FXML private VBox emptyState;
+    @FXML private VBox promptState;
+    @FXML private VBox courseSelectorCard;
+    @FXML private HBox searchBar;
+    @FXML private TextField txtSearch;
+    @FXML private Label lblResultCount;
+    @FXML private Button btnAdd;
+    @FXML private Button btnBack;
+    @FXML private ComboBox<Cours> comboCours;
+    @FXML private HBox headerButtons;
 
-    // ── State ──────────────────────────────────────────────────────────────────
-    private final ServiceChapitre        service;
-    private final ServiceCours           serviceCours;
-    private Cours                        cours;
-    private ObservableList<Chapitre>     allChapitres;
-    private Chapitre                     editingChapitre = null;
-    private boolean                      sidebarMode = false;
+    private final ServiceChapitre service;
+    private final ServiceCours serviceCours;
+    private Cours cours;
+    private ObservableList<Chapitre> allChapitres;
+    private Chapitre editingChapitre = null;
+    private boolean sidebarMode = false;
 
     public ChapitreController() {
-        this.service      = new ServiceChapitre();
+        this.service = new ServiceChapitre();
         this.serviceCours = new ServiceCours();
     }
 
-    // ── Lifecycle ──────────────────────────────────────────────────────────────
-
     @FXML
     public void initialize() {
-        txtSearch.textProperty().addListener((obs, o, n) -> applyFilter(n));
+        // Initialize search listener
+        if (txtSearch != null) {
+            txtSearch.textProperty().addListener((obs, o, n) -> applyFilter(n));
+        }
     }
 
-    /**
-     * Called when opened from the Cours card "View Chapters" button.
-     * Hides the course selector and loads chapters directly.
-     */
     public void setCours(Cours cours) {
-        this.cours       = cours;
+        this.cours = cours;
         this.sidebarMode = false;
 
-        // Hide selector, show action buttons
-        courseSelectorCard.setVisible(false);
-        courseSelectorCard.setManaged(false);
-        promptState.setVisible(false);
-        promptState.setManaged(false);
-        btnAdd.setVisible(true);
-        btnAdd.setManaged(true);
-        btnBack.setVisible(true);
-        btnBack.setManaged(true);
-        searchBar.setVisible(true);
-        searchBar.setManaged(true);
+        if (courseSelectorCard != null) {
+            courseSelectorCard.setVisible(false);
+            courseSelectorCard.setManaged(false);
+        }
+        if (promptState != null) {
+            promptState.setVisible(false);
+            promptState.setManaged(false);
+        }
+        if (btnAdd != null) {
+            btnAdd.setVisible(true);
+            btnAdd.setManaged(true);
+        }
+        if (btnBack != null) {
+            btnBack.setVisible(true);
+            btnBack.setManaged(true);
+        }
+        if (searchBar != null) {
+            searchBar.setVisible(true);
+            searchBar.setManaged(true);
+        }
 
-        lblTitle.setText("Chapters");
-        lblCoursInfo.setText(cours.getTittre() + " — " + cours.getDescription());
+        if (lblTitle != null) {
+            lblTitle.setText("Chapters");
+        }
+        if (lblCoursInfo != null) {
+            lblCoursInfo.setText(cours.getTittre() + " — " + cours.getDescription());
+        }
+
+        setupHeaderButtonsForCourseMode();
         loadData();
     }
 
-    /**
-     * Called when opened from the sidebar (no course pre-selected).
-     * Shows the course selector dropdown.
-     */
     public void initWithoutCours() {
         this.sidebarMode = true;
+        this.cours = null;
 
-        // Show selector, hide back button (we're already in the main layout)
-        courseSelectorCard.setVisible(true);
-        courseSelectorCard.setManaged(true);
-        btnBack.setVisible(false);
-        btnBack.setManaged(false);
-        btnAdd.setVisible(false);
-        btnAdd.setManaged(false);
-        searchBar.setVisible(false);
-        searchBar.setManaged(false);
-        promptState.setVisible(true);
-        promptState.setManaged(true);
+        if (courseSelectorCard != null) {
+            courseSelectorCard.setVisible(true);
+            courseSelectorCard.setManaged(true);
+        }
+        if (btnBack != null) {
+            btnBack.setVisible(false);
+            btnBack.setManaged(false);
+        }
+        if (btnAdd != null) {
+            btnAdd.setVisible(false);
+            btnAdd.setManaged(false);
+        }
+        if (searchBar != null) {
+            searchBar.setVisible(false);
+            searchBar.setManaged(false);
+        }
+        if (promptState != null) {
+            promptState.setVisible(true);
+            promptState.setManaged(true);
+        }
+        if (lblTitle != null) {
+            lblTitle.setText("Chapters");
+        }
+        if (lblCoursInfo != null) {
+            lblCoursInfo.setText("Select a course to browse its chapters");
+        }
 
         loadCourseSelector();
     }
 
-    // ── Course selector ────────────────────────────────────────────────────────
+    private void setupHeaderButtonsForCourseMode() {
+        if (headerButtons == null) return;
+
+        headerButtons.getChildren().clear();
+
+        Button btnExportPDF = new Button("📄 Export PDF");
+        btnExportPDF.setStyle("-fx-background-color: #10b981; -fx-text-fill: #ffffff; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 8 16; -fx-cursor: hand;");
+        btnExportPDF.setOnAction(e -> handleExportPDF());
+
+        Button btnQR = new Button("📱 QR Code");
+        btnQR.setStyle("-fx-background-color: #00d4ff; -fx-text-fill: #0a0e1a; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 8 16; -fx-cursor: hand;");
+        btnQR.setOnAction(e -> handleShowQRCode());
+
+        Button btnAddNew = new Button("＋  New Chapter");
+        btnAddNew.setStyle("-fx-background-color: #8b5cf6; -fx-text-fill: #ffffff; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 8 16; -fx-cursor: hand;");
+        btnAddNew.setOnAction(e -> handleAdd());
+
+        headerButtons.getChildren().addAll(btnExportPDF, btnQR, btnAddNew);
+    }
 
     private void loadCourseSelector() {
         try {
             List<Cours> list = serviceCours.recuperer();
-            comboCours.setItems(FXCollections.observableArrayList(list));
+            if (comboCours != null) {
+                comboCours.setItems(FXCollections.observableArrayList(list));
 
-            // Show course title in the dropdown
-            comboCours.setCellFactory(lv -> new ListCell<>() {
-                @Override
-                protected void updateItem(Cours item, boolean empty) {
-                    super.updateItem(item, empty);
-                    setText(empty || item == null ? null
-                            : item.getTittre() + "  ·  " + item.getNiveau() + "  ·  " + item.getCategorie());
-                }
-            });
-            comboCours.setButtonCell(new ListCell<>() {
-                @Override
-                protected void updateItem(Cours item, boolean empty) {
-                    super.updateItem(item, empty);
-                    setText(empty || item == null ? null
-                            : item.getTittre() + "  ·  " + item.getNiveau());
-                }
-            });
+                comboCours.setCellFactory(lv -> new ListCell<>() {
+                    @Override
+                    protected void updateItem(Cours item, boolean empty) {
+                        super.updateItem(item, empty);
+                        setText(empty || item == null ? null
+                                : item.getTittre() + "  ·  " + item.getNiveau() + "  ·  " + item.getCategorie());
+                    }
+                });
+                comboCours.setButtonCell(new ListCell<>() {
+                    @Override
+                    protected void updateItem(Cours item, boolean empty) {
+                        super.updateItem(item, empty);
+                        setText(empty || item == null ? null
+                                : item.getTittre() + "  ·  " + item.getNiveau());
+                    }
+                });
+            }
         } catch (SQLDataException e) {
             showAlert("Error", "Could not load courses: " + e.getMessage());
         }
@@ -135,39 +187,51 @@ public class ChapitreController {
 
     @FXML
     private void handleCoursSelected() {
+        if (comboCours == null) return;
+
         Cours selected = comboCours.getValue();
         if (selected == null) return;
 
         this.cours = selected;
-        lblTitle.setText("Chapters");
-        lblCoursInfo.setText(selected.getTittre() + " — " + selected.getDescription());
 
-        // Reveal search bar and add button now that a course is chosen
-        searchBar.setVisible(true);
-        searchBar.setManaged(true);
-        btnAdd.setVisible(true);
-        btnAdd.setManaged(true);
-        promptState.setVisible(false);
-        promptState.setManaged(false);
+        if (lblTitle != null) {
+            lblTitle.setText("Chapters");
+        }
+        if (lblCoursInfo != null) {
+            lblCoursInfo.setText(selected.getTittre() + " — " + selected.getDescription());
+        }
 
+        if (searchBar != null) {
+            searchBar.setVisible(true);
+            searchBar.setManaged(true);
+        }
+        if (btnAdd != null) {
+            btnAdd.setVisible(true);
+            btnAdd.setManaged(true);
+        }
+        if (promptState != null) {
+            promptState.setVisible(false);
+            promptState.setManaged(false);
+        }
+
+        setupHeaderButtonsForCourseMode();
         loadData();
     }
-
-    // ── Data ───────────────────────────────────────────────────────────────────
 
     private void loadData() {
         if (cours == null) return;
         try {
             List<Chapitre> list = service.getByCours(cours.getId());
             allChapitres = FXCollections.observableArrayList(list);
-            applyFilter(txtSearch.getText());
+            applyFilter(txtSearch != null ? txtSearch.getText() : "");
         } catch (SQLDataException e) {
             showAlert("Error", "Could not load chapters: " + e.getMessage());
         }
     }
 
     private void applyFilter(String query) {
-        if (allChapitres == null) return;
+        if (allChapitres == null || chapitreGrid == null) return;
+
         List<Chapitre> filtered;
         if (query == null || query.isBlank()) {
             filtered = allChapitres;
@@ -179,17 +243,21 @@ public class ChapitreController {
                     .collect(Collectors.toList());
         }
         renderCards(filtered);
-        lblResultCount.setText(filtered.size() + " chapter" + (filtered.size() != 1 ? "s" : ""));
+        if (lblResultCount != null) {
+            lblResultCount.setText(filtered.size() + " chapter" + (filtered.size() != 1 ? "s" : ""));
+        }
     }
 
-    // ── Card rendering ─────────────────────────────────────────────────────────
-
     private void renderCards(List<Chapitre> list) {
+        if (chapitreGrid == null) return;
+
         chapitreGrid.getChildren().clear();
 
         boolean isEmpty = list == null || list.isEmpty();
-        emptyState.setVisible(isEmpty);
-        emptyState.setManaged(isEmpty);
+        if (emptyState != null) {
+            emptyState.setVisible(isEmpty);
+            emptyState.setManaged(isEmpty);
+        }
         if (isEmpty) return;
 
         for (Chapitre ch : list) {
@@ -212,7 +280,6 @@ public class ChapitreController {
                         "-fx-cursor: hand;"
         );
 
-        // Title + order badge
         HBox topRow = new HBox(12);
         topRow.setAlignment(Pos.CENTER_LEFT);
 
@@ -232,7 +299,6 @@ public class ChapitreController {
         );
         topRow.getChildren().addAll(titleLabel, orderBadge);
 
-        // Content preview
         Label contenuLabel = new Label(
                 ch.getContenu() == null || ch.getContenu().isBlank()
                         ? "No content provided." : ch.getContenu());
@@ -240,7 +306,6 @@ public class ChapitreController {
         contenuLabel.setWrapText(true);
         contenuLabel.setMaxHeight(48);
 
-        // Exercise indicator
         boolean hasExercise = ch.getExercise() != null && !ch.getExercise().isBlank();
         Label exerciseTag = new Label(hasExercise ? "✅ Has Exercise" : "📝 No Exercise");
         exerciseTag.setStyle("-fx-font-size: 11px; -fx-text-fill: " + (hasExercise ? "#10b981;" : "#64748b;"));
@@ -248,11 +313,10 @@ public class ChapitreController {
         Separator sep = new Separator();
         sep.setStyle("-fx-background-color: #2a3142;");
 
-        // Action buttons
         HBox actions = new HBox(10);
         actions.setAlignment(Pos.CENTER_RIGHT);
 
-        Button btnEdit   = iconButton("✏️ Edit",   "#8b5cf6");
+        Button btnEdit = iconButton("✏️ Edit", "#8b5cf6");
         Button btnDelete = iconButton("🗑 Delete", "#ef4444");
         btnEdit.setOnAction(e -> handleEdit(ch));
         btnDelete.setOnAction(e -> handleDelete(ch));
@@ -274,8 +338,6 @@ public class ChapitreController {
         );
         return btn;
     }
-
-    // ── CRUD ───────────────────────────────────────────────────────────────────
 
     @FXML
     private void handleAdd() {
@@ -311,7 +373,108 @@ public class ChapitreController {
         stage.close();
     }
 
-    // ── Dialog ─────────────────────────────────────────────────────────────────
+    @FXML
+    private void handleExportPDF() {
+        if (cours == null) {
+            showAlert("Error", "No course selected.");
+            return;
+        }
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Export Course with Chapters to PDF");
+        fileChooser.setInitialFileName(cours.getTittre().replaceAll("[^a-zA-Z0-9]", "_") + "_Full.pdf");
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("PDF Document", "*.pdf")
+        );
+
+        File file = fileChooser.showSaveDialog(chapitreGrid != null ? chapitreGrid.getScene().getWindow() : null);
+        if (file != null) {
+            try {
+                PDFExporter.exportCourseWithChaptersToPDF(cours, allChapitres, file);
+                showAlert("Success", "Course with chapters exported to:\n" + file.getAbsolutePath());
+            } catch (IOException e) {
+                showAlert("Error", "Could not export PDF: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @FXML
+    private void handleShowQRCode() {
+        if (cours == null) {
+            showAlert("Error", "No course selected.");
+            return;
+        }
+
+        try {
+            String qrContent = String.format("AIVA-COURSE|%d|%s|%s|%s",
+                    cours.getId(),
+                    cours.getTittre(),
+                    cours.getCategorie(),
+                    cours.getNiveau()
+            );
+
+            BufferedImage qrImage = QRCodeGenerator.generateQRCodeImage(qrContent, 250, 250);
+            Image fxImage = SwingFXUtils.toFXImage(qrImage, null);
+
+            Stage dialog = new Stage();
+            dialog.initModality(Modality.APPLICATION_MODAL);
+            dialog.initStyle(StageStyle.UNDECORATED);
+
+            ImageView imageView = new ImageView(fxImage);
+            imageView.setFitWidth(250);
+            imageView.setFitHeight(250);
+            imageView.setPreserveRatio(true);
+
+            Label title = new Label(cours.getTittre());
+            title.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #ffffff;");
+
+            Label subtitle = new Label("Scan to access course");
+            subtitle.setStyle("-fx-font-size: 12px; -fx-text-fill: #94a3b8;");
+
+            Button btnSave = new Button("💾 Save");
+            btnSave.setStyle("-fx-background-color: #8b5cf6; -fx-text-fill: #ffffff; -fx-background-radius: 8; -fx-padding: 8 16; -fx-cursor: hand;");
+            btnSave.setOnAction(e -> {
+                FileChooser fc = new FileChooser();
+                fc.setTitle("Save QR Code");
+                fc.setInitialFileName("QR_" + cours.getTittre().replaceAll("[^a-zA-Z0-9]", "_") + ".png");
+                fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG", "*.png"));
+                File f = fc.showSaveDialog(dialog);
+                if (f != null) {
+                    try {
+                        ImageIO.write(qrImage, "PNG", f);
+                        showAlert("Success", "QR Code saved!");
+                    } catch (IOException ex) {
+                        showAlert("Error", "Could not save: " + ex.getMessage());
+                    }
+                }
+            });
+
+            Button btnClose = new Button("Close");
+            btnClose.setStyle("-fx-background-color: #1e2538; -fx-text-fill: #ffffff; -fx-background-radius: 8; -fx-padding: 8 16; -fx-cursor: hand;");
+            btnClose.setOnAction(e -> dialog.close());
+
+            HBox btns = new HBox(10, btnSave, btnClose);
+            btns.setAlignment(Pos.CENTER);
+
+            VBox root = new VBox(15, title, imageView, subtitle, btns);
+            root.setAlignment(Pos.CENTER);
+            root.setPadding(new Insets(30));
+            root.setStyle("-fx-background-color: #161b2e; -fx-border-radius: 12; -fx-background-radius: 12; -fx-border-color: #2a3142;");
+
+            StackPane overlay = new StackPane(root);
+            overlay.setStyle("-fx-background-color: rgba(0,0,0,0.7);");
+
+            Scene scene = new Scene(overlay, 400, 450);
+            scene.setFill(Color.TRANSPARENT);
+            dialog.setScene(scene);
+            dialog.show();
+
+        } catch (Exception e) {
+            showAlert("Error", "Could not generate QR: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
     private void openDialog(Chapitre ch) {
         Stage dialog = new Stage();
@@ -319,10 +482,10 @@ public class ChapitreController {
         dialog.initStyle(StageStyle.TRANSPARENT);
         dialog.setTitle(ch == null ? "New Chapter" : "Edit Chapter");
 
-        TextField fTitre    = styledField("Chapter title");
-        TextField fOrdre    = styledField("Order number (e.g. 1)");
-        TextArea  fContenu  = styledArea("Chapter content…");
-        TextArea  fExercise = styledArea("Exercise (optional)…");
+        TextField fTitre = styledField("Chapter title");
+        TextField fOrdre = styledField("Order number (e.g. 1)");
+        TextArea fContenu = styledArea("Chapter content…");
+        TextArea fExercise = styledArea("Exercise (optional)…");
 
         if (ch != null) {
             fTitre.setText(ch.getTitre());
@@ -336,8 +499,8 @@ public class ChapitreController {
 
         VBox form = new VBox(14,
                 fieldBlock("Chapter Title", fTitre),
-                fieldBlock("Order",         fOrdre),
-                fieldBlock("Content",       fContenu),
+                fieldBlock("Order", fOrdre),
+                fieldBlock("Content", fContenu),
                 fieldBlock("Exercise (optional)", fExercise),
                 errorLabel
         );
@@ -352,9 +515,9 @@ public class ChapitreController {
                 "-fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 10 24; -fx-cursor: hand;");
 
         btnSave.setOnAction(e -> {
-            if (fTitre.getText().isBlank())   { errorLabel.setText("Title is required.");   return; }
-            if (fContenu.getText().isBlank())  { errorLabel.setText("Content is required."); return; }
-            if (fOrdre.getText().isBlank())    { errorLabel.setText("Order is required.");   return; }
+            if (fTitre.getText().isBlank()) { errorLabel.setText("Title is required."); return; }
+            if (fContenu.getText().isBlank()) { errorLabel.setText("Content is required."); return; }
+            if (fOrdre.getText().isBlank()) { errorLabel.setText("Order is required."); return; }
             int ordre;
             try {
                 ordre = Integer.parseInt(fOrdre.getText().trim());
@@ -426,8 +589,6 @@ public class ChapitreController {
         dialog.setScene(scene);
         dialog.show();
     }
-
-    // ── Helpers ────────────────────────────────────────────────────────────────
 
     private TextField styledField(String prompt) {
         TextField f = new TextField();

@@ -10,7 +10,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/views/back/CoursBack.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/views/Main.fxml"));
 
         primaryStage.setTitle("AIVA Dashboard");
         primaryStage.setScene(new Scene(root, 1400, 900));

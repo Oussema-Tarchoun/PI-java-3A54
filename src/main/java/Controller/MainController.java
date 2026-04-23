@@ -46,21 +46,42 @@ public class MainController {
 
     @FXML
     public void openChapitre() {
-        // Chapitre needs special loading so we can call initWithoutCours() on its controller
         try {
+            System.out.println("Loading Chapitre.fxml..."); // Debug
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/Chapitre.fxml"));
+            if (loader.getLocation() == null) {
+                System.err.println("ERROR: Chapitre.fxml not found at /views/Chapitre.fxml");
+                showError("Chapitre.fxml not found in resources/views/");
+                return;
+            }
+
             Parent page = loader.load();
             ChapitreController controller = loader.getController();
-            controller.initWithoutCours(); // loads course selector instead of waiting for setCours()
+
+            if (controller == null) {
+                System.err.println("ERROR: ChapitreController is null");
+                showError("Could not initialize ChapitreController");
+                return;
+            }
+
+            controller.initWithoutCours();
 
             contentArea.getChildren().setAll(page);
             topbarTitle.setText("Chapitres");
             topbarSubtitle.setText("Parcourez les chapitres par cours");
             setActiveButton(btnChapitre);
 
+            System.out.println("Chapitre page loaded successfully"); // Debug
+
         } catch (IOException e) {
             e.printStackTrace();
-            System.err.println("Could not load: Chapitre.fxml");
+            System.err.println("Could not load: Chapitre.fxml - " + e.getMessage());
+            showError("Could not load Chapitre page: " + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Unexpected error loading Chapitre: " + e.getMessage());
+            showError("Unexpected error: " + e.getMessage());
         }
     }
 
@@ -91,6 +112,11 @@ public class MainController {
         if (activeButton != null) activeButton.getStyleClass().remove("nav-button-active");
         if (navBtn != null)       navBtn.getStyleClass().add("nav-button-active");
         activeButton = navBtn;
+    }
+
+    private void showError(String message) {
+        System.err.println("ERROR: " + message);
+        // You could also show a JavaFX alert here if you want
     }
 
     public void setUsername(String username) {
