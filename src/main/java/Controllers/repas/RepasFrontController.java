@@ -1,6 +1,7 @@
 package Controllers.repas;
 
 import Models.Repas;
+import Models.Aliment;
 import Models.AnalyseNutritionnelle;
 import Services.ServiceRepas;
 import Services.ServiceAliment;
@@ -59,6 +60,11 @@ public class RepasFrontController implements Initializable {
     // ── Card grid ─────────────────────────────────────────────────────────────
     @FXML private FlowPane cardsPane;
 
+
+    @FXML private ComboBox<Aliment> alimentCombo;
+    @FXML private VBox selectedAlimentsBox;
+    private List<Aliment> selectedAliments = new ArrayList<>();
+
     // ── Add form panel ────────────────────────────────────────────────────────
     @FXML private VBox      formPanel;
     @FXML private Label     formTitle;
@@ -94,12 +100,49 @@ public class RepasFrontController implements Initializable {
         if (typeCombo != null) {
             typeCombo.getItems().addAll("Petit-déjeuner", "Déjeuner", "Dîner", "Collation");
         }
+        // Charger aliments dans combo
+        try {
+            List<Aliment> aliments = serviceAliment.recuperer();
+            alimentCombo.getItems().addAll(aliments);
+            alimentCombo.setConverter(new javafx.util.StringConverter<>() {
+                public String toString(Aliment a) { return a == null ? "" : a.getNom() + " (" + (int)a.getCalories() + " kcal)"; }
+                public Aliment fromString(String s) { return null; }
+            });
+        } catch (Exception e) { System.out.println("aliments load error: " + e.getMessage()); }
 
         if (formPanel != null) formPanel.setVisible(false);
 
         loadData();
     }
 
+
+    @FXML
+    private void handleAddAliment() {
+        Aliment selected = alimentCombo.getValue();
+        if (selected == null) return;
+        if (selectedAliments.stream().anyMatch(a -> a.getId() == selected.getId())) return;
+
+        selectedAliments.add(selected);
+
+        HBox row = new HBox(8);
+        row.setAlignment(Pos.CENTER_LEFT);
+        row.setStyle("-fx-background-color: #1e293b; -fx-padding: 6 10; -fx-background-radius: 6;");
+
+        Label lbl = new Label("• " + selected.getNom() + " — " + (int)selected.getCalories() + " kcal");
+        lbl.setStyle("-fx-text-fill: #cbd5e1; -fx-font-size: 12px;");
+        HBox.setHgrow(lbl, Priority.ALWAYS);
+
+        Button remove = new Button("✕");
+        remove.setStyle("-fx-background-color: transparent; -fx-text-fill: #ef4444; -fx-cursor: hand;");
+        remove.setOnAction(e -> {
+            selectedAliments.remove(selected);
+            selectedAlimentsBox.getChildren().remove(row);
+        });
+
+        row.getChildren().addAll(lbl, remove);
+        selectedAlimentsBox.getChildren().add(row);
+        alimentCombo.setValue(null);
+    }
 
     @FXML
     private void handleAnalyseSemaine() {
@@ -356,6 +399,11 @@ public class RepasFrontController implements Initializable {
         HBox actions = new HBox(8);
         actions.setAlignment(Pos.CENTER_RIGHT);
 
+        Button btnView = new Button("👁 Voir");
+        btnView.setStyle("-fx-background-color: rgba(16,185,129,0.15); -fx-text-fill: #10b981; " +
+                "-fx-background-radius: 6; -fx-font-size: 12px; -fx-cursor: hand; -fx-padding: 6 12 6 12;");
+        btnView.setOnAction(e -> afficherDetailRepas(r));
+
         Button btnEdit = new Button("✎ Modifier");
         btnEdit.setStyle("-fx-background-color: rgba(0,212,255,0.15); -fx-text-fill: #00d4ff; " +
                 "-fx-background-radius: 6; -fx-font-size: 12px; -fx-cursor: hand; -fx-padding: 6 12 6 12;");
@@ -366,9 +414,8 @@ public class RepasFrontController implements Initializable {
                 "-fx-background-radius: 6; -fx-font-size: 12px; -fx-cursor: hand; -fx-padding: 6 12 6 12;");
         btnDel.setOnAction(e -> handleDelete(r));
 
-        actions.getChildren().addAll(btnEdit, btnDel);
+        actions.getChildren().addAll(btnView, btnEdit, btnDel);
         card.getChildren().add(actions);
-
         return card;
     }
 
@@ -386,6 +433,73 @@ public class RepasFrontController implements Initializable {
         }
         return "-fx-text-fill: " + color + "; -fx-background-color: " + color + "22; " +
                 "-fx-background-radius: 4; -fx-padding: 4 10 4 10; -fx-font-size: 11px; -fx-font-weight: bold;";
+    }
+
+
+    private void afficherDetailRepas(Repas r) {
+        Stage popup = new Stage();
+        popup.setTitle("Détails du repas");
+        popup.initModality(Modality.APPLICATION_MODAL);
+
+        VBox root = new VBox(14);
+        root.setStyle("-fx-background-color: #0a0e1a; -fx-padding: 24;");
+        root.setPrefWidth(480);
+
+        // Header
+        Label nom = new Label("🍽️ " + r.getNom());
+        nom.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 20px; -fx-font-weight: bold;");
+
+        HBox meta = new HBox(16);
+        meta.getChildren().addAll(
+                styledLabel("📅 " + (r.getDate() != null ? r.getDate() : "—"), "#94a3b8"),
+                styledLabel("🕐 " + (r.getHeure() != null ? r.getHeure().toString().substring(0,5) : "—"), "#94a3b8"),
+                styledLabel("🔥 " + r.getCalories() + " kcal", "#f97316"),
+                styledLabel(r.getType() != null ? r.getType() : "—", "#8b5cf6")
+        );
+
+        root.getChildren().addAll(nom, meta);
+
+        if (r.getDescription() != null && !r.getDescription().isBlank()) {
+            Label desc = new Label(r.getDescription());
+            desc.setWrapText(true);
+            desc.setStyle("-fx-text-fill: #64748b; -fx-font-size: 12px;");
+            root.getChildren().add(desc);
+        }
+
+        // Aliments liés
+        root.getChildren().add(sectionLbl("🥗 ALIMENTS LIÉS"));
+        try {
+            List<Integer> ids = serviceRepas.getLinkedAlimentIds(r.getId());
+            if (ids.isEmpty()) {
+                root.getChildren().add(styledLabel("Aucun aliment lié.", "#64748b"));
+            } else {
+                List<Aliment> aliments = serviceAliment.recuperer();
+                for (Aliment a : aliments) {
+                    if (ids.contains(a.getId())) {
+                        HBox row = new HBox(8);
+                        row.setStyle("-fx-background-color: #161b2e; -fx-padding: 8 12; -fx-background-radius: 6;");
+                        Label lbl = new Label("• " + a.getNom() + " — " + (int)a.getQuantite() + "g — " + (int)a.getCalories() + " kcal");
+                        lbl.setStyle("-fx-text-fill: #cbd5e1; -fx-font-size: 12px;");
+                        row.getChildren().add(lbl);
+                        root.getChildren().add(row);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            root.getChildren().add(styledLabel("Erreur chargement aliments.", "#ef4444"));
+        }
+
+        ScrollPane scroll = new ScrollPane(root);
+        scroll.setFitToWidth(true);
+        scroll.setStyle("-fx-background: #0a0e1a; -fx-background-color: #0a0e1a;");
+        popup.setScene(new Scene(scroll, 500, 500));
+        popup.show();
+    }
+
+    private Label styledLabel(String text, String color) {
+        Label l = new Label(text);
+        l.setStyle("-fx-text-fill: " + color + "; -fx-font-size: 12px;");
+        return l;
     }
 
     // ── Search & Filter ───────────────────────────────────────────────────────
@@ -473,7 +587,11 @@ public class RepasFrontController implements Initializable {
             if (editingRepas == null) {
                 Repas r = new Repas(USER_ID, nom, heure, calories, desc,
                         typeCombo.getValue(), Date.valueOf(datePicker.getValue()));
-                serviceRepas.ajouter(r);
+                try {
+                    serviceRepas.addWithAliments(r, selectedAliments);
+                } catch (Exception ex) {
+                    serviceRepas.ajouter(r);
+                }
             } else {
                 editingRepas.setNom(nom);
                 editingRepas.setType(typeCombo.getValue());
@@ -613,6 +731,8 @@ public class RepasFrontController implements Initializable {
         if (heureField     != null) heureField.clear();
         if (caloriesField  != null) caloriesField.clear();
         if (descriptionArea!= null) descriptionArea.clear();
+        selectedAliments.clear();
+        if (selectedAlimentsBox != null) selectedAlimentsBox.getChildren().clear();
     }
 
     private void showError(String msg) {
