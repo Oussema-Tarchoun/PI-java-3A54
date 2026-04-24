@@ -14,7 +14,7 @@ import java.util.List;
 
 public class GroqService {
 
-    private static final String API_KEY = "//////"; // même clé que Symfony ✅
+    private static final String API_KEY = "//"; // même clé que Symfony ✅
     private static final String API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
     private static final String MODEL_TEXT   = "llama-3.3-70b-versatile";

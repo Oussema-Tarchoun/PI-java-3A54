@@ -1,10 +1,15 @@
 package Controllers.repas;
 
 import Models.Repas;
+import Models.AnalyseNutritionnelle;
 import Services.ServiceRepas;
+import Services.ServiceAliment;
+import Services.AnalyseService;
+import Services.ServiceAnalyse;
 import Controllers.ChatBotFrontController;
 import Services.ChatRepasParser.ParsedMeal;
-import Services.ChatRepasParser.ParsedIngredient;
+import com.fasterxml.jackson.databind.JsonNode;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -16,11 +21,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import Services.GroqService;
-import Services.ChatRepasParser;
-import Services.ServiceAliment;
-import Models.Aliment;
-
 import java.net.URL;
 import java.sql.Date;
 import java.sql.SQLDataException;
@@ -28,6 +28,18 @@ import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
+
+import java.net.URL;
+import java.sql.Date;
+import java.sql.SQLDataException;
+import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
@@ -63,6 +75,7 @@ public class RepasFrontController implements Initializable {
     private Repas        editingRepas;
     private static final int USER_ID = 1;
     private ServiceAliment serviceAliment = new ServiceAliment();
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -87,6 +100,149 @@ public class RepasFrontController implements Initializable {
         loadData();
     }
 
+
+    @FXML
+    private void handleAnalyseSemaine() {
+        executor.submit(() -> {
+            try {
+                // 1. Récupérer repas des 7 derniers jours
+                ServiceAnalyse serviceAnalyse = new ServiceAnalyse();
+                List<Repas> repas7j = serviceAnalyse.getRepas7Jours(USER_ID);
+
+                if (repas7j.isEmpty()) {
+                    Platform.runLater(() -> {
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Analyse");
+                        alert.setHeaderText("Aucun repas trouvé");
+                        alert.setContentText("Vous n'avez aucun repas enregistré dans les 7 derniers jours.");
+                        alert.showAndWait();
+                    });
+                    return;
+                }
+
+                // 2. Appel Groq
+                AnalyseService analyseService = new AnalyseService();
+                JsonNode result = analyseService.analyserSemaine(repas7j);
+
+                // 3. Sauvegarder en BD
+                AnalyseNutritionnelle analyse = new AnalyseNutritionnelle();
+                analyse.setUserId(USER_ID);
+                analyse.setDateGeneration(new java.sql.Timestamp(System.currentTimeMillis()));
+                analyse.setPeriodeDebut(java.sql.Date.valueOf(java.time.LocalDate.now().minusDays(7)));
+                analyse.setPeriodeFin(java.sql.Date.valueOf(java.time.LocalDate.now()));
+                analyse.setScore(result.get("score").asInt());
+                analyse.setContenuJson(result.toString());
+                serviceAnalyse.sauvegarder(analyse);
+
+                // 4. Afficher le popup
+                Platform.runLater(() -> afficherPopupAnalyse(result));
+
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Erreur");
+                    alert.setHeaderText("Analyse impossible");
+                    alert.setContentText(e.getMessage());
+                    alert.showAndWait();
+                });
+            }
+        });
+    }
+
+    private void afficherPopupAnalyse(JsonNode data) {
+        Stage popup = new Stage();
+        popup.setTitle("Analyse de la semaine");
+        popup.initModality(Modality.APPLICATION_MODAL);
+
+        VBox root = new VBox(12);
+        root.setStyle("-fx-background-color: #0a0e1a; -fx-padding: 24;");
+        root.setPrefWidth(500);
+
+        // Score + résumé
+        int score = data.get("score").asInt();
+        String scoreColor = score >= 75 ? "#10b981" : score >= 50 ? "#f59e0b" : "#ef4444";
+
+        Label scoreLbl = new Label(score + "/100");
+        scoreLbl.setStyle("-fx-text-fill: " + scoreColor + "; -fx-font-size: 36px; -fx-font-weight: bold;");
+
+        Label resumeLbl = new Label(data.get("resume").asText());
+        resumeLbl.setStyle("-fx-text-fill: #cbd5e1; -fx-font-size: 14px;");
+        resumeLbl.setWrapText(true);
+
+        // Stats
+        JsonNode stats = data.get("stats");
+        HBox statsBox = new HBox(16);
+        statsBox.getChildren().addAll(
+                statCard(stats.get("total_repas").asText(), "Repas"),
+                statCard(stats.get("total_jours").asText(), "Jours"),
+                statCard(stats.get("kcal_moy_par_jour").asText() + " kcal", "kcal/jour moy.")
+        );
+
+        root.getChildren().addAll(scoreLbl, resumeLbl, statsBox);
+
+        // Points positifs
+        root.getChildren().add(sectionLbl("✅ POINTS POSITIFS"));
+        data.get("points_positifs").forEach(p ->
+                root.getChildren().add(bulletLbl(p.asText(), "#86efac")));
+
+        // À améliorer
+        root.getChildren().add(sectionLbl("⚠️ À AMÉLIORER"));
+        data.get("a_ameliorer").forEach(p ->
+                root.getChildren().add(bulletLbl(p.asText(), "#fbbf24")));
+
+        // Analyse par jour
+        root.getChildren().add(sectionLbl("📅 ANALYSE PAR JOUR"));
+        data.get("analyse_par_jour").forEach(j -> {
+            HBox row = new HBox(10);
+            Label date = new Label(j.get("date").asText());
+            date.setStyle("-fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-min-width: 110;");
+            Label comm = new Label(j.get("commentaire").asText());
+            comm.setWrapText(true);
+            comm.setStyle("-fx-text-fill: #cbd5e1; -fx-font-size: 12px;");
+            HBox.setHgrow(comm, Priority.ALWAYS);
+            row.getChildren().addAll(date, comm);
+            root.getChildren().add(row);
+        });
+
+        // Conseils
+        root.getChildren().add(sectionLbl("💡 CONSEILS PERSONNALISÉS"));
+        data.get("conseils").forEach(p ->
+                root.getChildren().add(bulletLbl(p.asText(), "#93c5fd")));
+
+        ScrollPane scroll = new ScrollPane(root);
+        scroll.setFitToWidth(true);
+        scroll.setStyle("-fx-background: #0a0e1a; -fx-background-color: #0a0e1a;");
+
+        popup.setScene(new Scene(scroll, 540, 620));
+        popup.show();
+    }
+
+    private VBox statCard(String val, String label) {
+        VBox box = new VBox(2);
+        box.setAlignment(Pos.CENTER);
+        box.setStyle("-fx-background-color: #161b2e; -fx-padding: 10 20; -fx-background-radius: 8;");
+        Label v = new Label(val);
+        v.setStyle("-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;");
+        Label l = new Label(label);
+        l.setStyle("-fx-text-fill: #64748b; -fx-font-size: 10px;");
+        box.getChildren().addAll(v, l);
+        return box;
+    }
+
+    private Label sectionLbl(String text) {
+        Label l = new Label(text);
+        l.setStyle("-fx-text-fill: #f1f5f9; -fx-font-size: 12px; -fx-font-weight: bold; -fx-padding: 8 0 2 0;");
+        return l;
+    }
+
+    private Label bulletLbl(String text, String color) {
+        Label l = new Label("• " + text);
+        l.setWrapText(true);
+        l.setMaxWidth(460);
+        l.setStyle("-fx-text-fill: " + color + "; -fx-font-size: 12px; " +
+                "-fx-background-color: #161b2e; -fx-padding: 8 12; -fx-background-radius: 6;");
+        return l;
+    }
     // ── Data ──────────────────────────────────────────────────────────────────
 
     private void loadData() {
@@ -472,5 +628,102 @@ public class RepasFrontController implements Initializable {
             errorLabel.setVisible(false);
             errorLabel.setManaged(false);
         }
+    }
+
+
+    @FXML
+    private void handleHistoriqueAnalyses() {
+        try {
+            ServiceAnalyse serviceAnalyse = new ServiceAnalyse();
+            List<AnalyseNutritionnelle> historique = serviceAnalyse.getHistorique(USER_ID);
+
+            Stage popup = new Stage();
+            popup.setTitle("Historique des analyses");
+            popup.initModality(Modality.APPLICATION_MODAL);
+
+            VBox root = new VBox(12);
+            root.setStyle("-fx-background-color: #0a0e1a; -fx-padding: 24;");
+            root.setPrefWidth(560);
+
+            Label title = new Label("🕓 Historique des analyses nutritionnelles");
+            title.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 16px; -fx-font-weight: bold;");
+            root.getChildren().add(title);
+
+            if (historique.isEmpty()) {
+                Label empty = new Label("Aucune analyse enregistrée.");
+                empty.setStyle("-fx-text-fill: #64748b; -fx-font-size: 13px;");
+                root.getChildren().add(empty);
+            } else {
+                for (AnalyseNutritionnelle a : historique) {
+                    root.getChildren().add(buildHistoriqueCard(a));
+                }
+            }
+
+            ScrollPane scroll = new ScrollPane(root);
+            scroll.setFitToWidth(true);
+            scroll.setStyle("-fx-background: #0a0e1a; -fx-background-color: #0a0e1a;");
+
+            popup.setScene(new Scene(scroll, 580, 600));
+            popup.show();
+
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erreur");
+            alert.setHeaderText("Impossible de charger l'historique");
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
+        }
+    }
+
+    private VBox buildHistoriqueCard(AnalyseNutritionnelle a) {
+        VBox card = new VBox(8);
+        card.setStyle("-fx-background-color: #161b2e; -fx-padding: 14; " +
+                "-fx-background-radius: 10; -fx-border-color: #2a3142; " +
+                "-fx-border-width: 1; -fx-border-radius: 10;");
+
+        // Header : date + score
+        HBox header = new HBox();
+        header.setAlignment(Pos.CENTER_LEFT);
+
+        Label dateLbl = new Label("📅 " + a.getDateGeneration().toLocalDateTime()
+                .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
+        dateLbl.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 12px;");
+        HBox.setHgrow(dateLbl, Priority.ALWAYS);
+
+        int score = a.getScore();
+        String scoreColor = score >= 75 ? "#10b981" : score >= 50 ? "#f59e0b" : "#ef4444";
+        Label scoreLbl = new Label(score + "/100");
+        scoreLbl.setStyle("-fx-text-fill: " + scoreColor + "; -fx-font-size: 18px; -fx-font-weight: bold;");
+
+        header.getChildren().addAll(dateLbl, scoreLbl);
+        card.getChildren().add(header);
+
+        // Période
+        Label periodeLbl = new Label("Période : " + a.getPeriodeDebut() + " → " + a.getPeriodeFin());
+        periodeLbl.setStyle("-fx-text-fill: #64748b; -fx-font-size: 11px;");
+        card.getChildren().add(periodeLbl);
+
+        // Résumé depuis JSON
+        try {
+            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            JsonNode json = mapper.readTree(a.getContenuJson());
+
+            Label resumeLbl = new Label(json.get("resume").asText());
+            resumeLbl.setStyle("-fx-text-fill: #cbd5e1; -fx-font-size: 12px;");
+            resumeLbl.setWrapText(true);
+            card.getChildren().add(resumeLbl);
+
+            // Bouton "Voir détails"
+            Button btnDetail = new Button("👁 Voir détails");
+            btnDetail.setStyle("-fx-background-color: #0f766e; -fx-text-fill: white; " +
+                    "-fx-background-radius: 6; -fx-font-size: 11px; -fx-cursor: hand; -fx-padding: 5 12;");
+            btnDetail.setOnAction(e -> afficherPopupAnalyse(json));
+            card.getChildren().add(btnDetail);
+
+        } catch (Exception e) {
+            System.out.println("JSON parse error: " + e.getMessage());
+        }
+
+        return card;
     }
 }

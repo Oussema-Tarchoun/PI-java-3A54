@@ -29,13 +29,24 @@
             </VBox>
             <Button text="🤖 Générer repas IA"
                     onAction="#handleChatbotGenerate"
-                    style="-fx-background-color: #8b5cf6; -fx-text-fill: white;" />
-
+                    style="-fx-background-color: #8b5cf6; -fx-text-fill: white;
+                   -fx-font-weight: bold; -fx-font-size: 13px;
+                   -fx-background-radius: 8; -fx-padding: 10 20 10 20; -fx-cursor: hand;"/>
+            <Button text="📊 Analyse semaine"
+                    onAction="#handleAnalyseSemaine"
+                    style="-fx-background-color: #0f766e; -fx-text-fill: white;
+                   -fx-font-weight: bold; -fx-font-size: 13px;
+                   -fx-background-radius: 8; -fx-padding: 10 20 10 20; -fx-cursor: hand;"/>
+            <Button text="🕓 Historique analyses"
+                    onAction="#handleHistoriqueAnalyses"
+                    style="-fx-background-color: #1e40af; -fx-text-fill: white;
+               -fx-font-weight: bold; -fx-font-size: 13px;
+               -fx-background-radius: 8; -fx-padding: 10 20 10 20; -fx-cursor: hand;"/>
             <Button text="➕ Nouveau Repas"
                     onAction="#openAddForm"
                     style="-fx-background-color: #00d4ff; -fx-text-fill: #0a0e1a;
-                           -fx-font-weight: bold; -fx-font-size: 13px;
-                           -fx-background-radius: 8; -fx-padding: 10 20 10 20; -fx-cursor: hand;"/>
+                   -fx-font-weight: bold; -fx-font-size: 13px;
+                   -fx-background-radius: 8; -fx-padding: 10 20 10 20; -fx-cursor: hand;"/>
         </HBox>
 
         <!-- ══════════════════════════════════════
