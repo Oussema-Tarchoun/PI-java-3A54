@@ -136,6 +136,17 @@
                                       prefRowCount="4" wrapText="true"/>
                         </VBox>
 
+                        <VBox spacing="6">
+                            <Label text="ALIMENTS" styleClass="form-label"/>
+                            <HBox spacing="8">
+                                <ComboBox fx:id="alimentCombo" promptText="Sélectionner un aliment..."
+                                          HBox.hgrow="ALWAYS" maxWidth="Infinity" styleClass="combo-box"/>
+                                <Button text="➕" onAction="#handleAddAliment"
+                                        styleClass="btn-primary" style="-fx-padding: 8 14;"/>
+                            </HBox>
+                            <VBox fx:id="selectedAlimentsBox" spacing="4"/>
+                        </VBox>
+
                         <Label fx:id="errorLabel" text=""
                                style="-fx-text-fill: #ff6b6b; -fx-font-size: 13px;"
                                wrapText="true" managed="false" visible="false"/>

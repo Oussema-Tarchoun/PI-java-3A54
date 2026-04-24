@@ -4,6 +4,9 @@ import Models.Aliment;
 import Models.Repas;
 import Services.ServiceAliment;
 import Services.ServiceRepas;
+import javafx.geometry.Pos;
+import javafx.scene.layout.Priority;
+import java.util.ArrayList;
 import javafx.animation.FadeTransition;
 import javafx.animation.ScaleTransition;
 import javafx.collections.FXCollections;
@@ -11,7 +14,6 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -65,6 +67,13 @@ public class RepasController implements Initializable {
     @FXML private ListView<Aliment> alimentsListView;
     @FXML private Label             errorLabelAliments;
 
+
+
+    @FXML private ComboBox<Aliment> alimentCombo;
+    @FXML private VBox selectedAlimentsBox;
+    private List<Aliment> selectedAliments = new ArrayList<>();
+
+
     /* ══════════════════════════════════════════════
        STATE — services initialized lazily in initialize()
     ══════════════════════════════════════════════ */
@@ -109,6 +118,17 @@ public class RepasController implements Initializable {
                     setText(empty || a == null ? null : a.getNom());
                 }
             });
+        }
+        // Charger combo aliments pour AddRepas
+        if (alimentCombo != null) {
+            try {
+                List<Aliment> aliments = serviceAliment.recuperer();
+                alimentCombo.getItems().addAll(aliments);
+                alimentCombo.setConverter(new javafx.util.StringConverter<>() {
+                    public String toString(Aliment a) { return a == null ? "" : a.getNom() + " (" + (int)a.getCalories() + " kcal)"; }
+                    public Aliment fromString(String s) { return null; }
+                });
+            } catch (Exception e) { System.out.println("combo error: " + e.getMessage()); }
         }
 
         hideError();
@@ -271,6 +291,32 @@ public class RepasController implements Initializable {
         });
     }
 
+
+
+    @FXML
+    private void handleAddAliment() {
+        Aliment selected = alimentCombo.getValue();
+        if (selected == null) return;
+        if (selectedAliments.stream().anyMatch(a -> a.getId() == selected.getId())) return;
+        selectedAliments.add(selected);
+
+        HBox row = new HBox(8);
+        row.setAlignment(Pos.CENTER_LEFT);
+        row.setStyle("-fx-background-color: #1e293b; -fx-padding: 6 10; -fx-background-radius: 6;");
+        Label lbl = new Label("• " + selected.getNom() + " — " + (int)selected.getCalories() + " kcal");
+        lbl.setStyle("-fx-text-fill: #cbd5e1; -fx-font-size: 12px;");
+        HBox.setHgrow(lbl, Priority.ALWAYS);
+        Button remove = new Button("✕");
+        remove.setStyle("-fx-background-color: transparent; -fx-text-fill: #ef4444; -fx-cursor: hand;");
+        remove.setOnAction(e -> {
+            selectedAliments.remove(selected);
+            selectedAlimentsBox.getChildren().remove(row);
+        });
+        row.getChildren().addAll(lbl, remove);
+        selectedAlimentsBox.getChildren().add(row);
+        alimentCombo.setValue(null);
+    }
+
     @FXML private void sortAscCalories() {
         if (repasTable != null)
             repasTable.getItems().sort((a, b) ->
@@ -334,12 +380,18 @@ public class RepasController implements Initializable {
         Repas repas = new Repas(CURRENT_USER_ID, nom.trim(), heure, calories,
                 descriptionArea.getText() != null ? descriptionArea.getText().trim() : "",
                 typeCombo.getValue(), Date.valueOf(datePicker.getValue()));
+
         try {
-            serviceRepas.ajouter(repas);
-            goBack();
-        } catch (SQLDataException e) {
-            showError("Erreur lors de la création : " + e.getMessage());
+            serviceRepas.addWithAliments(repas, selectedAliments);
+        } catch (Exception ex) {
+            try {
+                serviceRepas.ajouter(repas);
+            } catch (SQLDataException ex2) {
+                showError("Erreur : " + ex2.getMessage());
+                return;
+            }
         }
+        goBack();
     }
 
     /* ══════════════════════════════════════════════

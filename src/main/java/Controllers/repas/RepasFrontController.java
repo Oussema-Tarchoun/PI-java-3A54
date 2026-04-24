@@ -5,6 +5,7 @@ import Models.Aliment;
 import Models.AnalyseNutritionnelle;
 import Services.ServiceRepas;
 import Services.ServiceAliment;
+import Services.EmailService;
 import Services.AnalyseService;
 import Services.ServiceAnalyse;
 import Controllers.ChatBotFrontController;
@@ -522,6 +523,57 @@ public class RepasFrontController implements Initializable {
                 .collect(Collectors.toList());
 
         renderCards(filtered);
+    }
+
+
+    @FXML
+    private void handleEnvoyerRapport() {
+        executor.submit(() -> {
+            try {
+                ServiceAnalyse serviceAnalyse = new ServiceAnalyse();
+                List<Repas> repas7j = serviceAnalyse.getRepas7Jours(USER_ID);
+
+                if (repas7j.isEmpty()) {
+                    Platform.runLater(() -> {
+                        Alert a = new Alert(Alert.AlertType.INFORMATION);
+                        a.setTitle("Email");
+                        a.setHeaderText("Aucun repas");
+                        a.setContentText("Aucun repas dans les 7 derniers jours.");
+                        a.showAndWait();
+                    });
+                    return;
+                }
+
+                // Générer l'analyse
+                AnalyseService analyseService = new AnalyseService();
+                com.fasterxml.jackson.databind.JsonNode result = analyseService.analyserSemaine(repas7j);
+
+                // Envoyer le mail
+                EmailService emailService = new EmailService();
+                emailService.sendRapportNutrition(
+                        "mehdi@gmail.com", // ← remplace par le vrai email user
+                        "mehdi",           // ← remplace par le vrai nom user
+                        result
+                );
+
+                Platform.runLater(() -> {
+                    Alert a = new Alert(Alert.AlertType.INFORMATION);
+                    a.setTitle("Email envoyé");
+                    a.setHeaderText("✅ Rapport envoyé !");
+                    a.setContentText("Vérifiez votre boîte mail.");
+                    a.showAndWait();
+                });
+
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    Alert a = new Alert(Alert.AlertType.ERROR);
+                    a.setTitle("Erreur");
+                    a.setHeaderText("Envoi échoué");
+                    a.setContentText(e.getMessage());
+                    a.showAndWait();
+                });
+            }
+        });
     }
 
     // ── Form ─────────────────────────────────────────────────────────────────
