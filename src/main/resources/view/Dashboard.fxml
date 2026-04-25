@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<VBox alignment="TOP_CENTER" spacing="30" style="-fx-background-color: transparent; -fx-padding: 40;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+    <VBox spacing="10">
+        <Label text="Administration BackOffice" styleClass="page-title" style="-fx-font-size: 32px;"/>
+        <Label text="Gestion globale et optimisation énergétique." styleClass="card-subtitle" style="-fx-font-size: 16px;"/>
+    </VBox>
+
+    <HBox spacing="20" alignment="CENTER_LEFT">
+        <!-- Weather Widget -->
+        <fx:include source="WeatherWidget.fxml"/>
+        
+        <!-- Quick Stats placeholder -->
+        <VBox styleClass="glass-card" prefWidth="300" spacing="10">
+            <Label text="Statut Serveur" styleClass="card-title"/>
+            <Label text="Groq API: Connecté" style="-fx-text-fill: #34d399;"/>
+            <Label text="Database: En ligne" style="-fx-text-fill: #34d399;"/>
+        </VBox>
+    </HBox>
+</VBox>

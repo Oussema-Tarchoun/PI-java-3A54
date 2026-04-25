@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controllers.energie.EnergieFormController"
+      spacing="20" 
+      style="-fx-background-color: linear-gradient(to bottom right, #0d1a14, #132419, #1a2e23); -fx-padding: 25; -fx-border-color: rgba(52,211,153,0.3); -fx-border-width: 1; -fx-border-radius: 12; -fx-background-radius: 12;"
+      prefWidth="550">
+
+    <Label fx:id="formTitle" text="➕ Nouvelle Consommation" 
+           style="-fx-text-fill: #ffffff; -fx-font-size: 20px; -fx-font-weight: bold;"/>
+
+    <GridPane hgap="20" vgap="20">
+        <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="0">
+            <Label text="TYPE D'ÉNERGIE" style="-fx-text-fill: #94a3b8; -fx-font-size: 11px; -fx-font-weight: bold;"/>
+            <ComboBox fx:id="typeCombo" prefWidth="240" styleClass="combo-box"/>
+        </VBox>
+        
+        <VBox spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="0">
+            <Label text="SOURCE" style="-fx-text-fill: #94a3b8; -fx-font-size: 11px; -fx-font-weight: bold;"/>
+            <TextField fx:id="sourceField" prefWidth="240" styleClass="search-field" promptText="Ex: Compteur Principal"/>
+        </VBox>
+        
+        <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="1">
+            <Label text="VALEUR (KWH)" style="-fx-text-fill: #94a3b8; -fx-font-size: 11px; -fx-font-weight: bold;"/>
+            <TextField fx:id="valeurField" prefWidth="240" styleClass="search-field" promptText="0.0"/>
+        </VBox>
+        
+        <VBox spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <Label text="PÉRIODE (JOURS)" style="-fx-text-fill: #94a3b8; -fx-font-size: 11px; -fx-font-weight: bold;"/>
+            <TextField fx:id="periodeField" prefWidth="240" styleClass="search-field" promptText="30"/>
+        </VBox>
+        
+        <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="2">
+            <Label text="DATE D'ENREGISTREMENT" style="-fx-text-fill: #94a3b8; -fx-font-size: 11px; -fx-font-weight: bold;"/>
+            <DatePicker fx:id="datePicker" prefWidth="240"/>
+        </VBox>
+        
+        <VBox fx:id="userSection" spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="2">
+            <Label text="UTILISATEUR" style="-fx-text-fill: #94a3b8; -fx-font-size: 11px; -fx-font-weight: bold;"/>
+            <ComboBox fx:id="userCombo" prefWidth="240" styleClass="combo-box"/>
+        </VBox>
+    </GridPane>
+
+    <Label fx:id="errorLabel" text="" style="-fx-text-fill: #ef4444; -fx-font-size: 13px;" visible="false" managed="false"/>
+
+    <HBox spacing="12" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
+        <Button text="Annuler" onAction="#handleCancel" prefWidth="100" styleClass="btn-secondary"/>
+        <Button text="Enregistrer" onAction="#handleSave" prefWidth="120" styleClass="btn-primary"/>
+    </HBox>
+
+</VBox>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controllers.energie.FrontEnergieController"
+            fitToWidth="true"
+            style="-fx-background: transparent; -fx-background-color: transparent;">
+
+    <VBox spacing="20" style="-fx-padding: 10 0 30 0;">
+        
+        <!-- STAT CARDS -->
+        <HBox spacing="16">
+            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="6">
+                <Label text="TOTAL KWH" styleClass="stat-label"/>
+                <Label fx:id="statTotal" text="—" styleClass="stat-value"/>
+            </VBox>
+            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="6">
+                <Label text="MOYENNE" styleClass="stat-label"/>
+                <Label fx:id="statAverage" text="—" styleClass="stat-value"/>
+            </VBox>
+            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="6">
+                <Label text="PIC" styleClass="stat-label"/>
+                <HBox spacing="10" alignment="BASELINE_LEFT">
+                    <Label fx:id="statMax" text="—" styleClass="stat-value"/>
+                    <Label fx:id="statMaxType" text="" style="-fx-text-fill: #94a3b8; -fx-font-size: 12px;"/>
+                </HBox>
+            </VBox>
+        </HBox>
+
+        <!-- SEARCH & AI HEADER -->
+        <HBox spacing="12" alignment="CENTER_LEFT">
+            <TextField fx:id="searchField" promptText="Rechercher une consommation..." 
+                       onKeyReleased="#handleSearch" HBox.hgrow="ALWAYS"
+                       styleClass="search-field"/>
+            <Button text="✨ Analyse IA" onAction="#generateIA" styleClass="btn-primary"/>
+        </HBox>
+
+        <!-- AI RECOMMENDATION RESULT -->
+        <VBox fx:id="aiResultPanel" styleClass="card" spacing="12" visible="false" managed="false" style="-fx-border-color: #34d399; -fx-border-width: 1;">
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="🤖 Recommandation IA instantanée" style="-fx-text-fill: #34d399; -fx-font-weight: bold; -fx-font-size: 14px;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="✕" onAction="#closeAI" styleClass="btn-action-delete" style="-fx-min-width: 30;"/>
+            </HBox>
+            <TextArea fx:id="aiTextArea" editable="false" wrapText="true" prefHeight="150" styleClass="text-area"
+                      promptText="Analyse de votre consommation en cours..."/>
+        </VBox>
+
+        <!-- GRID OF CARDS -->
+        <FlowPane fx:id="cardsPane" hgap="16" vgap="16" style="-fx-padding: 5 0 0 0;"/>
+
+    </VBox>
+</ScrollPane>

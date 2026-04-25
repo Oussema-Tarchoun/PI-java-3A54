@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<VBox alignment="CENTER" spacing="20" style="-fx-background-color: #0a0e1a;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+    <Label text="Bienvenue sur AIVA" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #ffffff;"/>
+    <Label text="Consultez vos consommations et recommandations personnalisées." style="-fx-font-size: 16px; -fx-text-fill: #64748b;"/>
+</VBox>

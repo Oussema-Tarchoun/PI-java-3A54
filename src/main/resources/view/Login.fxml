@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<VBox alignment="CENTER" spacing="20" style="-fx-background-color: #0a0f0d; -fx-padding: 50;" 
+      xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      stylesheets="@/style.css" styleClass="main-window">
+    
+    <Label text="AIVA" styleClass="logo-name" style="-fx-font-size: 40px;"/>
+    <VBox spacing="10" maxWidth="300">
+        <Label text="Connexion" styleClass="page-title"/>
+        <TextField promptText="Email" styleClass="search-field"/>
+        <PasswordField promptText="Mot de passe" styleClass="search-field"/>
+        <Button text="Se connecter" styleClass="btn-primary" maxWidth="Infinity"/>
+    </VBox>
+</VBox>

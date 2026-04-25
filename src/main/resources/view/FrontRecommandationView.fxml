@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controllers.recommandation.FrontRecommandationController"
+            fitToWidth="true"
+            style="-fx-background: transparent; -fx-background-color: transparent;">
+
+    <VBox spacing="20" style="-fx-padding: 10 0 30 0;">
+
+        <!-- STAT CARDS -->
+        <HBox spacing="16">
+            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="6">
+                <Label text="TOTAL CONSEILS" styleClass="stat-label"/>
+                <Label fx:id="statTotal" text="—" styleClass="stat-value"/>
+            </VBox>
+            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="6">
+                <Label text="IMPACT ÉLEVÉ" styleClass="stat-label"/>
+                <Label fx:id="statHighImpact" text="—" styleClass="stat-value"/>
+            </VBox>
+            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="6">
+                <Label text="IMPACT FAIBLE" styleClass="stat-label"/>
+                <Label fx:id="statLowImpact" text="—" styleClass="stat-value"/>
+            </VBox>
+        </HBox>
+
+        <!-- SEARCH HEADER -->
+        <HBox spacing="12" alignment="CENTER_LEFT">
+            <TextField fx:id="searchField" promptText="Filtrer les recommandations..." 
+                       onKeyReleased="#handleSearch" HBox.hgrow="ALWAYS"
+                       styleClass="search-field"/>
+            <Button text="✨ Générer Recommandation IA" onAction="#generateIA"
+                    styleClass="btn-primary"/>
+        </HBox>
+
+        <!-- AI RESULT AREA -->
+        <VBox fx:id="aiSection" spacing="10" visible="false" managed="false" styleClass="glass-card">
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="🤖 Analyse IA Groq" style="-fx-font-weight: bold; -fx-text-fill: #34d399; -fx-font-size: 15px;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="Fermer" onAction="#closeAI" styleClass="btn-action-delete" style="-fx-min-width: 80;"/>
+            </HBox>
+            <TextArea fx:id="aiResultArea" editable="false" wrapText="true" prefHeight="200" 
+                      styleClass="text-area" promptText="L'IA analyse vos données..."/>
+        </VBox>
+
+        <!-- GRID OF CARDS -->
+        <FlowPane fx:id="cardsPane" hgap="20" vgap="20" style="-fx-padding: 5 0 0 0;"/>
+
+    </VBox>
+</ScrollPane>

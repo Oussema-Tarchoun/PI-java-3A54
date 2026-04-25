@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" 
+      fx:controller="Controllers.WeatherWidgetController"
+      styleClass="glass-card" spacing="15" prefWidth="400">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <HBox alignment="CENTER_LEFT" spacing="15">
+        <VBox alignment="CENTER" styleClass="stat-icon-cyan" minWidth="60" minHeight="60">
+            <Label fx:id="weatherIcon" text="☀️" styleClass="weather-icon-label"/>
+        </VBox>
+        <VBox spacing="2">
+            <Label fx:id="cityLabel" text="Tunis, TN" styleClass="card-title"/>
+            <Label fx:id="tempLabel" text="--°C" styleClass="stat-value" style="-fx-font-size: 24px;"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <VBox alignment="CENTER_RIGHT" spacing="2">
+            <Label fx:id="conditionLabel" text="Chargement..." styleClass="card-subtitle"/>
+            <Label fx:id="humidityLabel" text="Humidité: --%" styleClass="card-subtitle"/>
+        </VBox>
+    </HBox>
+
+    <Separator style="-fx-opacity: 0.1;"/>
+
+    <VBox spacing="8">
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="🤖 Conseil Énergétique IA" style="-fx-text-fill: #34d399; -fx-font-weight: bold;"/>
+            <ProgressIndicator fx:id="aiLoading" prefWidth="16" prefHeight="16" visible="false"/>
+        </HBox>
+        <Label fx:id="aiAdviceLabel" text="Analyse de la météo en cours..." 
+               wrapText="true" style="-fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-line-spacing: 4;"/>
+    </VBox>
+    
+    <HBox alignment="CENTER_RIGHT">
+        <Label fx:id="updateLabel" text="Mis à jour à --:--" style="-fx-font-size: 10px; -fx-text-fill: rgba(255,255,255,0.3);"/>
+    </HBox>
+</VBox>

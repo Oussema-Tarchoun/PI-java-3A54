@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controllers.MainController"
+            styleClass="main-window"
+            stylesheets="@/style.css"
+            prefWidth="1400" prefHeight="900">
+
+    <!-- ════════════════════════════════════════
+         SIDEBAR (Reusable)
+    ════════════════════════════════════════ -->
+    <left>
+        <VBox styleClass="sidebar" prefWidth="250" spacing="0">
+            <!-- Logo area -->
+            <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 0 0 20 0; -fx-border-color: rgba(255,255,255,0.08); -fx-border-width: 0 0 1 0;">
+                <ImageView fitWidth="38" fitHeight="38" preserveRatio="true">
+                    <Image url="@/images/img.png"/>
+                </ImageView>
+                <Label text="AIVA" styleClass="logo-name" style="-fx-font-size: 20px;"/>
+            </HBox>
+
+            <VBox spacing="2" style="-fx-padding: 15 0 0 0;" VBox.vgrow="ALWAYS">
+                <Label text="TABLEAU DE BORD" styleClass="nav-section-title"/>
+                <Button fx:id="btnDashboard" styleClass="nav-item" maxWidth="Infinity" onAction="#openDashboard">
+                    <graphic>
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Label text="⊞" styleClass="nav-icon-label"/>
+                            <Label text="Dashboard"/>
+                        </HBox>
+                    </graphic>
+                </Button>
+
+                <Label text="ÉNERGIE" styleClass="nav-section-title"/>
+                <Button fx:id="btnEnergie" styleClass="nav-item" maxWidth="Infinity" onAction="#openEnergie">
+                    <graphic>
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Label text="⚡" styleClass="nav-icon-label"/>
+                            <Label text="Consommation"/>
+                        </HBox>
+                    </graphic>
+                </Button>
+                <Button fx:id="btnRecommandations" styleClass="nav-item" maxWidth="Infinity" onAction="#openRecommandations">
+                    <graphic>
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Label text="💡" styleClass="nav-icon-label"/>
+                            <Label text="Conseils"/>
+                        </HBox>
+                    </graphic>
+                </Button>
+
+            </VBox>
+
+            <!-- Footer area -->
+            <VBox spacing="10" style="-fx-padding: 15 0 0 0; -fx-border-color: rgba(255,255,255,0.08); -fx-border-width: 1 0 0 0;">
+                <Button styleClass="nav-item" maxWidth="Infinity" onAction="#handleLogout">
+                    <graphic>
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Label text="⬅" styleClass="nav-icon-label"/>
+                            <Label text="Déconnexion"/>
+                        </HBox>
+                    </graphic>
+                </Button>
+                <Label fx:id="labelUser" text="● Utilisateur" styleClass="user-role" style="-fx-padding: 0 10;"/>
+            </VBox>
+        </VBox>
+    </left>
+
+    <!-- ════════════════════════════════════════
+         MAIN CONTENT AREA
+    ════════════════════════════════════════ -->
+    <center>
+        <VBox spacing="0" style="-fx-background-color: transparent;">
+            <!-- Topbar -->
+            <HBox styleClass="top-navbar" alignment="CENTER_LEFT" prefHeight="70">
+                <VBox spacing="2" HBox.hgrow="ALWAYS">
+                    <Label fx:id="topbarTitle" text="Dashboard" styleClass="page-title"/>
+                    <Label fx:id="topbarSubtitle" text="Bienvenue sur votre espace AIVA" styleClass="card-subtitle"/>
+                </VBox>
+                <HBox spacing="15" alignment="CENTER_RIGHT">
+                    <Label fx:id="topbarUser" text="Admin" styleClass="user-name"/>
+                    <StackPane styleClass="user-avatar">
+                        <Label text="A"/>
+                    </StackPane>
+                </HBox>
+            </HBox>
+
+            <!-- Dynamic Content Area -->
+            <StackPane fx:id="contentArea" VBox.vgrow="ALWAYS" style="-fx-padding: 20;"/>
+        </VBox>
+    </center>
+
+</BorderPane>
