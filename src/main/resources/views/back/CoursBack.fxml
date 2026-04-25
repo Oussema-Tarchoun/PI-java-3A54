@@ -103,14 +103,55 @@
         <VBox spacing="0" VBox.vgrow="ALWAYS">
 
             <!-- TOP NAVBAR -->
-            <HBox styleClass="top-navbar" alignment="CENTER_LEFT" spacing="16">
+            <HBox styleClass="top-navbar" alignment="CENTER_LEFT" spacing="12">
                 <Label text="□" style="-fx-text-fill: #34d399; -fx-font-size: 20px;"/>
                 <Label text="Gestion des Cours" styleClass="page-title"/>
                 <Region HBox.hgrow="ALWAYS"/>
+
+                <!-- Search -->
                 <TextField fx:id="searchField"
                            promptText="Rechercher un cours..."
                            styleClass="search-field"
                            onKeyReleased="#handleSearch"/>
+
+                <!-- Export All PDF -->
+                <Button text="📄 Export PDF"
+                        onAction="#handleExportAllPDF"
+                        style="-fx-background-color: rgba(14,165,233,0.15);
+                               -fx-border-color: rgba(14,165,233,0.30);
+                               -fx-border-radius: 8; -fx-background-radius: 8;
+                               -fx-border-width: 1; -fx-text-fill: #0ea5e9;
+                               -fx-font-size: 12px; -fx-padding: 8 14; -fx-cursor: hand;"/>
+
+                <!-- Notification Bell -->
+                <StackPane>
+                    <Button fx:id="btnNotifBell"
+                            text="🔔"
+                            onAction="#handleToggleNotifications"
+                            style="-fx-background-color: transparent;
+                                   -fx-text-fill: rgba(245,245,244,0.45);
+                                   -fx-background-radius: 10;
+                                   -fx-font-size: 18px;
+                                   -fx-padding: 6 10;
+                                   -fx-cursor: hand;"/>
+                    <Label fx:id="lblNotifBadge"
+                           text="0"
+                           visible="false"
+                           managed="false"
+                           style="-fx-background-color: #ff6b6b;
+                                  -fx-text-fill: white;
+                                  -fx-font-size: 9px;
+                                  -fx-font-weight: bold;
+                                  -fx-background-radius: 8;
+                                  -fx-padding: 1 4;
+                                  -fx-min-width: 16;
+                                  -fx-alignment: center;"
+                           StackPane.alignment="TOP_RIGHT"
+                           translateX="4"
+                           translateY="-2"/>
+                </StackPane>
+
+                <!-- Add Course -->
                 <Button text="+ Nouveau Cours"
                         styleClass="btn-primary"
                         onAction="#handleOpenAddDialog"/>
@@ -142,7 +183,7 @@
                                     <Label text="▲" style="-fx-text-fill: #d4a574; -fx-font-size: 18px;"/>
                                 </StackPane>
                             </HBox>
-                            <Label text="Beginner" styleClass="stat-label"/>
+                            <Label text="BEGINNER" styleClass="stat-label"/>
                             <Label fx:id="statDebutant" text="—" styleClass="stat-value"/>
                             <Label text="niveau débutant"
                                    style="-fx-text-fill: rgba(245,245,244,0.40); -fx-font-size: 11px;"/>
@@ -166,7 +207,7 @@
                                     <Label text="✦" style="-fx-text-fill: #0ea5e9; -fx-font-size: 18px;"/>
                                 </StackPane>
                             </HBox>
-                            <Label text="Advanced" styleClass="stat-label"/>
+                            <Label text="ADVANCED" styleClass="stat-label"/>
                             <Label fx:id="statAvance" text="—" styleClass="stat-value"/>
                             <Label text="niveau avancé"
                                    style="-fx-text-fill: rgba(245,245,244,0.40); -fx-font-size: 11px;"/>
@@ -199,13 +240,13 @@
                                    prefHeight="460">
                             <columns>
                                 <TableColumn fx:id="colId"           text="ID"          prefWidth="55"/>
-                                <TableColumn fx:id="colTitre"        text="TITRE"       prefWidth="190"/>
-                                <TableColumn fx:id="colCategorie"    text="CATÉGORIE"   prefWidth="120"/>
-                                <TableColumn fx:id="colNiveau"       text="NIVEAU"      prefWidth="110"/>
-                                <TableColumn fx:id="colDuree"        text="DURÉE (H)"   prefWidth="90"/>
+                                <TableColumn fx:id="colTitre"        text="TITRE"       prefWidth="180"/>
+                                <TableColumn fx:id="colCategorie"    text="CATÉGORIE"   prefWidth="110"/>
+                                <TableColumn fx:id="colNiveau"       text="NIVEAU"      prefWidth="100"/>
+                                <TableColumn fx:id="colDuree"        text="DURÉE (H)"   prefWidth="80"/>
                                 <TableColumn fx:id="colStatus"       text="STATUT"      prefWidth="100"/>
-                                <TableColumn fx:id="colDateCreation" text="DATE"        prefWidth="110"/>
-                                <TableColumn fx:id="colActions"      text="ACTIONS"     prefWidth="120"/>
+                                <TableColumn fx:id="colDateCreation" text="DATE"        prefWidth="100"/>
+                                <TableColumn fx:id="colActions"      text="ACTIONS"     prefWidth="140"/>
                             </columns>
                             <placeholder>
                                 <Label text="Aucun cours trouvé."

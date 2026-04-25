@@ -4,6 +4,7 @@ import Models.Cours;
 import Services.Iservice;
 import Services.ServiceCours;
 import utils.EmailService;
+import utils.NotificationService;
 import utils.OllamaService;
 import utils.PDFExporter;
 import utils.QRCodeGenerator;
@@ -12,7 +13,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -48,6 +48,10 @@ public class CoursController {
     @FXML private ComboBox<String> comboFilterNiveau;
     @FXML private ComboBox<String> comboFilterStatus;
     @FXML private Label            lblResultCount;
+
+    // ── Notification bell ──────────────────────────────────────────────────────
+    @FXML private Button btnNotifBell;
+    @FXML private Label  lblNotifBadge;
 
     // ── Stats labels ───────────────────────────────────────────────────────────
     @FXML private Label       lblTotalCours;
@@ -94,17 +98,22 @@ public class CoursController {
     @FXML private ScrollPane chatScrollPane;
 
     // ── Services ───────────────────────────────────────────────────────────────
-    private final Iservice<Cours> service;
-    private final OllamaService   ollamaService;
-    private final EmailService    emailService;
-    private ObservableList<Cours> allCours;
-    private Cours                 editingCours = null;
-    private boolean               chatOpen     = false;
+    private final Iservice<Cours>       service;
+    private final OllamaService         ollamaService;
+    private final EmailService          emailService;
+    private final NotificationService   notifService;
+    private ObservableList<Cours>       allCours;
+    private Cours                       editingCours = null;
+    private boolean                     chatOpen     = false;
+
+    // ── Notification popup stage (reused) ─────────────────────────────────────
+    private Stage notifPopup;
 
     public CoursController() {
-        this.service       = new ServiceCours();
+        this.service      = new ServiceCours();
         this.ollamaService = new OllamaService();
         this.emailService  = new EmailService();
+        this.notifService  = NotificationService.getInstance();
     }
 
     // ── Init ───────────────────────────────────────────────────────────────────
@@ -114,8 +123,219 @@ public class CoursController {
         initializeFilters();
         setupFilterListeners();
         styleLineChart();
+        bindNotificationBadge();
         loadData();
     }
+
+    /** Keep the badge count and bell colour in sync with the service. */
+    private void bindNotificationBadge() {
+        if (lblNotifBadge == null || btnNotifBell == null) return;
+
+        // Initial state
+        refreshBellStyle(notifService.getUnreadCount());
+
+        // React to every push/markRead/clear
+        notifService.unreadCountProperty().addListener((obs, oldVal, newVal) ->
+                Platform.runLater(() -> refreshBellStyle(newVal.intValue())));
+    }
+
+    private void refreshBellStyle(int count) {
+        if (lblNotifBadge == null || btnNotifBell == null) return;
+
+        if (count > 0) {
+            // Bell turns vivid yellow, badge is visible
+            btnNotifBell.setText("🔔");
+            btnNotifBell.setStyle(
+                    "-fx-background-color: rgba(245,158,11,0.18);" +
+                            "-fx-text-fill: #f59e0b;" +
+                            "-fx-background-radius: 10;" +
+                            "-fx-font-size: 20px;" +
+                            "-fx-padding: 8 12;" +
+                            "-fx-cursor: hand;" +
+                            "-fx-effect: dropshadow(gaussian, rgba(245,158,11,0.55), 14, 0, 0, 0);");
+            lblNotifBadge.setText(count > 99 ? "99+" : String.valueOf(count));
+            lblNotifBadge.setVisible(true);
+            lblNotifBadge.setManaged(true);
+        } else {
+            // Bell is grey / inactive
+            btnNotifBell.setText("🔔");
+            btnNotifBell.setStyle(
+                    "-fx-background-color: transparent;" +
+                            "-fx-text-fill: #64748b;" +
+                            "-fx-background-radius: 10;" +
+                            "-fx-font-size: 20px;" +
+                            "-fx-padding: 8 12;" +
+                            "-fx-cursor: hand;");
+            lblNotifBadge.setVisible(false);
+            lblNotifBadge.setManaged(false);
+        }
+    }
+
+    // ── Notification popup ────────────────────────────────────────────────────
+
+    @FXML
+    private void handleToggleNotifications() {
+        if (notifPopup != null && notifPopup.isShowing()) {
+            notifPopup.close();
+            notifPopup = null;
+            return;
+        }
+        notifService.markAllRead();          // mark all read when opened
+        showNotificationPopup();
+    }
+
+    private void showNotificationPopup() {
+        notifPopup = new Stage();
+        notifPopup.initModality(Modality.NONE);
+        notifPopup.initStyle(StageStyle.TRANSPARENT);
+        notifPopup.setAlwaysOnTop(true);
+
+        // ── Header ────────────────────────────────────────────────────────────
+        Label title = new Label("🔔  Notifications");
+        title.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ffffff;");
+
+        Button btnClear = new Button("Clear all");
+        btnClear.setStyle(
+                "-fx-background-color: transparent; -fx-text-fill: #ef4444;" +
+                        "-fx-font-size: 12px; -fx-cursor: hand;");
+        btnClear.setOnAction(e -> {
+            notifService.clearAll();
+            notifPopup.close();
+            notifPopup = null;
+        });
+
+        Button btnClose = new Button("✕");
+        btnClose.setStyle(
+                "-fx-background-color: transparent; -fx-text-fill: #64748b;" +
+                        "-fx-font-size: 14px; -fx-cursor: hand;");
+        btnClose.setOnAction(e -> { notifPopup.close(); notifPopup = null; });
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        HBox header = new HBox(10, title, spacer, btnClear, btnClose);
+        header.setAlignment(Pos.CENTER_LEFT);
+        header.setPadding(new Insets(16, 16, 10, 16));
+
+        Separator sep = new Separator();
+        sep.setStyle("-fx-background-color: #2a3142;");
+
+        // ── Notifications list ────────────────────────────────────────────────
+        VBox listBox = new VBox(0);
+        listBox.setStyle("-fx-background-color: #0f1424;");
+
+        ObservableList<NotificationService.AppNotification> notifs =
+                notifService.getNotifications();
+
+        if (notifs.isEmpty()) {
+            Label empty = new Label("No notifications yet.");
+            empty.setStyle("-fx-text-fill: #64748b; -fx-font-size: 13px; -fx-padding: 24 0;");
+            VBox emptyBox = new VBox(empty);
+            emptyBox.setAlignment(Pos.CENTER);
+            emptyBox.setPadding(new Insets(20));
+            listBox.getChildren().add(emptyBox);
+        } else {
+            for (NotificationService.AppNotification n : notifs) {
+                listBox.getChildren().add(buildNotifRow(n));
+            }
+        }
+
+        ScrollPane scrollPane = new ScrollPane(listBox);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
+        scrollPane.setPrefHeight(Math.min(notifs.size() * 80 + 20, 380));
+
+        // ── Root ──────────────────────────────────────────────────────────────
+        VBox root = new VBox(0, header, sep, scrollPane);
+        root.setPrefWidth(360);
+        root.setStyle(
+                "-fx-background-color: #161b2e;" +
+                        "-fx-background-radius: 14;" +
+                        "-fx-border-radius: 14;" +
+                        "-fx-border-color: #2a3142;" +
+                        "-fx-border-width: 1;" +
+                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.55), 24, 0, 0, 8);");
+
+        StackPane overlay = new StackPane(root);
+        overlay.setStyle("-fx-background-color: transparent;");
+        overlay.setAlignment(Pos.TOP_RIGHT);
+        overlay.setPadding(new Insets(0));
+
+        Scene scene = new Scene(overlay,
+                360,
+                Math.min(notifs.size() * 80 + 80, 460));
+        scene.setFill(Color.TRANSPARENT);
+        notifPopup.setScene(scene);
+
+        // Position below the bell button
+        if (btnNotifBell.getScene() != null && btnNotifBell.getScene().getWindow() != null) {
+            javafx.geometry.Bounds bounds =
+                    btnNotifBell.localToScreen(btnNotifBell.getBoundsInLocal());
+            if (bounds != null) {
+                notifPopup.setX(bounds.getMaxX() - 360);
+                notifPopup.setY(bounds.getMaxY() + 6);
+            }
+        }
+
+        notifPopup.show();
+    }
+
+    /** Build a single notification row card */
+    private VBox buildNotifRow(NotificationService.AppNotification n) {
+        // Icon
+        String icon;
+        String accentColor;
+        switch (n.getType()) {
+            case "course"  -> { icon = "📚"; accentColor = "#8b5cf6"; }
+            case "chapter" -> { icon = "📖"; accentColor = "#00d4ff"; }
+            default        -> { icon = "ℹ️";  accentColor = "#64748b"; }
+        }
+
+        Label iconLabel = new Label(icon);
+        iconLabel.setStyle("-fx-font-size: 20px;");
+        iconLabel.setMinWidth(36);
+        iconLabel.setAlignment(Pos.CENTER);
+
+        Label msgLabel = new Label(n.getMessage());
+        msgLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #e0e0e0;");
+        msgLabel.setWrapText(true);
+
+        Label timeLabel = new Label(n.getTime());
+        timeLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #64748b;");
+
+        VBox textCol = new VBox(4, msgLabel, timeLabel);
+        textCol.setAlignment(Pos.CENTER_LEFT);
+        HBox.setHgrow(textCol, Priority.ALWAYS);
+
+        // Coloured left accent bar
+        Region accent = new Region();
+        accent.setMinWidth(3);
+        accent.setMaxWidth(3);
+        accent.setStyle("-fx-background-color: " + accentColor + "; -fx-background-radius: 2;");
+
+        HBox row = new HBox(10, accent, iconLabel, textCol);
+        row.setAlignment(Pos.CENTER_LEFT);
+        row.setPadding(new Insets(12, 16, 12, 12));
+
+        Separator rowSep = new Separator();
+        rowSep.setStyle("-fx-background-color: #2a3142;");
+
+        VBox wrapper = new VBox(0, row, rowSep);
+        wrapper.setStyle("-fx-background-color: #161b2e;");
+
+        // Hover highlight
+        wrapper.setOnMouseEntered(e ->
+                wrapper.setStyle("-fx-background-color: #1e2538;"));
+        wrapper.setOnMouseExited(e ->
+                wrapper.setStyle("-fx-background-color: #161b2e;"));
+
+        return wrapper;
+    }
+
+    // ══════════════════════════════════════════════════════════════════════════
+    // Everything below is unchanged from your original file
+    // ══════════════════════════════════════════════════════════════════════════
 
     private void initializeFilters() {
         comboFilterCategorie.getItems().add("All Categories");
@@ -146,8 +366,6 @@ public class CoursController {
         }
     }
 
-    // ── Toggle stats ───────────────────────────────────────────────────────────
-
     @FXML
     private void handleToggleStats() {
         boolean visible = statsBody.isVisible();
@@ -163,8 +381,6 @@ public class CoursController {
         comboFilterNiveau.setValue("All Levels");
         comboFilterStatus.setValue("All Statuses");
     }
-
-    // ── Filters ────────────────────────────────────────────────────────────────
 
     private void applyFilters() {
         if (allCours == null) return;
@@ -188,8 +404,6 @@ public class CoursController {
         lblResultCount.setText(filtered.size() + " course" + (filtered.size() != 1 ? "s" : "") + " found");
     }
 
-    // ── Data ───────────────────────────────────────────────────────────────────
-
     private void loadData() {
         try {
             List<Cours> list = service.recuperer();
@@ -200,8 +414,6 @@ public class CoursController {
             showAlert("Error", "Could not load courses: " + e.getMessage());
         }
     }
-
-    // ── Stats ──────────────────────────────────────────────────────────────────
 
     private void updateStats(List<Cours> list) {
         int total = list.size();
@@ -318,7 +530,6 @@ public class CoursController {
     // CHAT PANEL
     // ══════════════════════════════════════════════════════════════════════════
 
-    /** Toggle chat panel open/close */
     @FXML
     private void handleToggleChat() {
         chatOpen = !chatOpen;
@@ -329,23 +540,19 @@ public class CoursController {
         }
     }
 
-    /** Send a chat message */
     @FXML
     private void handleSendChat() {
         String msg = chatInput.getText().trim();
         if (msg.isBlank()) return;
         chatInput.clear();
 
-        // Show user message
         addUserMessage(msg);
 
-        // Show typing indicator
         Label typing = new Label("⏳ En train de répondre...");
         typing.setStyle("-fx-text-fill: #64748b; -fx-font-size: 12px; -fx-padding: 4 0;");
         chatMessages.getChildren().add(typing);
         scrollChatToBottom();
 
-        // Call Ollama in background thread
         CompletableFuture.supplyAsync(() -> ollamaService.chat(msg, null))
                 .thenAcceptAsync(response -> {
                     chatMessages.getChildren().remove(typing);
@@ -354,7 +561,6 @@ public class CoursController {
                 }, Platform::runLater);
     }
 
-    /** Handle Enter key in chat input */
     @FXML
     private void handleChatKeyPress(javafx.scene.input.KeyEvent event) {
         if (event.getCode() == javafx.scene.input.KeyCode.ENTER) {
@@ -362,7 +568,6 @@ public class CoursController {
         }
     }
 
-    /** Clear chat history */
     @FXML
     private void handleClearChat() {
         chatMessages.getChildren().clear();
@@ -411,7 +616,6 @@ public class CoursController {
     // ══════════════════════════════════════════════════════════════════════════
 
     private void handleGenerateRoadmap(Cours cours) {
-        // Show loading dialog
         Stage loadingStage = new Stage();
         loadingStage.initModality(Modality.APPLICATION_MODAL);
         loadingStage.initStyle(StageStyle.TRANSPARENT);
@@ -437,7 +641,6 @@ public class CoursController {
         loadingStage.setScene(loadingScene);
         loadingStage.show();
 
-        // Generate roadmap in background
         CompletableFuture.supplyAsync(() ->
                         ollamaService.generateRoadmap(cours.getNiveau(), cours.getTittre()))
                 .thenAcceptAsync(roadmap -> {
@@ -451,7 +654,6 @@ public class CoursController {
         dialog.initModality(Modality.APPLICATION_MODAL);
         dialog.initStyle(StageStyle.TRANSPARENT);
 
-        // Header
         Label title = new Label("🗺 Roadmap — " + cours.getTittre());
         title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #ffffff;");
         title.setWrapText(true);
@@ -476,7 +678,6 @@ public class CoursController {
         Separator sep = new Separator();
         sep.setStyle("-fx-background-color: #2a3142;");
 
-        // Roadmap content
         TextArea roadmapArea = new TextArea(roadmap);
         roadmapArea.setEditable(false);
         roadmapArea.setWrapText(true);
@@ -486,11 +687,9 @@ public class CoursController {
                         "-fx-background-radius: 10; -fx-border-color: #2a3142;" +
                         "-fx-border-radius: 10; -fx-border-width: 1; -fx-font-size: 13px;");
 
-        // Email status label
         Label emailStatus = new Label("");
         emailStatus.setStyle("-fx-font-size: 12px; -fx-text-fill: #64748b;");
 
-        // Buttons
         Button btnEmail = new Button("📧 Envoyer par email");
         btnEmail.setStyle(
                 "-fx-background-color: #10b981; -fx-text-fill: #ffffff;" +
@@ -565,7 +764,6 @@ public class CoursController {
                         "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 16, 0, 0, 4);" +
                         "-fx-cursor: hand;");
 
-        // Title + status badge
         HBox topRow = new HBox(10);
         topRow.setAlignment(Pos.CENTER_LEFT);
         Label titleLabel = new Label(cours.getTittre());
@@ -575,7 +773,6 @@ public class CoursController {
         HBox.setHgrow(titleLabel, Priority.ALWAYS);
         topRow.getChildren().addAll(titleLabel, buildStatusBadge(cours.getStatus()));
 
-        // Meta chips
         HBox metaRow = new HBox(14);
         metaRow.setAlignment(Pos.CENTER_LEFT);
         metaRow.getChildren().addAll(
@@ -583,14 +780,12 @@ public class CoursController {
                 metaChip("📶 " + cours.getNiveau()),
                 metaChip("⏱ " + cours.getDureeEstimee() + "h"));
 
-        // Description
         Label descLabel = new Label(cours.getDescription() == null || cours.getDescription().isBlank()
                 ? "No description provided." : cours.getDescription());
         descLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #64748b;");
         descLabel.setWrapText(true);
         descLabel.setMaxHeight(40);
 
-        // Action buttons — including Roadmap
         HBox actions = new HBox(8);
         actions.setAlignment(Pos.CENTER_RIGHT);
 
@@ -767,7 +962,8 @@ public class CoursController {
         btnCancel.setStyle("-fx-background-color: #1e2538; -fx-text-fill: #ffffff; -fx-background-radius: 8; -fx-padding: 10 24; -fx-cursor: hand;");
         btnCancel.setOnAction(e -> dialog.close());
 
-        Button btnSave = new Button(cours == null ? "Add Course" : "Save Changes");
+        boolean isEdit = (cours != null);
+        Button btnSave = new Button(isEdit ? "Save Changes" : "Add Course");
         btnSave.setStyle("-fx-background-color: #00d4ff; -fx-text-fill: #0a0e1a; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 10 24; -fx-cursor: hand;");
         btnSave.setOnAction(e -> {
             if (fTitre.getText().isBlank())    { errorLabel.setText("Title is required.");    return; }
@@ -785,11 +981,15 @@ public class CoursController {
                     c.setDureeEstimee(duree); c.setStatus("actif");
                     c.setDateCreation(java.time.LocalDate.now().toString()); c.setUser_id(1);
                     service.ajouter(c);
+                    // ── Notification: course added ──────────────────────────
+                    notifService.pushCourse(fTitre.getText().trim(), "added");
                 } else {
                     editingCours.setTittre(fTitre.getText().trim()); editingCours.setDescription(fDescription.getText().trim());
                     editingCours.setNiveau(fNiveau.getValue()); editingCours.setCategorie(fCategorie.getValue());
                     editingCours.setDureeEstimee(duree);
                     service.modifier(editingCours);
+                    // ── Notification: course updated ────────────────────────
+                    notifService.pushCourse(fTitre.getText().trim(), "updated");
                 }
                 dialog.close(); loadData();
             } catch (SQLDataException ex) { errorLabel.setText("Database error: " + ex.getMessage()); }

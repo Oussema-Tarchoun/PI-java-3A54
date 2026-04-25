@@ -26,6 +26,29 @@
                     <Label text="LEARNING OVERVIEW" style="-fx-font-size: 11px; -fx-text-fill: #64748b;"/>
                 </VBox>
                 <Region HBox.hgrow="ALWAYS"/>
+
+                <!-- ── Notification Bell ──────────────────────────────────── -->
+                <StackPane>
+                    <!-- Bell button -->
+                    <Button fx:id="btnNotifBell"
+                            text="🔔"
+                            onAction="#handleToggleNotifications"
+                            style="-fx-background-color: transparent; -fx-text-fill: #64748b;
+                                   -fx-background-radius: 10; -fx-font-size: 20px;
+                                   -fx-padding: 8 12; -fx-cursor: hand;"/>
+                    <!-- Badge (red dot with count) — hidden when 0 -->
+                    <Label fx:id="lblNotifBadge"
+                           text="0"
+                           visible="false" managed="false"
+                           style="-fx-background-color: #ef4444; -fx-text-fill: #ffffff;
+                                  -fx-background-radius: 10; -fx-font-size: 9px;
+                                  -fx-font-weight: bold; -fx-padding: 2 5;
+                                  -fx-min-width: 18; -fx-min-height: 18;
+                                  -fx-alignment: CENTER;"
+                           StackPane.alignment="TOP_RIGHT"/>
+                </StackPane>
+                <!-- ── End Notification Bell ─────────────────────────────── -->
+
                 <HBox spacing="12" alignment="CENTER_RIGHT">
                     <Button text="Export All" onAction="#handleExportAllPDF"
                             style="-fx-background-color: #10b981; -fx-text-fill: #ffffff; -fx-font-weight: bold;
