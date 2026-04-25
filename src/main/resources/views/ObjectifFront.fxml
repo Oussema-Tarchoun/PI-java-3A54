@@ -3,6 +3,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.shape.*?>
+<?import javafx.scene.chart.*?>
 <?import javafx.geometry.*?>
 
 <VBox xmlns="http://javafx.com/javafx/17"
@@ -11,7 +12,9 @@
       spacing="24"
       style="-fx-background-color: transparent; -fx-padding: 0;">
 
-    <!-- ── STAT CARDS ──────────────────────────────────── -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- ║  STAT CARDS + ACTION BUTTONS                        ║ -->
+    <!-- ═══════════════════════════════════════════════════════ -->
     <HBox spacing="16" alignment="CENTER_LEFT">
         <VBox styleClass="user-stat-card" HBox.hgrow="ALWAYS">
             <HBox alignment="CENTER_LEFT" spacing="12">
@@ -46,14 +49,34 @@
                 </VBox>
             </HBox>
         </VBox>
-        <VBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
+        <VBox styleClass="user-stat-card" HBox.hgrow="ALWAYS">
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <StackPane styleClass="user-icon-box user-icon-purple">
+                    <Label text="📊" style="-fx-font-size:15px;"/>
+                </StackPane>
+                <VBox spacing="2">
+                    <Label text="Progression moy." styleClass="user-stat-label"/>
+                    <Label fx:id="statProgressionLabel" text="0%" styleClass="user-stat-value"/>
+                </VBox>
+            </HBox>
+        </VBox>
+        <VBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS" spacing="8">
+            <Button text="🔔 Notifications" onAction="#ouvrirNotifications"
+                    prefHeight="36"
+                    style="-fx-background-color:#1e2538; -fx-text-fill:#f59e0b;
+                           -fx-font-weight:bold; -fx-background-radius:8px;
+                           -fx-padding:8 16 8 16; -fx-cursor:hand; -fx-font-size:12px;
+                           -fx-border-color:#f59e0b; -fx-border-width:1px;
+                           -fx-border-radius:8px;"/>
             <Button text="＋  Nouvel objectif"
                     styleClass="user-btn-primary"
                     onAction="#ouvrirFormulaire"/>
         </VBox>
     </HBox>
 
-    <!-- ── ADD / EDIT FORM ─────────────────────────────── -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- ║  ADD / EDIT FORM                                     ║ -->
+    <!-- ═══════════════════════════════════════════════════════ -->
     <VBox fx:id="formPane" styleClass="user-form-card"
           spacing="16" visible="false" managed="false">
         <HBox alignment="CENTER_LEFT" spacing="10">
@@ -105,24 +128,135 @@
         </HBox>
     </VBox>
 
-    <!-- ── OBJECTIVE CARDS (populated by controller) ───── -->
-    <HBox alignment="CENTER_LEFT" spacing="12">
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- ║  SEARCH AND FILTER BAR                               ║ -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <HBox spacing="12" alignment="CENTER_LEFT">
         <Label text="Mes objectifs" styleClass="user-section-title" HBox.hgrow="ALWAYS"/>
+
+        <!-- 🔍 Champ de recherche -->
+        <TextField fx:id="searchField" promptText="🔍 Rechercher..."
+                   styleClass="search-field"
+                   prefWidth="200"
+                   style="-fx-background-color:#1e2538; -fx-text-fill:white; -fx-background-radius:20px; -fx-padding:8 16 8 16;
+                          -fx-border-color:#2a3142; -fx-border-radius:20px; -fx-border-width:1px;"/>
+
+        <!-- 🏷️ Filtre par statut -->
+        <ComboBox fx:id="filterStatusCombo" styleClass="filter-combo"
+                  prefWidth="130"
+                  style="-fx-background-color:#1e2538; -fx-text-fill:white; -fx-background-radius:8px;
+                         -fx-border-color:#2a3142; -fx-border-radius:8px; -fx-border-width:1px;
+                         -fx-padding:6 12 6 12;"/>
+
+        <!-- 📊 Tri -->
+        <ComboBox fx:id="sortCombo" styleClass="filter-combo"
+                  prefWidth="220"
+                  style="-fx-background-color:#1e2538; -fx-text-fill:white; -fx-background-radius:8px;
+                         -fx-border-color:#2a3142; -fx-border-radius:8px; -fx-border-width:1px;
+                         -fx-padding:6 12 6 12;"/>
+
         <Button text="↻ Actualiser" styleClass="user-btn-ghost" onAction="#charger"/>
     </HBox>
 
-    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
-                style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;">
-        <FlowPane fx:id="cardGrid"
-                  hgap="16" vgap="16"
-                  prefWrapLength="880"
-                  style="-fx-background-color: transparent; -fx-padding: 2 0 8 0;"/>
-    </ScrollPane>
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- ║  TABS: Objectifs / Statistiques                      ║ -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <TabPane styleClass="user-tab-pane" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
 
-    <Label fx:id="emptyLabel"
-           text="Aucun objectif enregistré. Cliquez sur « Nouvel objectif » pour commencer !"
-           styleClass="user-empty-label"
-           wrapText="true"
-           visible="false" managed="false"/>
+        <!-- ── TAB 1: MES OBJECTIFS ── -->
+        <Tab text="🎯  Mes objectifs">
+            <VBox spacing="12" style="-fx-padding: 16 0 0 0;">
+                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                            style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;">
+                    <FlowPane fx:id="cardGrid"
+                              hgap="16" vgap="16"
+                              prefWrapLength="880"
+                              style="-fx-background-color: transparent; -fx-padding: 2 0 8 0;"/>
+                </ScrollPane>
+
+                <Label fx:id="emptyLabel"
+                       text="Aucun objectif enregistré. Cliquez sur « Nouvel objectif » pour commencer !"
+                       styleClass="user-empty-label"
+                       wrapText="true"
+                       visible="false" managed="false"/>
+            </VBox>
+        </Tab>
+
+        <!-- ── TAB 2: STATISTIQUES ── -->
+        <Tab text="📊  Statistiques">
+            <VBox spacing="20" style="-fx-padding: 16 0 0 0;">
+
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <Label text="Statistiques &amp; Analyses" styleClass="user-section-title" HBox.hgrow="ALWAYS"/>
+                    <Button text="↻ Actualiser" styleClass="user-btn-ghost" onAction="#charger"/>
+                </HBox>
+
+                <HBox spacing="16">
+                    <VBox styleClass="user-stat-card" HBox.hgrow="ALWAYS" spacing="10">
+                        <Label text="Progression par objectif (% temps écoulé)" styleClass="user-chart-title"/>
+                        <LineChart fx:id="progressionLineChart" VBox.vgrow="ALWAYS" prefHeight="260"
+                                   style="-fx-background-color: transparent;">
+                            <xAxis><CategoryAxis label="Objectifs" side="BOTTOM"/></xAxis>
+                            <yAxis><NumberAxis label="Progression (%)" lowerBound="0" upperBound="100" tickUnit="20" side="LEFT"/></yAxis>
+                        </LineChart>
+                    </VBox>
+                    <VBox styleClass="user-stat-card" HBox.hgrow="ALWAYS" spacing="10">
+                        <Label text="Valeur cible par objectif" styleClass="user-chart-title"/>
+                        <LineChart fx:id="valeurCibleLineChart" VBox.vgrow="ALWAYS" prefHeight="260"
+                                   style="-fx-background-color: transparent;">
+                            <xAxis><CategoryAxis label="Objectifs" side="BOTTOM"/></xAxis>
+                            <yAxis><NumberAxis label="Valeur cible" side="LEFT"/></yAxis>
+                        </LineChart>
+                    </VBox>
+                </HBox>
+
+                <HBox spacing="16">
+                    <VBox styleClass="user-stat-card" HBox.hgrow="ALWAYS" spacing="10">
+                        <Label text="Durée des objectifs (jours)" styleClass="user-chart-title"/>
+                        <LineChart fx:id="dureeLineChart" VBox.vgrow="ALWAYS" prefHeight="240"
+                                   style="-fx-background-color: transparent;">
+                            <xAxis><CategoryAxis label="Objectifs" side="BOTTOM"/></xAxis>
+                            <yAxis><NumberAxis label="Jours" side="LEFT"/></yAxis>
+                        </LineChart>
+                    </VBox>
+                    <VBox styleClass="user-stat-card" HBox.hgrow="ALWAYS" spacing="10">
+                        <Label text="Objectifs créés par mois" styleClass="user-chart-title"/>
+                        <LineChart fx:id="parMoisLineChart" VBox.vgrow="ALWAYS" prefHeight="240"
+                                   style="-fx-background-color: transparent;">
+                            <xAxis><CategoryAxis label="Mois" side="BOTTOM"/></xAxis>
+                            <yAxis><NumberAxis label="Nombre" side="LEFT"/></yAxis>
+                        </LineChart>
+                    </VBox>
+                </HBox>
+
+                <HBox spacing="16">
+                    <VBox styleClass="user-stat-card" HBox.hgrow="ALWAYS" spacing="12">
+                        <Label text="Résumé analytique" styleClass="user-chart-title"/>
+                        <GridPane hgap="24" vgap="10">
+                            <columnConstraints>
+                                <ColumnConstraints percentWidth="33"/>
+                                <ColumnConstraints percentWidth="33"/>
+                                <ColumnConstraints percentWidth="34"/>
+                            </columnConstraints>
+                            <VBox GridPane.columnIndex="0" GridPane.rowIndex="0" spacing="4" styleClass="user-analytic-box">
+                                <Label text="Durée moy. (jours)" styleClass="user-stat-label"/>
+                                <Label fx:id="statDureeMoyLabel" text="—" styleClass="user-stat-value"/>
+                            </VBox>
+                            <VBox GridPane.columnIndex="1" GridPane.rowIndex="0" spacing="4" styleClass="user-analytic-box">
+                                <Label text="Taux de complétion" styleClass="user-stat-label"/>
+                                <Label fx:id="statTauxLabel" text="—" styleClass="user-stat-value"/>
+                            </VBox>
+                            <VBox GridPane.columnIndex="2" GridPane.rowIndex="0" spacing="4" styleClass="user-analytic-box">
+                                <Label text="Valeur cible moy." styleClass="user-stat-label"/>
+                                <Label fx:id="statValeurMoyLabel" text="—" styleClass="user-stat-value"/>
+                            </VBox>
+                        </GridPane>
+                    </VBox>
+                </HBox>
+
+            </VBox>
+        </Tab>
+
+    </TabPane>
 
 </VBox>

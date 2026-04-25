@@ -22,7 +22,7 @@ public class ServiceObjectif implements Iservice<Objectif> {
             ps.setDate(4, Date.valueOf(o.getDateDebut()));
             ps.setDate(5, Date.valueOf(o.getDateFin()));
             ps.setString(6, o.getStatut());
-            ps.setInt(7, o.getUserId());
+            ps.setInt(7, o.getUserId() > 0 ? o.getUserId() : 1); // ← default to user id=1
             ps.executeUpdate();
             System.out.println("✅ Objectif ajouté.");
         } catch (SQLException e) { System.err.println("❌ " + e.getMessage()); }

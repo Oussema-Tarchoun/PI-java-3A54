@@ -11,7 +11,9 @@
       spacing="24"
       style="-fx-background-color: transparent; -fx-padding: 0;">
 
-    <!-- ── STAT CARDS ──────────────────────────────────── -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- ║  STAT CARDS + ACTION BUTTONS                        ║ -->
+    <!-- ═══════════════════════════════════════════════════════ -->
     <HBox spacing="16" alignment="CENTER_LEFT">
         <VBox styleClass="user-stat-card" HBox.hgrow="ALWAYS">
             <HBox alignment="CENTER_LEFT" spacing="12">
@@ -46,14 +48,30 @@
                 </VBox>
             </HBox>
         </VBox>
-        <VBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
+        <VBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS" spacing="8">
             <Button text="＋  Ajouter une activité"
                     styleClass="user-btn-primary"
                     onAction="#ouvrirFormulaire"/>
         </VBox>
     </HBox>
 
-    <!-- ── ADD / EDIT FORM ─────────────────────────────── -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- ║  WEATHER WIDGET                                     ║ -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <VBox spacing="10" styleClass="user-stat-card">
+        <HBox alignment="CENTER_LEFT" spacing="10">
+            <Label text="🌤 Météo actuelle :" styleClass="user-stat-label"/>
+            <Label fx:id="weatherLabel" text="Chargement..." styleClass="user-stat-value"/>
+        </HBox>
+        <HBox alignment="CENTER_LEFT" spacing="10">
+            <Label text="📊 Recommandation :" styleClass="user-stat-label"/>
+            <Label fx:id="weatherAdviceLabel" text="..." />
+        </HBox>
+    </VBox>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- ║  ADD / EDIT FORM                                     ║ -->
+    <!-- ═══════════════════════════════════════════════════════ -->
     <VBox fx:id="formPane" styleClass="user-form-card"
           spacing="16" visible="false" managed="false">
         <HBox alignment="CENTER_LEFT" spacing="10">
@@ -106,12 +124,81 @@
         </HBox>
     </VBox>
 
-    <!-- ── CARD GRID (populated by controller) ─────────── -->
-    <HBox alignment="CENTER_LEFT" spacing="12">
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- ║  SEARCH AND FILTER BAR                               ║ -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <HBox spacing="12" alignment="CENTER_LEFT">
         <Label text="Mes activités" styleClass="user-section-title" HBox.hgrow="ALWAYS"/>
+
+        <!-- 🔍 Champ de recherche -->
+        <TextField fx:id="searchField" promptText="🔍 Rechercher..."
+                   styleClass="search-field"
+                   prefWidth="180"
+                   style="-fx-background-color:#1e2538; -fx-text-fill:white; -fx-background-radius:20px; -fx-padding:8 16 8 16;
+                          -fx-border-color:#2a3142; -fx-border-radius:20px; -fx-border-width:1px;"/>
+
+        <!-- 🏷️ Filtre par type -->
+        <ComboBox fx:id="filterTypeCombo" styleClass="filter-combo"
+                  prefWidth="120"
+                  style="-fx-background-color:#1e2538; -fx-text-fill:white; -fx-background-radius:8px;
+                         -fx-border-color:#2a3142; -fx-border-radius:8px; -fx-border-width:1px;
+                         -fx-padding:6 12 6 12;"/>
+
+        <!-- 🏷️ Filtre par intensité -->
+        <ComboBox fx:id="filterIntensiteCombo" styleClass="filter-combo"
+                  prefWidth="120"
+                  style="-fx-background-color:#1e2538; -fx-text-fill:white; -fx-background-radius:8px;
+                         -fx-border-color:#2a3142; -fx-border-radius:8px; -fx-border-width:1px;
+                         -fx-padding:6 12 6 12;"/>
+
+        <!-- 📅 Filtre par période -->
+        <DatePicker fx:id="startDatePicker" promptText="Début"
+                    styleClass="filter-date"
+                    prefWidth="120"
+                    style="-fx-background-color:#1e2538; -fx-text-fill:white; -fx-background-radius:8px;
+                           -fx-border-color:#2a3142; -fx-border-radius:8px; -fx-border-width:1px;"/>
+        <Label text="→" style="-fx-text-fill:#94a3b8; -fx-font-size:14px;"/>
+        <DatePicker fx:id="endDatePicker" promptText="Fin"
+                    styleClass="filter-date"
+                    prefWidth="120"
+                    style="-fx-background-color:#1e2538; -fx-text-fill:white; -fx-background-radius:8px;
+                           -fx-border-color:#2a3142; -fx-border-radius:8px; -fx-border-width:1px;"/>
+
+        <!-- 📊 Tri -->
+        <ComboBox fx:id="sortCombo" styleClass="filter-combo"
+                  prefWidth="170"
+                  style="-fx-background-color:#1e2538; -fx-text-fill:white; -fx-background-radius:8px;
+                         -fx-border-color:#2a3142; -fx-border-radius:8px; -fx-border-width:1px;
+                         -fx-padding:6 12 6 12;"/>
+
+        <Button text="🏋️ Coach IA" onAction="#genererCoaching"
+                prefHeight="40"
+                style="-fx-background-color:#1e2538; -fx-text-fill:#a855f7;
+                       -fx-font-weight:bold; -fx-background-radius:10px;
+                       -fx-padding:10 20 10 20; -fx-cursor:hand; -fx-font-size:13px;
+                       -fx-border-color:#a855f7; -fx-border-width:1px;
+                       -fx-border-radius:10px;"/>
+        <Button text="📧 Rapport Email" onAction="#envoyerRapportMail"
+                prefHeight="40"
+                style="-fx-background-color:#1e2538; -fx-text-fill:#22c55e;
+                       -fx-font-weight:bold; -fx-background-radius:10px;
+                       -fx-padding:10 20 10 20; -fx-cursor:hand; -fx-font-size:13px;
+                       -fx-border-color:#22c55e; -fx-border-width:1px;
+                       -fx-border-radius:10px;"/>
+        <Button text="⬇ Exporter PDF" onAction="#exporterPDF"
+                prefHeight="40"
+                style="-fx-background-color:rgba(239,68,68,0.15);
+                       -fx-text-fill:#ef4444;
+                       -fx-font-weight:bold; -fx-background-radius:10px;
+                       -fx-padding:10 20 10 20; -fx-cursor:hand; -fx-font-size:13px;
+                       -fx-border-color:rgba(239,68,68,0.3);
+                       -fx-border-radius:10px; -fx-border-width:1px;"/>
         <Button text="↻ Actualiser" styleClass="user-btn-ghost" onAction="#charger"/>
     </HBox>
 
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- ║  CARD GRID                                          ║ -->
+    <!-- ═══════════════════════════════════════════════════════ -->
     <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
                 style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;">
         <FlowPane fx:id="cardGrid"
@@ -120,7 +207,7 @@
                   style="-fx-background-color: transparent; -fx-padding: 2 0 8 0;"/>
     </ScrollPane>
 
-    <!-- Empty state label shown when no cards -->
+    <!-- Empty state -->
     <Label fx:id="emptyLabel"
            text="Aucune activité enregistrée. Cliquez sur « Ajouter » pour commencer !"
            styleClass="user-empty-label"
