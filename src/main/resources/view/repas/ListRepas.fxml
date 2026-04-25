@@ -284,6 +284,7 @@
                                 <TableColumn fx:id="colCalories" text="CALORIES" prefWidth="115"/>
                                 <TableColumn fx:id="colScore"    text="SCORE"    prefWidth="100"/>
                                 <TableColumn fx:id="colActions"  text="ACTIONS"  prefWidth="110"/>
+                                <TableColumn fx:id="colPdf" text="PDF" prefWidth="70"/>
                             </columns>
                             <placeholder>
                                 <Label text="Aucun repas trouvé."

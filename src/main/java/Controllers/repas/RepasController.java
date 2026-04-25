@@ -6,6 +6,8 @@ import Services.ServiceAliment;
 import Services.ServiceRepas;
 import javafx.geometry.Pos;
 import javafx.scene.layout.Priority;
+import Services.PdfService;
+import java.util.stream.Collectors;
 import java.util.ArrayList;
 import javafx.animation.FadeTransition;
 import javafx.animation.ScaleTransition;
@@ -48,6 +50,9 @@ public class RepasController implements Initializable {
     @FXML private Label     statScore;
     @FXML private Label     repasCountLabel;
     @FXML private TextField searchField;
+
+
+    @FXML private TableColumn<Repas, Void> colPdf;
 
     /* ══════════════════════════════════════════════
        ADD / DETAIL VIEW
@@ -235,6 +240,50 @@ public class RepasController implements Initializable {
                 setGraphic(empty ? null : box);
             }
         });
+
+        colPdf.setCellFactory(col -> new TableCell<>() {
+            private final Button btnPdf = new Button("📄");
+            {
+                btnPdf.setTooltip(new Tooltip("Exporter PDF"));
+                btnPdf.getStyleClass().add("btn-action-edit");
+                btnPdf.setOnAction(e -> {
+                    Repas r = getTableView().getItems().get(getIndex());
+                    exportPdf(r);
+                });
+            }
+            @Override protected void updateItem(Void v, boolean empty) {
+                super.updateItem(v, empty);
+                setGraphic(empty ? null : btnPdf);
+            }
+        });
+    }
+
+    private void exportPdf(Repas r) {
+        try {
+            List<Integer> ids = serviceRepas.getLinkedAlimentIds(r.getId());
+            List<Aliment> all = serviceAliment.recuperer();
+            List<Aliment> linked = all.stream()
+                    .filter(a -> ids.contains(a.getId()))
+                    .collect(java.util.stream.Collectors.toList());
+
+            String path = System.getProperty("user.home") + "/Desktop/repas_" + r.getId() + "_" + r.getNom().replaceAll("\\s+", "_") + ".pdf";
+
+            PdfService pdfService = new PdfService();
+            pdfService.exportRepasPdf(r, linked, path);
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("PDF exporté");
+            alert.setHeaderText("✅ PDF généré avec succès !");
+            alert.setContentText("Fichier sauvegardé sur le Bureau :\n" + path);
+            alert.showAndWait();
+
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erreur");
+            alert.setHeaderText("Export PDF échoué");
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
+        }
     }
 
     private void loadData() {

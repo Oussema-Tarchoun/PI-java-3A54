@@ -79,6 +79,9 @@ public class ServiceAliment implements Iservice<Aliment> {
         return list;
     }
 
+
+
+
     // ───────── NEW METHOD (CHATBOT) ─────────
 
     public Aliment findByNameOrCreate(String name, int calories, String quantity) {
