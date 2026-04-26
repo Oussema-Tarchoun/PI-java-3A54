@@ -145,6 +145,147 @@ public class RepasFrontController implements Initializable {
         alimentCombo.setValue(null);
     }
 
+
+    @FXML
+    private void handleRepasIdealDemain() {
+        executor.submit(() -> {
+            try {
+                // 1. Récupérer repas d'aujourd'hui
+                List<Repas> tousLesRepas = serviceRepas.recuperer();
+                LocalDate today = LocalDate.now();
+                List<Repas> repasAujourdhui = tousLesRepas.stream()
+                        .filter(r -> r.getDate() != null && r.getDate().toLocalDate().equals(today))
+                        .collect(Collectors.toList());
+
+                // 2. Calculer ce qui manque
+                int totalCalAujourdhui = repasAujourdhui.stream().mapToInt(Repas::getCalories).sum();
+                int caloriesManquantes = Math.max(0, 2000 - totalCalAujourdhui);
+
+                StringBuilder repasInfo = new StringBuilder();
+                repasInfo.append("Repas d'aujourd'hui (").append(today).append("):\n");
+                if (repasAujourdhui.isEmpty()) {
+                    repasInfo.append("Aucun repas aujourd'hui.\n");
+                } else {
+                    repasAujourdhui.forEach(r -> repasInfo.append("- ").append(r.getNom())
+                            .append(" (").append(r.getCalories()).append(" kcal, ").append(r.getType()).append(")\n"));
+                }
+                repasInfo.append("Total calories aujourd'hui: ").append(totalCalAujourdhui).append(" kcal\n");
+                repasInfo.append("Calories manquantes pour atteindre 2000 kcal: ").append(caloriesManquantes).append(" kcal\n");
+
+                // 3. Appel Groq
+                String prompt = "Tu es un nutritionniste. Voici les repas d'aujourd'hui d'un utilisateur:\n\n"
+                        + repasInfo
+                        + "\nPropose UN repas idéal pour demain matin qui complète ce qui manque "
+                        + "(protéines, glucides, légumes). Réponds en français avec ce format EXACT:\n\n"
+                        + "**NOM_DU_PLAT** | TOTAL kcal\n"
+                        + "• INGREDIENT — QUANTITE g (CALORIES kcal)\n"
+                        + "💡 NOTE: conseil nutritionnel\n"
+                        + "RECETTE:\n1. étape\n2. étape";
+
+                Services.GroqService groq = new Services.GroqService();
+                String response = groq.chat(prompt);
+
+                // 4. Parser + afficher
+                Services.ChatRepasParser.ParsedMeal meal = Services.ChatRepasParser.parse(response);
+
+                Platform.runLater(() -> afficherPopupRepasIdeal(meal, response, totalCalAujourdhui, caloriesManquantes));
+
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Erreur");
+                    alert.setHeaderText("Impossible de générer le repas");
+                    alert.setContentText(e.getMessage());
+                    alert.showAndWait();
+                });
+            }
+        });
+    }
+
+    private void afficherPopupRepasIdeal(Services.ChatRepasParser.ParsedMeal meal, String rawResponse,
+                                         int calAujourdhui, int calManquantes) {
+        Stage popup = new Stage();
+        popup.setTitle("🍽️ Repas idéal pour demain");
+        popup.initModality(Modality.APPLICATION_MODAL);
+
+        VBox root = new VBox(14);
+        root.setStyle("-fx-background-color: #0a0e1a; -fx-padding: 24;");
+        root.setPrefWidth(500);
+
+        // Header
+        Label title = new Label("🍽️ Repas idéal pour demain");
+        title.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 18px; -fx-font-weight: bold;");
+
+        // Stats aujourd'hui
+        HBox statsBox = new HBox(12);
+        statsBox.getChildren().addAll(
+                statCard(calAujourdhui + " kcal", "Aujourd'hui"),
+                statCard(calManquantes + " kcal", "Manquantes"),
+                statCard("2000 kcal", "Objectif")
+        );
+
+        root.getChildren().addAll(title, statsBox);
+
+        // Barre de progression
+        double progress = Math.min(1.0, calAujourdhui / 2000.0);
+        String progressColor = progress >= 0.8 ? "#10b981" : progress >= 0.5 ? "#f59e0b" : "#ef4444";
+        Label progressLbl = new Label("Progression journalière : " + (int)(progress * 100) + "%");
+        progressLbl.setStyle("-fx-text-fill: " + progressColor + "; -fx-font-size: 12px; -fx-font-weight: bold;");
+        root.getChildren().add(progressLbl);
+
+        root.getChildren().add(sectionLbl("💡 PROPOSITION POUR DEMAIN MATIN"));
+
+        if (meal != null && meal.isValid()) {
+            // Nom + calories
+            Label nomLbl = new Label("🍳 " + meal.name + "  —  🔥 " + meal.totalCalories + " kcal");
+            nomLbl.setStyle("-fx-text-fill: #f97316; -fx-font-size: 15px; -fx-font-weight: bold;");
+            nomLbl.setWrapText(true);
+            root.getChildren().add(nomLbl);
+
+            // Ingrédients
+            root.getChildren().add(sectionLbl("🥗 INGRÉDIENTS"));
+            meal.ingredients.forEach(ing -> {
+                HBox row = new HBox(8);
+                row.setStyle("-fx-background-color: #161b2e; -fx-padding: 8 12; -fx-background-radius: 6;");
+                Label lbl = new Label("• " + ing.name + " — " + ing.quantity + " (" + ing.calories + " kcal)");
+                lbl.setStyle("-fx-text-fill: #cbd5e1; -fx-font-size: 12px;");
+                row.getChildren().add(lbl);
+                root.getChildren().add(row);
+            });
+
+            // Note
+            if (meal.note != null && !meal.note.isEmpty()) {
+                Label noteLbl = new Label("💡 " + meal.note);
+                noteLbl.setWrapText(true);
+                noteLbl.setStyle("-fx-text-fill: #64748b; -fx-font-size: 11px; -fx-font-style: italic;");
+                root.getChildren().add(noteLbl);
+            }
+
+            // Étapes
+            if (!meal.steps.isEmpty()) {
+                root.getChildren().add(sectionLbl("📋 RECETTE"));
+                for (int i = 0; i < meal.steps.size(); i++) {
+                    Label step = new Label((i + 1) + ". " + meal.steps.get(i));
+                    step.setWrapText(true);
+                    step.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 12px;");
+                    root.getChildren().add(step);
+                }
+            }
+        } else {
+            // Fallback texte brut
+            Label raw = new Label(rawResponse.replaceAll("\\*+", "").trim());
+            raw.setWrapText(true);
+            raw.setStyle("-fx-text-fill: #cbd5e1; -fx-font-size: 12px;");
+            root.getChildren().add(raw);
+        }
+
+        ScrollPane scroll = new ScrollPane(root);
+        scroll.setFitToWidth(true);
+        scroll.setStyle("-fx-background: #0a0e1a; -fx-background-color: #0a0e1a;");
+        popup.setScene(new Scene(scroll, 540, 600));
+        popup.show();
+    }
+
     @FXML
     private void handleAnalyseSemaine() {
         executor.submit(() -> {
@@ -717,19 +858,13 @@ public class RepasFrontController implements Initializable {
      */
     private void addRepasFromChatbot(ParsedMeal meal) {
         try {
-            // Use current PC time and today's date automatically
             LocalTime now = LocalTime.now();
             Time currentTime = Time.valueOf(now.withSecond(0).withNano(0));
             Date today = Date.valueOf(LocalDate.now());
-
-            // Determine type based on current hour
             String type = guessTypeFromHour(now.getHour());
 
-            // Build description from ingredients
             StringBuilder desc = new StringBuilder();
-            if (meal.note != null && !meal.note.isEmpty()) {
-                desc.append(meal.note);
-            }
+            if (meal.note != null && !meal.note.isEmpty()) desc.append(meal.note);
             if (!meal.ingredients.isEmpty()) {
                 if (desc.length() > 0) desc.append(" | ");
                 desc.append("Ingrédients: ");
@@ -738,18 +873,24 @@ public class RepasFrontController implements Initializable {
                         .collect(Collectors.joining(", ")));
             }
 
-            Repas repas = new Repas(
-                    USER_ID,
-                    meal.name,
-                    currentTime,
-                    meal.totalCalories,
-                    desc.toString(),
-                    type,
-                    today
-            );
+            Repas repas = new Repas(USER_ID, meal.name, currentTime, meal.totalCalories,
+                    desc.toString(), type, today);
 
-            serviceRepas.ajouter(repas);
-            loadData(); // Refresh the cards
+            // Créer/trouver les aliments
+            List<Aliment> aliments = new ArrayList<>();
+            for (Services.ChatRepasParser.ParsedIngredient ing : meal.ingredients) {
+                Aliment a = serviceAliment.findByNameOrCreate(ing.name, ing.calories, ing.quantity);
+                if (a != null) aliments.add(a);
+            }
+
+            // Sauvegarder repas + lier aliments
+            try {
+                serviceRepas.addWithAliments(repas, aliments);
+            } catch (Exception ex) {
+                serviceRepas.ajouter(repas);
+            }
+
+            loadData();
 
         } catch (Exception e) {
             System.out.println("addRepasFromChatbot error: " + e.getMessage());

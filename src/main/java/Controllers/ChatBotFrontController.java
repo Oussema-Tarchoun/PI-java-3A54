@@ -335,45 +335,19 @@ public class ChatBotFrontController {
         addBtn.setOnMouseExited(e -> addBtn.setStyle(btnBase));
 
         addBtn.setOnAction(e -> {
-            try {
-                // Créer le repas
-                Repas repas = new Repas();
-                repas.setUser_id(1); // ← mets le vrai user_id ici
-                repas.setNom(meal.name);
-                repas.setCalories(meal.totalCalories);
-                repas.setType("diner");
-                repas.setDate(new java.sql.Date(System.currentTimeMillis()));
-                repas.setHeure(java.sql.Time.valueOf(java.time.LocalTime.now()));
-                repas.setDescription(meal.note != null ? meal.note : "");
-
-                // Créer/trouver les aliments
-                ServiceAliment serviceAliment = new ServiceAliment();
-                List<Aliment> aliments = new ArrayList<>();
-                for (ChatRepasParser.ParsedIngredient ing : meal.ingredients) {
-                    Aliment a = serviceAliment.findByNameOrCreate(ing.name, ing.calories, ing.quantity);
-                    if (a != null) aliments.add(a);
-                }
-
-                // Sauvegarder repas + lier aliments
-                ServiceRepas serviceRepas = new ServiceRepas();
-                serviceRepas.addWithAliments(repas, aliments);
-
-                if (addRepasCallback != null) addRepasCallback.onAddRepas(meal);
-
-                addBtn.setText("✅ Repas ajouté !");
-                addBtn.setDisable(true);
-                addBtn.setStyle(
-                        "-fx-background-color: #166534;" +
-                                "-fx-text-fill: #86efac;" +
-                                "-fx-font-size: 12px;" +
-                                "-fx-font-weight: bold;" +
-                                "-fx-padding: 10 0;" +
-                                "-fx-background-radius: 0 0 15 15;"
-                );
-            } catch (Exception ex) {
-                addErrorMessage("Erreur sauvegarde : " + ex.getMessage());
-                ex.printStackTrace();
+            if (addRepasCallback != null) {
+                addRepasCallback.onAddRepas(meal);
             }
+            addBtn.setText("✅ Repas ajouté !");
+            addBtn.setDisable(true);
+            addBtn.setStyle(
+                    "-fx-background-color: #166534;" +
+                            "-fx-text-fill: #86efac;" +
+                            "-fx-font-size: 12px;" +
+                            "-fx-font-weight: bold;" +
+                            "-fx-padding: 10 0;" +
+                            "-fx-background-radius: 0 0 15 15;"
+            );
         });
 
         card.getChildren().add(addBtn);
