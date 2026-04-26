@@ -11,6 +11,10 @@ import java.util.List;
 public class ServiceEnergie implements Iservice<Energie> {
 
     private final ServiceRecommandation serviceRecommandation;
+    private final MailService mailService;
+    private final ServiceUser serviceUser;
+    private final WeatherService weatherService;
+    private final AIWeatherAdvisorService weatherAdvisorService;
 
     private Connection getConnection() {
         return MyDatabase.getInstance().getConnection();
@@ -18,6 +22,47 @@ public class ServiceEnergie implements Iservice<Energie> {
 
     public ServiceEnergie() {
         this.serviceRecommandation = new ServiceRecommandation();
+        this.mailService = new MailService();
+        this.serviceUser = new ServiceUser();
+        this.weatherService = new WeatherService();
+        this.weatherAdvisorService = new AIWeatherAdvisorService();
+    }
+
+    private void checkAlerts(Energie energie, Recommandation reco) {
+        Models.User user = serviceUser.getById(energie.getUser_id());
+        if (user == null) return;
+
+        // 1. Alerte forte consommation (Règle métier)
+        if (energie.getValeur() > 1000) {
+            mailService.sendAlert(user, "Forte Consommation", 
+                "Votre consommation de " + energie.getValeur() + " unités est supérieure au seuil recommandé. " +
+                "L'IA suggère : " + (reco != null ? reco.getDescription() : "Réduire l'utilisation des appareils énergivores."));
+        }
+
+        // 2. Alerte Météo (IA)
+        try {
+            WeatherService.WeatherData weather = weatherService.fetchCurrentWeather();
+            if (weather.condition.equalsIgnoreCase("Rain") || weather.temp < 15 || weather.temp > 35) {
+                String advice = weatherAdvisorService.getAdvice(weather);
+                mailService.sendAlert(user, "Conseil Météo", 
+                    "La météo actuelle (" + weather.description + ") impacte vos besoins. Conseil : " + advice);
+            }
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la vérification météo pour alerte: " + e.getMessage());
+        }
+    }
+
+    public Energie getById(int id) throws SQLDataException {
+        String query = "SELECT * FROM energie WHERE id = ?";
+        try (PreparedStatement ps = getConnection().prepareStatement(query)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return mapResultSet(rs);
+            }
+        } catch (SQLException e) {
+            throw new SQLDataException("Erreur de récupération: " + e.getMessage());
+        }
+        return null;
     }
 
     @Override
@@ -38,6 +83,14 @@ public class ServiceEnergie implements Iservice<Energie> {
                     // Now that we have the ID, generate and add recommendation
                     Recommandation reco = serviceRecommandation.genererRecommandation(energie);
                     serviceRecommandation.ajouter(reco);
+
+                    // --- ENVOI EMAIL ---
+                    Models.User user = serviceUser.getById(energie.getUser_id());
+                    if (user != null) {
+                        mailService.sendEnergyAdded(user, energie, reco);
+                        // Vérifier alertes intelligentes
+                        checkAlerts(energie, reco);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -48,6 +101,9 @@ public class ServiceEnergie implements Iservice<Energie> {
 
     @Override
     public void modifier(Energie energie) throws SQLDataException {
+        // Fetch old record for comparison
+        Energie oldEnergie = getById(energie.getId());
+
         String query = "UPDATE energie SET type_energie=?, periode=?, valeur=?, date_enregistrement=?, source=?, user_id=? WHERE id=?";
         try (PreparedStatement ps = getConnection().prepareStatement(query)) {
             ps.setString(1, energie.getType_energie());
@@ -62,9 +118,15 @@ public class ServiceEnergie implements Iservice<Energie> {
             if (rows > 0) {
                 // Update or Create recommendation
                 Recommandation reco = serviceRecommandation.genererRecommandation(energie);
-                // We try to modify, if it doesn't exist (0 rows updated), we could add it
-                // But for now let's just call the service which handles its own logic
                 serviceRecommandation.modifier(reco);
+
+                // --- ENVOI EMAIL ---
+                Models.User user = serviceUser.getById(energie.getUser_id());
+                if (user != null && oldEnergie != null) {
+                    mailService.sendEnergyModified(user, oldEnergie, energie, reco);
+                    // Vérifier alertes intelligentes après modif
+                    checkAlerts(energie, reco);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
