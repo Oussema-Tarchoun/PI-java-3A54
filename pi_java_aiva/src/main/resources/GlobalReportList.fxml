@@ -13,34 +13,35 @@
             stylesheets="@styles.css">
 
     <VBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0"
-          prefWidth="220" spacing="0" styleClass="sidebar">
-        <VBox alignment="CENTER" styleClass="sidebar-logo" prefHeight="100">
-            <Label text="&#9670; AIVA" styleClass="logo-text"/>
-            <Label text="Admin Portal" styleClass="logo-sub"/>
+          spacing="0" styleClass="sidebar">
+        <VBox alignment="CENTER" styleClass="logo-box" prefHeight="80">
+            <Label text="AIVA" styleClass="logo-text"/>
+            <Label text="Admin" styleClass="logo-name"/>
         </VBox>
-        <Button text="&#128100;  User Management" maxWidth="Infinity" styleClass="nav-btn"
+        <Pane styleClass="logo-separator"/>
+        <Button text="&#128100;  User Management" maxWidth="Infinity" styleClass="nav-item"
                 onAction="#openUserManagement" id="btnUsersNavList"/>
-        <Button text="&#128203;  Global Reports" maxWidth="Infinity" styleClass="nav-btn, nav-btn-active"
+        <Button text="&#128203;  Global Reports" maxWidth="Infinity" styleClass="nav-item active"
                 id="btnReportsNavList"/>
-        <Button text="&#127919;  Objectifs" maxWidth="Infinity" styleClass="nav-btn"
+        <Button text="&#127919;  Objectifs" maxWidth="Infinity" styleClass="nav-item"
                 onAction="#goHome" id="btnObjectifsNav"/>
-        <Button text="&#127974;  Cours" maxWidth="Infinity" styleClass="nav-btn"
+        <Button text="&#127974;  Cours" maxWidth="Infinity" styleClass="nav-item"
                 onAction="#goHome" id="btnCoursNav"/>
         <Pane VBox.vgrow="ALWAYS"/>
-        <Button text="&#8592; Tableau de Bord" maxWidth="Infinity" styleClass="nav-btn"
+        <Button text="&#8592; Tableau de Bord" maxWidth="Infinity" styleClass="nav-item"
                 onAction="#goHome" id="btnBackDash"/>
-        <Button text="&#128274;  Déconnexion" maxWidth="Infinity" styleClass="nav-btn, nav-btn-danger"
+        <Button text="&#128274;  Déconnexion" maxWidth="Infinity" styleClass="nav-item"
                 onAction="#goHome"/>
     </VBox>
 
     <VBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
-          AnchorPane.leftAnchor="220" AnchorPane.rightAnchor="0"
-          styleClass="main-content">
+          AnchorPane.leftAnchor="250" AnchorPane.rightAnchor="0"
+          styleClass="main-window">
 
-        <HBox alignment="CENTER_LEFT" styleClass="topbar">
+        <HBox alignment="CENTER_LEFT" styleClass="top-navbar">
             <Label text="Gestion Globale des Rapports" styleClass="page-title"/>
             <Pane HBox.hgrow="ALWAYS"/>
-            <Label text="Bienvenue, Admin" styleClass="topbar-user"/>
+            <Label text="Bienvenue, Admin" style="-fx-text-fill: rgba(245,245,244,0.6);"/>
         </HBox>
 
         <HBox alignment="CENTER_LEFT" spacing="12">
@@ -48,7 +49,7 @@
             <TextField fx:id="txtSearch" promptText="&#128269;  Rechercher par titre, description ou auteur..."
                        styleClass="search-field" prefWidth="440" id="txtSearchGlobal"/>
             <Label text="Trier par :" styleClass="form-label" style="-fx-padding: 0 0 0 8;"/>
-            <ComboBox fx:id="comboSort" prefWidth="200" styleClass="form-field">
+            <ComboBox fx:id="comboSort" prefWidth="200" styleClass="combo-box">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
                         <String fx:value="Date (Plus récent)"/>
@@ -70,7 +71,7 @@
             <Button text="&#8635;  Actualiser" styleClass="btn-secondary" onAction="#initialize"/>
         </HBox>
 
-        <TableView fx:id="tableReports" VBox.vgrow="ALWAYS" styleClass="data-table">
+        <TableView fx:id="tableReports" VBox.vgrow="ALWAYS" styleClass="table-view">
             <VBox.margin><Insets right="24" bottom="20" left="24"/></VBox.margin>
             <columns>
                 <TableColumn fx:id="colId" text="ID" prefWidth="60"/>

@@ -13,38 +13,39 @@
             stylesheets="@styles.css">
 
     <VBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0"
-          prefWidth="220" spacing="0" styleClass="sidebar">
-        <VBox alignment="CENTER" styleClass="sidebar-logo" prefHeight="100">
-            <Label text="&#9670; AIVA" styleClass="logo-text"/>
-            <Label text="Admin Portal" styleClass="logo-sub"/>
+          spacing="0" styleClass="sidebar">
+        <VBox alignment="CENTER" styleClass="logo-box" prefHeight="80">
+            <Label text="AIVA" styleClass="logo-text"/>
+            <Label text="Admin" styleClass="logo-name"/>
         </VBox>
-        <Button text="&#128100;  User Management" maxWidth="Infinity" styleClass="nav-btn, nav-btn-active"
+        <Pane styleClass="logo-separator"/>
+        <Button text="&#128100;  User Management" maxWidth="Infinity" styleClass="nav-item active"
                 id="btnUsersNavList"/>
-        <Button text="&#128203;  Global Reports" maxWidth="Infinity" styleClass="nav-btn"
+        <Button text="&#128203;  Global Reports" maxWidth="Infinity" styleClass="nav-item"
                 onAction="#openReportManagement" id="btnReportsNavList"/>
-        <Button text="&#127974;  Cours" maxWidth="Infinity" styleClass="nav-btn"
+        <Button text="&#127974;  Cours" maxWidth="Infinity" styleClass="nav-item"
                 onAction="#goToDashboard" id="btnCoursNavList"/>
-        <Button text="&#127859;  Repas" maxWidth="Infinity" styleClass="nav-btn"
+        <Button text="&#127859;  Repas" maxWidth="Infinity" styleClass="nav-item"
                 onAction="#goToDashboard" id="btnRepasNavList"/>
-        <Button text="&#128170;  Activités" maxWidth="Infinity" styleClass="nav-btn"
+        <Button text="&#128170;  Activités" maxWidth="Infinity" styleClass="nav-item"
                 onAction="#goToDashboard" id="btnActivitesNavList"/>
-        <Button text="&#127775;  Badges" maxWidth="Infinity" styleClass="nav-btn"
+        <Button text="&#127775;  Badges" maxWidth="Infinity" styleClass="nav-item"
                 onAction="#goToDashboard" id="btnBadgesNavList"/>
         <Pane VBox.vgrow="ALWAYS"/>
-        <Button text="&#8592; Tableau de Bord" maxWidth="Infinity" styleClass="nav-btn"
+        <Button text="&#8592; Tableau de Bord" maxWidth="Infinity" styleClass="nav-item"
                 onAction="#goToDashboard" id="btnBackDash"/>
-        <Button text="&#128274;  Déconnexion" maxWidth="Infinity" styleClass="nav-btn, nav-btn-danger"
+        <Button text="&#128274;  Déconnexion" maxWidth="Infinity" styleClass="nav-item"
                 onAction="#handleLogout" id="btnLogoutList"/>
     </VBox>
 
     <VBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
-          AnchorPane.leftAnchor="220" AnchorPane.rightAnchor="0"
-          styleClass="main-content">
+          AnchorPane.leftAnchor="250" AnchorPane.rightAnchor="0"
+          styleClass="main-window">
 
-        <HBox alignment="CENTER_LEFT" styleClass="topbar">
+        <HBox alignment="CENTER_LEFT" styleClass="top-navbar">
             <Label text="Gestion des Utilisateurs" styleClass="page-title"/>
             <Pane HBox.hgrow="ALWAYS"/>
-            <Label text="Bienvenue, Admin" styleClass="topbar-user"/>
+            <Label text="Bienvenue, Admin" style="-fx-text-fill: rgba(245,245,244,0.6);"/>
         </HBox>
 
         <HBox alignment="CENTER_LEFT" spacing="12">
@@ -53,11 +54,10 @@
                        styleClass="search-field" prefWidth="340" onKeyReleased="#handleSearch"
                        id="tfSearchUsers"/>
             <Label text="Trier par :" styleClass="form-label" style="-fx-padding: 0 0 0 8;"/>
-            <ComboBox fx:id="cmbSort" prefWidth="160" styleClass="form-field" id="cmbSortUsers"
+            <ComboBox fx:id="cmbSort" prefWidth="160" styleClass="combo-box" id="cmbSortUsers"
                        onAction="#handleSort">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
-                        <String fx:value="ID"/>
                         <String fx:value="Nom"/>
                         <String fx:value="Email"/>
                         <String fx:value="XP"/>
@@ -84,10 +84,9 @@
                     id="btnExportPdf"/>
         </HBox>
 
-        <TableView fx:id="tableUsers" VBox.vgrow="ALWAYS" styleClass="data-table">
+        <TableView fx:id="tableUsers" VBox.vgrow="ALWAYS" styleClass="table-view">
             <VBox.margin><Insets right="24" bottom="0" left="24"/></VBox.margin>
             <columns>
-                <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
                 <TableColumn fx:id="colName" text="Nom" prefWidth="130"/>
                 <TableColumn fx:id="colEmail" text="Email" prefWidth="200"/>
                 <TableColumn fx:id="colRoles" text="Rôle" prefWidth="110"/>
@@ -101,7 +100,7 @@
             </placeholder>
         </TableView>
 
-        <HBox alignment="CENTER_LEFT" styleClass="statusbar">
+        <HBox alignment="CENTER_LEFT" styleClass="top-navbar" minHeight="50">
             <VBox.margin><Insets top="0" right="0" bottom="0" left="0"/></VBox.margin>
             <Label fx:id="lblStatus" text="Chargement..." styleClass="status-text"/>
             <Pane HBox.hgrow="ALWAYS"/>

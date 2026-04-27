@@ -14,38 +14,41 @@
 
     <VBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
           AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
-          styleClass="dialog-root" spacing="0">
+          styleClass="dialog-pane" spacing="0">
 
-        <HBox styleClass="dialog-header" alignment="CENTER_LEFT" prefHeight="64">
+        <HBox styleClass="header-panel" alignment="CENTER_LEFT" prefHeight="70">
             <padding><Insets left="24" right="24"/></padding>
-            <Label fx:id="lblFormTitle" text="Ajouter un Utilisateur" styleClass="dialog-title"/>
+            <Label fx:id="lblFormTitle" text="Ajouter un Utilisateur" styleClass="card-title" style="-fx-font-size: 18px;"/>
             <Pane HBox.hgrow="ALWAYS"/>
-            <Label fx:id="lblFormIcon" text="&#128100;" styleClass="dialog-icon"/>
+            <Label fx:id="lblFormIcon" text="&#128100;" style="-fx-font-size: 24px; -fx-text-fill: #34d399;"/>
         </HBox>
 
-        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="dialog-scroll">
-            <VBox spacing="16" styleClass="form-body">
+        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent; -fx-background: transparent;">
+            <VBox spacing="16" style="-fx-background-color: transparent;">
                 <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
 
                 <HBox spacing="16">
-                    <VBox HBox.hgrow="ALWAYS" spacing="4">
+                    <VBox HBox.hgrow="ALWAYS" spacing="2">
+                        <Label fx:id="errName" text="" visible="false" managed="false" style="-fx-text-fill: #ef4444; -fx-font-size: 11px;"/>
                         <Label text="Nom complet *" styleClass="form-label"/>
-                        <TextField fx:id="tfName" promptText="ex: Jean Dupont" styleClass="form-field" id="tfName"/>
+                        <TextField fx:id="tfName" promptText="ex: Jean Dupont" styleClass="form-input" id="tfName"/>
                     </VBox>
-                    <VBox HBox.hgrow="ALWAYS" spacing="4">
+                    <VBox HBox.hgrow="ALWAYS" spacing="2">
+                        <Label fx:id="errEmail" text="" visible="false" managed="false" style="-fx-text-fill: #ef4444; -fx-font-size: 11px;"/>
                         <Label text="Email *" styleClass="form-label"/>
-                        <TextField fx:id="tfEmail" promptText="ex: jean@mail.com" styleClass="form-field" id="tfEmail"/>
+                        <TextField fx:id="tfEmail" promptText="ex: jean@mail.com" styleClass="form-input" id="tfEmail"/>
                     </VBox>
                 </HBox>
 
-                <VBox spacing="4">
+                <VBox spacing="2">
+                    <Label fx:id="errPassword" text="" visible="false" managed="false" style="-fx-text-fill: #ef4444; -fx-font-size: 11px;"/>
                     <Label text="Mot de passe *" styleClass="form-label"/>
-                    <PasswordField fx:id="pfPassword" promptText="••••••••" styleClass="form-field" id="pfPassword"/>
+                    <PasswordField fx:id="pfPassword" promptText="••••••••" styleClass="form-input" id="pfPassword"/>
                 </VBox>
 
                 <VBox spacing="4">
                     <Label text="Rôle" styleClass="form-label"/>
-                    <ComboBox fx:id="cmbRoles" prefWidth="999" styleClass="form-field" id="cmbRoles">
+                    <ComboBox fx:id="cmbRoles" prefWidth="999" styleClass="combo-box" id="cmbRoles">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
                                 <String fx:value='["ROLE_USER"]'/>
@@ -59,7 +62,7 @@
                 <HBox spacing="16">
                     <VBox HBox.hgrow="ALWAYS" spacing="4">
                         <Label text="Statut Blocage" styleClass="form-label"/>
-                        <ComboBox fx:id="cmbBlocked" prefWidth="999" styleClass="form-field" id="cmbBlocked">
+                        <ComboBox fx:id="cmbBlocked" prefWidth="999" styleClass="combo-box" id="cmbBlocked">
                             <items>
                                 <FXCollections fx:factory="observableArrayList">
                                     <String fx:value="0 - Actif"/>
@@ -70,7 +73,7 @@
                     </VBox>
                     <VBox HBox.hgrow="ALWAYS" spacing="4">
                         <Label text="Compte Vérifié" styleClass="form-label"/>
-                        <ComboBox fx:id="cmbVerified" prefWidth="999" styleClass="form-field" id="cmbVerified">
+                        <ComboBox fx:id="cmbVerified" prefWidth="999" styleClass="combo-box" id="cmbVerified">
                             <items>
                                 <FXCollections fx:factory="observableArrayList">
                                     <String fx:value="Non vérifié"/>
@@ -84,7 +87,7 @@
                 <HBox spacing="16">
                     <VBox HBox.hgrow="ALWAYS" spacing="4">
                         <Label text="2FA Activé" styleClass="form-label"/>
-                        <ComboBox fx:id="cmb2FA" prefWidth="999" styleClass="form-field" id="cmb2FA">
+                        <ComboBox fx:id="cmb2FA" prefWidth="999" styleClass="combo-box" id="cmb2FA">
                             <items>
                                 <FXCollections fx:factory="observableArrayList">
                                     <String fx:value="Non"/>
@@ -93,9 +96,10 @@
                             </items>
                         </ComboBox>
                     </VBox>
-                    <VBox HBox.hgrow="ALWAYS" spacing="4">
+                    <VBox HBox.hgrow="ALWAYS" spacing="2">
+                        <Label fx:id="errXP" text="" visible="false" managed="false" style="-fx-text-fill: #ef4444; -fx-font-size: 11px;"/>
                         <Label text="Points XP" styleClass="form-label"/>
-                        <TextField fx:id="tfXP" promptText="0" text="0" styleClass="form-field" id="tfXP"/>
+                        <TextField fx:id="tfXP" promptText="0" text="0" styleClass="form-input" id="tfXP"/>
                     </VBox>
                 </HBox>
 
@@ -103,7 +107,7 @@
             </VBox>
         </ScrollPane>
 
-        <HBox styleClass="dialog-footer" alignment="CENTER_RIGHT" spacing="12" prefHeight="72">
+        <HBox styleClass="button-bar" alignment="CENTER_RIGHT" spacing="12" prefHeight="72">
             <padding><Insets left="24" right="24"/></padding>
             <Button text="Annuler" styleClass="btn-secondary" onAction="#cancel" id="btnCancel"/>
             <Button fx:id="btnSave" text="Enregistrer" styleClass="btn-primary" onAction="#save" id="btnSave"

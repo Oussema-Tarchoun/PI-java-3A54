@@ -8,31 +8,42 @@
 <?import javafx.scene.layout.HBox?>
 
 <AnchorPane prefHeight="680.0" prefWidth="1080.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.VerifyAccountController">
+    <!-- Background -->
+    <VBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
+          styleClass="main-window"/>
 
-    <!-- Left decorative panel (consistent with Login/Register) -->
-    <VBox alignment="CENTER" prefWidth="480" spacing="24" styleClass="auth-left-panel" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.topAnchor="0">
-        <Label styleClass="auth-brand-logo" text="◆ AIVA" />
-        <Label styleClass="auth-brand-sub" text="Admin Portal" />
-        <Label styleClass="auth-brand-desc" text="Sécurisez votre compte&#10;en vérifiant votre email." textAlignment="CENTER" wrapText="true" />
-        <Label styleClass="auth-brand-icon" text="📧" />
+    <!-- Left side (Text/Logo) -->
+    <VBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+          AnchorPane.leftAnchor="0" prefWidth="440"
+          alignment="CENTER" spacing="24">
+        <VBox alignment="CENTER" spacing="10">
+             <VBox alignment="CENTER" styleClass="logo-box" prefWidth="80" prefHeight="80" maxWidth="80" maxHeight="80">
+                <Label text="A" style="-fx-font-size: 40px; -fx-text-fill: white; -fx-font-weight: bold;"/>
+            </VBox>
+            <Label text="AIVA" styleClass="page-title" style="-fx-font-size: 36px;"/>
+            <Label text="VERIFICATION" styleClass="stat-label"/>
+        </VBox>
+        <Label text="Sécurisez votre compte en vérifiant votre adresse email." styleClass="card-subtitle"
+               wrapText="true" textAlignment="CENTER" maxWidth="300"/>
     </VBox>
 
     <!-- Right verification form -->
-    <VBox alignment="CENTER" spacing="0" styleClass="auth-right-panel" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="480" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
-
-        <VBox maxWidth="380" spacing="32">
+    <VBox alignment="CENTER" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="440" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+        <VBox maxWidth="480" spacing="0" styleClass="glass-card">
+            <VBox spacing="32" style="-fx-padding: 10;">
 
             <!-- Header -->
             <VBox spacing="8">
-                <Label styleClass="auth-title" text="Vérification du compte" />
-                <Label fx:id="lblInstruction" styleClass="auth-subtitle" text="Veuillez saisir le code à 6 chiffres envoyé à votre adresse email." wrapText="true" />
+                <Label styleClass="card-title" text="Vérification du compte" style="-fx-font-size: 24px;" />
+                <Label fx:id="lblInstruction" styleClass="card-subtitle" text="Veuillez saisir le code à 6 chiffres envoyé à votre adresse email." wrapText="true" />
             </VBox>
 
             <!-- Form -->
             <VBox spacing="20">
-                <VBox spacing="8">
-                    <Label styleClass="form-label" text="Code de vérification *" />
-                    <TextField fx:id="tfVerificationCode" alignment="CENTER" prefHeight="50" promptText="000000" style="-fx-font-size: 24px; -fx-letter-spacing: 12px; -fx-font-weight: bold;" styleClass="form-field" />
+                <VBox spacing="2">
+                    <Label fx:id="errCode" text="" visible="false" managed="false" style="-fx-text-fill: #ef4444; -fx-font-size: 11px;"/>
+                    <Label styleClass="form-label" text="CODE DE VÉRIFICATION *" />
+                    <TextField fx:id="tfVerificationCode" alignment="CENTER" prefHeight="50" promptText="000000" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-background-color: rgba(255,255,255,0.05); -fx-text-fill: #34d399; -fx-border-color: rgba(52,211,153,0.3); -fx-border-radius: 10; -fx-background-radius: 10;" styleClass="form-input" />
                 </VBox>
 
                 <!-- Error label -->
@@ -42,16 +53,16 @@
                 <Button defaultButton="true" maxWidth="Infinity" onAction="#handleVerify" prefHeight="44" styleClass="btn-primary" text="Vérifier le compte →" />
                 
                 <HBox alignment="CENTER" spacing="10">
-                     <Label styleClass="auth-subtitle" text="Vous n'avez pas reçu de code ?" />
-                     <Button onAction="#handleResendCode" styleClass="btn-link" text="Renvoyer" />
+                     <Label styleClass="card-subtitle" text="Vous n'avez pas reçu de code ?" />
+                     <Button onAction="#handleResendCode" styleClass="btn-secondary" text="Renvoyer" />
                 </HBox>
             </VBox>
 
             <!-- Back to login -->
             <HBox alignment="CENTER">
-                <Button onAction="#goToLogin" styleClass="btn-link" text="Retour à la connexion" />
+                <Button onAction="#goToLogin" styleClass="btn-secondary" text="Retour à la connexion" />
             </HBox>
-
+            </VBox>
         </VBox>
     </VBox>
 </AnchorPane>

@@ -16,36 +16,37 @@
 
     <!-- Left Sidebar -->
     <VBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0"
-          prefWidth="220" spacing="0" styleClass="sidebar">
+          spacing="0" styleClass="sidebar">
         <!-- Logo Area -->
-        <VBox alignment="CENTER" styleClass="sidebar-logo" prefHeight="100">
-            <Label text="&#9670; AIVA" styleClass="logo-text"/>
-            <Label text="Admin Portal" styleClass="logo-sub"/>
+        <VBox alignment="CENTER" styleClass="logo-box" prefHeight="80">
+            <Label text="AIVA" styleClass="logo-text"/>
+            <Label text="Admin" styleClass="logo-name"/>
         </VBox>
+        <Pane styleClass="logo-separator"/>
 
         <!-- Nav Buttons -->
-        <Button text="&#127968;  Dashboard" maxWidth="Infinity" styleClass="nav-btn, nav-btn-active" id="btnDashNav"/>
-        <Button text="&#128100;  User Management" maxWidth="Infinity" styleClass="nav-btn"
+        <Button text="&#127968;  Dashboard" maxWidth="Infinity" styleClass="nav-item active" id="btnDashNav"/>
+        <Button text="&#128100;  User Management" maxWidth="Infinity" styleClass="nav-item"
                 onAction="#openUserManagement" id="btnUsersNav"/>
-        <Button text="&#128203;  Global Reports" maxWidth="Infinity" styleClass="nav-btn"
+        <Button text="&#128203;  Global Reports" maxWidth="Infinity" styleClass="nav-item"
                 onAction="#openReportManagement" id="btnReportsNav"/>
         
         <Pane VBox.vgrow="ALWAYS"/>
         
-        <Button text="&#128274;  Déconnexion" maxWidth="Infinity" styleClass="nav-btn, nav-btn-danger"
+        <Button text="&#128274;  Déconnexion" maxWidth="Infinity" styleClass="nav-item"
                 onAction="#handleLogout" id="btnLogout"/>
     </VBox>
 
     <!-- Main Content -->
     <VBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
-          AnchorPane.leftAnchor="220" AnchorPane.rightAnchor="0"
-          styleClass="main-content">
+          AnchorPane.leftAnchor="250" AnchorPane.rightAnchor="0"
+          styleClass="main-window">
 
         <!-- Top Bar -->
-        <HBox alignment="CENTER_LEFT" styleClass="topbar">
+        <HBox alignment="CENTER_LEFT" styleClass="top-navbar">
             <Label text="Administration Dashboard" styleClass="page-title"/>
             <Pane HBox.hgrow="ALWAYS"/>
-            <Label text="Bienvenue, Administrateur" styleClass="topbar-user"/>
+            <Label text="Bienvenue, Administrateur" style="-fx-text-fill: rgba(245,245,244,0.6);"/>
         </HBox>
 
         <!-- Stats Cards Row -->
@@ -54,24 +55,48 @@
                 <Insets top="30" right="30" bottom="0" left="30"/>
             </VBox.margin>
             <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
-                <Label text="&#128100;" styleClass="stat-icon"/>
-                <Label fx:id="lblTotalUsers" text="—" styleClass="stat-number"/>
-                <Label text="Utilisateurs" styleClass="stat-label"/>
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <VBox styleClass="stat-icon-cyan">
+                        <Label text="&#128100;" style="-fx-text-fill: white; -fx-font-size: 20px;"/>
+                    </VBox>
+                    <VBox>
+                        <Label text="UTILISATEURS" styleClass="stat-label"/>
+                        <Label fx:id="lblTotalUsers" text="—" styleClass="stat-value"/>
+                    </VBox>
+                </HBox>
             </VBox>
-            <VBox styleClass="stat-card, stat-card-green" HBox.hgrow="ALWAYS">
-                <Label text="&#9989;" styleClass="stat-icon"/>
-                <Label fx:id="lblVerifiedUsers" text="—" styleClass="stat-number"/>
-                <Label text="Vérifiés" styleClass="stat-label"/>
+            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <VBox styleClass="stat-icon-info">
+                        <Label text="&#9989;" style="-fx-text-fill: white; -fx-font-size: 20px;"/>
+                    </VBox>
+                    <VBox>
+                        <Label text="VÉRIFIÉS" styleClass="stat-label"/>
+                        <Label fx:id="lblVerifiedUsers" text="—" styleClass="stat-value"/>
+                    </VBox>
+                </HBox>
             </VBox>
-            <VBox styleClass="stat-card, stat-card-red" HBox.hgrow="ALWAYS">
-                <Label text="&#128683;" styleClass="stat-icon" style="-fx-text-fill: #ef4444;"/>
-                <Label fx:id="lblBlockedUsers" text="—" styleClass="stat-number" style="-fx-text-fill: #ef4444;"/>
-                <Label text="Bloqués" styleClass="stat-label"/>
+            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <VBox styleClass="stat-icon-danger">
+                        <Label text="&#128683;" style="-fx-text-fill: white; -fx-font-size: 20px;"/>
+                    </VBox>
+                    <VBox>
+                        <Label text="BLOQUÉS" styleClass="stat-label"/>
+                        <Label fx:id="lblBlockedUsers" text="—" styleClass="stat-value"/>
+                    </VBox>
+                </HBox>
             </VBox>
-            <VBox styleClass="stat-card, stat-card-purple" HBox.hgrow="ALWAYS">
-                <Label text="&#128274;" styleClass="stat-icon" style="-fx-text-fill: #a855f7;"/>
-                <Label fx:id="lblAdminUsers" text="—" styleClass="stat-number" style="-fx-text-fill: #a855f7;"/>
-                <Label text="Admins" styleClass="stat-label"/>
+            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <VBox styleClass="stat-icon-warning">
+                        <Label text="&#128274;" style="-fx-text-fill: white; -fx-font-size: 20px;"/>
+                    </VBox>
+                    <VBox>
+                        <Label text="ADMINS" styleClass="stat-label"/>
+                        <Label fx:id="lblAdminUsers" text="—" styleClass="stat-value"/>
+                    </VBox>
+                </HBox>
             </VBox>
         </HBox>
 
@@ -83,18 +108,22 @@
         <HBox spacing="20">
             <VBox.margin><Insets left="30" right="30"/></VBox.margin>
             
-            <VBox styleClass="quick-card" onMouseClicked="#openUserManagement" HBox.hgrow="ALWAYS" alignment="CENTER" prefHeight="200">
-                <Label text="&#128100;" styleClass="quick-icon"/>
-                <Label text="Comptes Utilisateurs" styleClass="quick-title"/>
-                <Label text="Gérer les accès, modifier les profils&#10;et visualiser les statistiques." styleClass="quick-desc" alignment="CENTER" textAlignment="CENTER"/>
-                <Button text="Gérer les Utilisateurs →" styleClass="quick-btn" onAction="#openUserManagement"/>
+            <VBox styleClass="glass-card" onMouseClicked="#openUserManagement" HBox.hgrow="ALWAYS" alignment="CENTER" prefHeight="200">
+                <Label text="&#128100;" style="-fx-font-size: 40px; -fx-text-fill: #34d399;"/>
+                <Label text="Comptes Utilisateurs" styleClass="card-title"/>
+                <Label text="Gérer les accès, modifier les profils et visualiser les statistiques." styleClass="card-subtitle" alignment="CENTER" textAlignment="CENTER" wrapText="true"/>
+                <Button text="Gérer les Utilisateurs →" styleClass="btn-primary" onAction="#openUserManagement">
+                    <VBox.margin><Insets top="15"/></VBox.margin>
+                </Button>
             </VBox>
 
-            <VBox styleClass="quick-card" onMouseClicked="#openReportManagement" HBox.hgrow="ALWAYS" alignment="CENTER" prefHeight="200" style="-fx-border-color: rgba(168, 85, 247, 0.3);">
-                <Label text="&#128203;" styleClass="quick-icon" style="-fx-text-fill: #a855f7;"/>
-                <Label text="Rapports d'Activité" styleClass="quick-title"/>
-                <Label text="Consulter l'historique complet,&#10;filtrer par auteur et exporter." styleClass="quick-desc" alignment="CENTER" textAlignment="CENTER"/>
-                <Button text="Ouvrir les Rapports →" styleClass="quick-btn" onAction="#openReportManagement" style="-fx-background-color: #a855f7;"/>
+            <VBox styleClass="glass-card" onMouseClicked="#openReportManagement" HBox.hgrow="ALWAYS" alignment="CENTER" prefHeight="200">
+                <Label text="&#128203;" style="-fx-font-size: 40px; -fx-text-fill: #d4a574;"/>
+                <Label text="Rapports d'Activité" styleClass="card-title"/>
+                <Label text="Consulter l'historique complet, filtrer par auteur et exporter." styleClass="card-subtitle" alignment="CENTER" textAlignment="CENTER" wrapText="true"/>
+                <Button text="Ouvrir les Rapports →" styleClass="btn-secondary" onAction="#openReportManagement">
+                    <VBox.margin><Insets top="15"/></VBox.margin>
+                </Button>
             </VBox>
         </HBox>
 

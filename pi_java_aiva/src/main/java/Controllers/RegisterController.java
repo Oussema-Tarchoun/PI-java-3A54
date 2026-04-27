@@ -11,6 +11,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import utils.PasswordUtils;
+import utils.ValidationUtils;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -23,6 +24,10 @@ public class RegisterController {
     @FXML private PasswordField pfPassword;
     @FXML private PasswordField pfConfirm;
     @FXML private Label lblError;
+    @FXML private Label errName;
+    @FXML private Label errEmail;
+    @FXML private Label errPassword;
+    @FXML private Label errConfirm;
 
     private final ServiceUser serviceUser = new ServiceUser();
 
@@ -30,9 +35,20 @@ public class RegisterController {
     public void initialize() {
         lblError.setVisible(false);
         lblError.setManaged(false);
+        hideIndividualErrors();
         
         cbRole.getItems().addAll("Utilisateur", "Administrateur");
         cbRole.setValue("Utilisateur");
+    }
+
+    private void hideIndividualErrors() {
+        Label[] labels = {errName, errEmail, errPassword, errConfirm};
+        for (Label l : labels) {
+            if (l != null) {
+                l.setVisible(false);
+                l.setManaged(false);
+            }
+        }
     }
 
     @FXML
@@ -43,25 +59,16 @@ public class RegisterController {
         String password = pfPassword.getText();
         String confirm = pfConfirm.getText();
 
-        if (name.isEmpty() || email.isEmpty() || password.isEmpty() || confirm.isEmpty() || roleSelection == null) {
-            showError("Veuillez remplir tous les champs.");
-            return;
-        }
+        hideIndividualErrors();
+        lblError.setVisible(false);
 
-        if (!email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$")) {
-            showError("Format d'email invalide.");
-            return;
-        }
-
-        if (!password.equals(confirm)) {
-            showError("Les mots de passe ne correspondent pas.");
-            return;
-        }
-
-        if (password.length() < 4) {
-            showError("Le mot de passe doit contenir au moins 4 caractères.");
-            return;
-        }
+        if (!ValidationUtils.isNotEmpty(name)) { showFieldError(errName, "Nom obligatoire."); return; }
+        if (name.length() < 3) { showFieldError(errName, "3 caractères min."); return; }
+        if (!ValidationUtils.isValidEmail(email)) { showFieldError(errEmail, "Email invalide."); return; }
+        if (!ValidationUtils.isNotEmpty(password)) { showFieldError(errPassword, "Mot de passe obligatoire."); return; }
+        if (!ValidationUtils.isValidPassword(password)) { showFieldError(errPassword, "6 caractères min."); return; }
+        if (!password.equals(confirm)) { showFieldError(errConfirm, "Mots de passe différents."); return; }
+        if (roleSelection == null) { showError("Veuillez sélectionner un rôle."); return; }
 
         try {
             if (serviceUser.emailExists(email)) {
@@ -163,6 +170,14 @@ public class RegisterController {
         lblError.setStyle("-fx-text-fill: #f87171;");
         lblError.setVisible(true);
         lblError.setManaged(true);
+    }
+
+    private void showFieldError(Label label, String message) {
+        if (label != null) {
+            label.setText("⚠ " + message);
+            label.setVisible(true);
+            label.setManaged(true);
+        }
     }
 
     private void showSuccess(String message) {

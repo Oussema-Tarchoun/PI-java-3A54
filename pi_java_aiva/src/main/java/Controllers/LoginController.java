@@ -11,6 +11,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import utils.PasswordUtils;
+import utils.ValidationUtils;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -20,6 +21,8 @@ public class LoginController {
     @FXML private TextField tfEmail;
     @FXML private PasswordField pfPassword;
     @FXML private Label lblError;
+    @FXML private Label errEmail;
+    @FXML private Label errPassword;
 
     private final ServiceUser serviceUser = new ServiceUser();
 
@@ -27,6 +30,12 @@ public class LoginController {
     public void initialize() {
         lblError.setVisible(false);
         lblError.setManaged(false);
+        hideIndividualErrors();
+    }
+
+    private void hideIndividualErrors() {
+        if (errEmail != null) { errEmail.setVisible(false); errEmail.setManaged(false); }
+        if (errPassword != null) { errPassword.setVisible(false); errPassword.setManaged(false); }
     }
 
     @FXML
@@ -34,10 +43,12 @@ public class LoginController {
         String email = tfEmail.getText().trim();
         String password = pfPassword.getText();
 
-        if (email.isEmpty() || password.isEmpty()) {
-            showError("Veuillez remplir tous les champs.");
-            return;
-        }
+        hideIndividualErrors();
+        lblError.setVisible(false);
+
+        if (!ValidationUtils.isNotEmpty(email)) { showFieldError(errEmail, "Email obligatoire."); return; }
+        if (!ValidationUtils.isValidEmail(email)) { showFieldError(errEmail, "Email invalide."); return; }
+        if (!ValidationUtils.isNotEmpty(password)) { showFieldError(errPassword, "Mot de passe obligatoire."); return; }
 
         try {
             String hashedPassword = PasswordUtils.hashPassword(password);
@@ -127,8 +138,16 @@ public class LoginController {
     }
 
     private void showError(String message) {
-        lblError.setText(message);
+        lblError.setText("⚠ " + message);
         lblError.setVisible(true);
         lblError.setManaged(true);
+    }
+
+    private void showFieldError(Label label, String message) {
+        if (label != null) {
+            label.setText("⚠ " + message);
+            label.setVisible(true);
+            label.setManaged(true);
+        }
     }
 }

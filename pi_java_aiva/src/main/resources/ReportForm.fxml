@@ -9,21 +9,23 @@
       xmlns:fx="http://javafx.com/fxml/1" 
       fx:controller="Controllers.ReportFormController"
       stylesheets="@styles.css"
-      styleClass="form-body">
+      styleClass="dialog-pane">
     
     <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
 
-    <Label fx:id="lblTitle" text="Nouveau Rapport" styleClass="page-title" style="-fx-font-size: 18;"/>
+    <Label fx:id="lblTitle" text="Nouveau Rapport" styleClass="card-title" style="-fx-font-size: 18px;"/>
     
-    <VBox spacing="5">
+    <VBox spacing="2">
+        <Label fx:id="errTitle" text="" visible="false" managed="false" style="-fx-text-fill: #ef4444; -fx-font-size: 11px;"/>
         <Label text="Titre *" styleClass="form-label"/>
-        <TextField fx:id="tfTitle" promptText="Titre du rapport" styleClass="form-field"/>
+        <TextField fx:id="tfTitle" promptText="Titre du rapport" styleClass="form-input"/>
     </VBox>
 
-    <VBox spacing="5" VBox.vgrow="ALWAYS">
+    <VBox spacing="2" VBox.vgrow="ALWAYS">
+        <Label fx:id="errDescription" text="" visible="false" managed="false" style="-fx-text-fill: #ef4444; -fx-font-size: 11px;"/>
         <Label text="Description *" styleClass="form-label"/>
         <TextArea fx:id="taDescription" promptText="Détails du rapport..." 
-                  prefHeight="150" wrapText="true" styleClass="form-field"/>
+                  prefHeight="150" wrapText="true" styleClass="text-area"/>
     </VBox>
 
     <Label fx:id="lblError" text="Veuillez remplir tous les champs." 

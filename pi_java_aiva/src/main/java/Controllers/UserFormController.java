@@ -8,6 +8,7 @@ import javafx.stage.Stage;
 
 import java.sql.SQLException;
 import utils.PasswordUtils;
+import utils.ValidationUtils;
 
 public class UserFormController {
 
@@ -22,6 +23,10 @@ public class UserFormController {
     @FXML private ComboBox<String> cmb2FA;
     @FXML private TextField     tfXP;
     @FXML private Label         lblError;
+    @FXML private Label         errName;
+    @FXML private Label         errEmail;
+    @FXML private Label         errPassword;
+    @FXML private Label         errXP;
     @FXML private Button        btnSave;
 
     private User userToEdit;
@@ -38,6 +43,21 @@ public class UserFormController {
         lblError.setText("");
         lblError.setVisible(false);
         lblError.setManaged(false);
+        
+        hideIndividualErrors();
+
+        // Apply numeric filter to XP field
+        ValidationUtils.applyNumericFilter(tfXP);
+    }
+
+    private void hideIndividualErrors() {
+        Label[] errLabels = {errName, errEmail, errPassword, errXP};
+        for (Label l : errLabels) {
+            if (l != null) {
+                l.setVisible(false);
+                l.setManaged(false);
+            }
+        }
     }
 
     public void setUserToEdit(User user) {
@@ -81,27 +101,31 @@ public class UserFormController {
 
     @FXML
     private void save() {
-        clearError();
-
+        hideIndividualErrors();
+        
         String name     = tfName.getText().trim();
         String email    = tfEmail.getText().trim();
         String password = pfPassword.getText();
 
-        if (name.isEmpty()) { showError("Le nom est obligatoire."); return; }
-        if (email.isEmpty()) { showError("L'email est obligatoire."); return; }
-        if (!email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$")) {
-            showError("L'email n'est pas valide."); return;
-        }
-        if (userToEdit == null && password.isEmpty()) {
-            showError("Le mot de passe est obligatoire lors de la création."); return;
+        if (!ValidationUtils.isNotEmpty(name)) { showFieldError(errName, "Nom obligatoire."); return; }
+        if (name.length() < 3) { showFieldError(errName, "3 caractères min."); return; }
+        if (!ValidationUtils.isValidEmail(email)) { showFieldError(errEmail, "Email invalide."); return; }
+        
+        if (userToEdit == null) {
+            if (!ValidationUtils.isNotEmpty(password)) {
+                showFieldError(errPassword, "Mot de passe obligatoire."); return;
+            }
+            if (!ValidationUtils.isValidPassword(password)) {
+                showFieldError(errPassword, "6 caractères min."); return;
+            }
+        } else if (ValidationUtils.isNotEmpty(password) && !ValidationUtils.isValidPassword(password)) {
+            showFieldError(errPassword, "6 caractères min."); return;
         }
 
         int xp = 0;
-        try {
-            String xpText = tfXP.getText().trim();
-            if (!xpText.isEmpty()) xp = Integer.parseInt(xpText);
-        } catch (NumberFormatException e) {
-            showError("Les points XP doivent être un nombre entier."); return;
+        String xpText = tfXP.getText().trim();
+        if (ValidationUtils.isNotEmpty(xpText)) {
+            xp = Integer.parseInt(xpText);
         }
 
         int roleIdx = cmbRoles.getSelectionModel().getSelectedIndex();
@@ -183,5 +207,14 @@ public class UserFormController {
         lblError.setVisible(false);
         lblError.setManaged(false);
         lblError.setStyle("-fx-text-fill: #f87171;");
+        hideIndividualErrors();
+    }
+
+    private void showFieldError(Label label, String message) {
+        if (label != null) {
+            label.setText("⚠ " + message);
+            label.setVisible(true);
+            label.setManaged(true);
+        }
     }
 }

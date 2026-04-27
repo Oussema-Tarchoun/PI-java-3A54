@@ -11,9 +11,9 @@
             stylesheets="@styles.css">
 
     <VBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
-          styleClass="main-content">
+          styleClass="main-window">
         
-        <HBox alignment="CENTER_LEFT" styleClass="topbar">
+        <HBox alignment="CENTER_LEFT" styleClass="top-navbar">
             <Button text="&#8592; Retour au Profil" onAction="#goBackToProfile" styleClass="btn-secondary"/>
             <Label text="Gestion des Rapports Utilisateur" styleClass="page-title" style="-fx-padding: 0 0 0 20;"/>
         </HBox>
@@ -27,7 +27,7 @@
                 <Pane HBox.hgrow="ALWAYS"/>
             </HBox>
 
-            <TableView fx:id="tableReports" VBox.vgrow="ALWAYS" styleClass="data-table">
+            <TableView fx:id="tableReports" VBox.vgrow="ALWAYS" styleClass="table-view">
                 <columns>
                     <TableColumn fx:id="colId" text="ID" prefWidth="60"/>
                     <TableColumn fx:id="colTitle" text="Titre" prefWidth="200"/>

@@ -44,7 +44,6 @@ import java.util.stream.Collectors;
 public class UserListController {
 
     @FXML private TableView<User>           tableUsers;
-    @FXML private TableColumn<User,String>  colId;
     @FXML private TableColumn<User,String>  colName;
     @FXML private TableColumn<User,String>  colEmail;
     @FXML private TableColumn<User,String>  colRoles;
@@ -73,7 +72,6 @@ public class UserListController {
     }
 
     private void setupColumns() {
-        colId.setCellValueFactory(c -> new SimpleStringProperty(String.valueOf(c.getValue().getId())));
         colName.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getName()));
         colEmail.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getEmail()));
         colRoles.setCellValueFactory(c -> {
@@ -291,16 +289,16 @@ public class UserListController {
             sub.setSpacingAfter(20);
             doc.add(sub);
 
-            PdfPTable table = new PdfPTable(8);
+            PdfPTable table = new PdfPTable(7);
             table.setWidthPercentage(100);
-            table.setWidths(new float[]{1f, 2.5f, 3f, 2f, 1.5f, 1.5f, 1.2f, 1.2f});
+            table.setWidths(new float[]{2.5f, 3f, 2f, 1.5f, 1.5f, 1.2f, 1.2f});
 
             BaseColor headerBg  = new BaseColor(26, 29, 46);
             BaseColor headerText = new BaseColor(156, 163, 176);
             Font hFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9, headerText);
             Font cFont = FontFactory.getFont(FontFactory.HELVETICA, 9, BaseColor.DARK_GRAY);
 
-            String[] headers = {"ID", "Nom", "Email", "Rôle", "Vérifié", "Bloqué", "2FA", "XP"};
+            String[] headers = {"Nom", "Email", "Rôle", "Vérifié", "Bloqué", "2FA", "XP"};
             for (String h : headers) {
                 PdfPCell cell = new PdfPCell(new Phrase(h, hFont));
                 cell.setBackgroundColor(headerBg);
@@ -321,7 +319,6 @@ public class UserListController {
                 }
 
                 String[] row = {
-                    String.valueOf(u.getId()),
                     u.getName()  != null ? u.getName()  : "—",
                     u.getEmail() != null ? u.getEmail() : "—",
                     role,

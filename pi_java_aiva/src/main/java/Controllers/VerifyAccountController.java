@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import utils.MailUtils;
+import utils.ValidationUtils;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -19,6 +20,7 @@ public class VerifyAccountController {
 
     @FXML private TextField tfVerificationCode;
     @FXML private Label lblError;
+    @FXML private Label errCode;
     @FXML private Label lblInstruction;
 
     private final ServiceUser serviceUser = new ServiceUser();
@@ -33,14 +35,30 @@ public class VerifyAccountController {
     public void initialize() {
         lblError.setVisible(false);
         lblError.setManaged(false);
+        hideIndividualErrors();
+    }
+
+    private void hideIndividualErrors() {
+        if (errCode != null) {
+            errCode.setVisible(false);
+            errCode.setManaged(false);
+        }
     }
 
     @FXML
     private void handleVerify() {
         String code = tfVerificationCode.getText().trim();
 
-        if (code.isEmpty()) {
-            showError("Veuillez saisir le code de vérification.");
+        hideIndividualErrors();
+        lblError.setVisible(false);
+
+        if (!ValidationUtils.isNotEmpty(code)) {
+            showFieldError(errCode, "Code obligatoire.");
+            return;
+        }
+        
+        if (code.length() != 6 || !ValidationUtils.isNumeric(code)) {
+            showFieldError(errCode, "6 chiffres requis.");
             return;
         }
 
@@ -48,7 +66,6 @@ public class VerifyAccountController {
             boolean success = serviceUser.verifyAccount(userEmail, code);
             if (success) {
                 showSuccess("Compte vérifié avec succès ! Vous pouvez maintenant vous connecter.");
-                // Wait a bit or redirect immediately
                 goToLogin();
             } else {
                 showError("Code invalide ou expiré.");
@@ -123,5 +140,13 @@ public class VerifyAccountController {
         lblError.setStyle("-fx-text-fill: #22c55e;");
         lblError.setVisible(true);
         lblError.setManaged(true);
+    }
+
+    private void showFieldError(Label label, String message) {
+        if (label != null) {
+            label.setText("⚠ " + message);
+            label.setVisible(true);
+            label.setManaged(true);
+        }
     }
 }

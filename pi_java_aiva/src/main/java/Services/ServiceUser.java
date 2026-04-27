@@ -181,7 +181,6 @@ public class ServiceUser implements Iservice<User> {
 
     public boolean verifyAccount(String email, String token) throws SQLException {
         checkConnection();
-        // Check if token matches and is not expired
         String sql = "SELECT id FROM user WHERE email = ? AND verification_token = ? AND token_expires_at > NOW()";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, email);
@@ -189,7 +188,6 @@ public class ServiceUser implements Iservice<User> {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     int userId = rs.getInt("id");
-                    // Update is_verified and clear token
                     String updateSql = "UPDATE user SET is_verified = 1, verification_token = NULL, token_expires_at = NULL WHERE id = ?";
                     try (PreparedStatement psUpdate = connection.prepareStatement(updateSql)) {
                         psUpdate.setInt(1, userId);
