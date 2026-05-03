@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controller.MainController"
+            styleClass="main-container"
+            stylesheets="@../styles/aiva-theme.css"
+            prefHeight="900" prefWidth="1400">
+
+    <left>
+        <VBox styleClass="sidebar" spacing="8">
+            <HBox styleClass="sidebar-logo" alignment="CENTER_LEFT" spacing="12">
+                <StackPane>
+                    <Circle radius="20" fill="#00d4ff" opacity="0.2"/>
+                    <Label text="▲" textFill="#00d4ff" style="-fx-font-size: 20px;"/>
+                </StackPane>
+                <Label text="AIVA" styleClass="logo-text"/>
+            </HBox>
+
+            <Separator/>
+
+            <VBox spacing="4" VBox.vgrow="ALWAYS">
+                <Button fx:id="btnDashboard" text="Overview" styleClass="nav-button, nav-button-active"
+                        onAction="#openDashboard" maxWidth="Infinity" alignment="CENTER_LEFT"/>
+
+                <Button fx:id="btnDepense" text="Finance" styleClass="nav-button"
+                        onAction="#openDepense" maxWidth="Infinity" alignment="CENTER_LEFT"/>
+
+                <Button fx:id="btnApprentissage" text="Cours" styleClass="nav-button"
+                        onAction="#openApprentissage" maxWidth="Infinity" alignment="CENTER_LEFT"/>
+
+                <Button fx:id="btnChapitre" text="Chapitre" styleClass="nav-button"
+                        onAction="#openChapitre" maxWidth="Infinity" alignment="CENTER_LEFT"/>
+
+                <Button fx:id="btnAlimentation" text="Nutrition" styleClass="nav-button"
+                        onAction="#openAlimentation" maxWidth="Infinity" alignment="CENTER_LEFT"/>
+
+                <Button fx:id="btnActivite" text="Health" styleClass="nav-button"
+                        onAction="#openActivite" maxWidth="Infinity" alignment="CENTER_LEFT"/>
+
+                <Button fx:id="btnEnergie" text="Home &amp; Energy" styleClass="nav-button"
+                        onAction="#openEnergie" maxWidth="Infinity" alignment="CENTER_LEFT"/>
+
+                <Button fx:id="btnObjectif" text="Goals" styleClass="nav-button"
+                        onAction="#openObjectif" maxWidth="Infinity" alignment="CENTER_LEFT"/>
+
+                <Button fx:id="btnRecommandation" text="Recommendations" styleClass="nav-button"
+                        onAction="#openRecommandation" maxWidth="Infinity" alignment="CENTER_LEFT"/>
+            </VBox>
+
+            <VBox styleClass="sidebar-footer" spacing="8">
+                <Separator/>
+                <Button text="Settings" styleClass="nav-button" maxWidth="Infinity" alignment="CENTER_LEFT"/>
+                <Button text="Disconnect" styleClass="nav-button" onAction="#handleLogout"
+                        maxWidth="Infinity" alignment="CENTER_LEFT"/>
+                <Label fx:id="labelUser" text="● User" styleClass="topbar-user"/>
+            </VBox>
+        </VBox>
+    </left>
+
+    <center>
+        <VBox spacing="20" style="-fx-background-color: #0a0e1a;">
+            <HBox styleClass="topbar" alignment="CENTER_LEFT">
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label fx:id="topbarTitle" text="Dashboard" styleClass="topbar-title"/>
+                    <Label fx:id="topbarSubtitle" text="Vue d'ensemble" styleClass="topbar-subtitle"/>
+                </VBox>
+                <HBox spacing="12" alignment="CENTER_RIGHT">
+                    <Label fx:id="topbarUser" text="Welcome back, User" styleClass="topbar-user"/>
+                    <Circle radius="18" fill="#2a3142" stroke="#00d4ff" strokeWidth="2"/>
+                </HBox>
+            </HBox>
+
+            <StackPane fx:id="contentArea" VBox.vgrow="ALWAYS" style="-fx-padding: 0 30 30 30;"/>
+        </VBox>
+    </center>
+</BorderPane>

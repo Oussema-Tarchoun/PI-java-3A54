@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controller.back.CoursBackController"
+            styleClass="main-window"
+            stylesheets="@/styles/style.css"
+            prefWidth="1280" prefHeight="800">
+
+    <!-- ══════════════════════════════════════
+         SIDEBAR
+    ══════════════════════════════════════ -->
+    <left>
+        <VBox styleClass="sidebar" prefWidth="240" spacing="0">
+
+            <HBox alignment="CENTER_LEFT" spacing="10"
+                  style="-fx-padding: 2 0 16 0;
+                         -fx-border-color: rgba(255,255,255,0.08);
+                         -fx-border-width: 0 0 1 0;">
+                <ImageView fitWidth="36" fitHeight="36" preserveRatio="true" styleClass="logo-image">
+                    <Image url="@/images/img.png"/>
+                </ImageView>
+                <Label text="AIVA" styleClass="logo-name"/>
+            </HBox>
+
+            <VBox spacing="1" style="-fx-padding: 12 0 0 0;" VBox.vgrow="ALWAYS">
+
+                <Label text="MENU PRINCIPAL" styleClass="nav-section-title"/>
+                <Button styleClass="nav-item" maxWidth="Infinity" onAction="#goToDashboard">
+                    <graphic><HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="⊞" styleClass="nav-icon-label nav-icon-muted"/>
+                        <Label text="Tableau de bord" style="-fx-text-fill: inherit;"/>
+                    </HBox></graphic>
+                </Button>
+
+                <Label text="FORMATION" styleClass="nav-section-title"/>
+                <Button styleClass="nav-item active" maxWidth="Infinity">
+                    <graphic><HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="□" styleClass="nav-icon-label nav-icon-emerald"/>
+                        <Label text="Cours" style="-fx-text-fill: #f5f5f4; -fx-font-weight: bold;"/>
+                    </HBox></graphic>
+                </Button>
+                <Button styleClass="nav-item" maxWidth="Infinity" onAction="#goToChapitres">
+                    <graphic><HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="☰" styleClass="nav-icon-label nav-icon-muted"/>
+                        <Label text="Chapitres" style="-fx-text-fill: inherit;"/>
+                    </HBox></graphic>
+                </Button>
+
+                <Label text="ALIMENTATION" styleClass="nav-section-title"/>
+                <Button styleClass="nav-item" maxWidth="Infinity" onAction="#goToAliments">
+                    <graphic><HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="○" styleClass="nav-icon-label nav-icon-emerald"/>
+                        <Label text="Aliments" style="-fx-text-fill: inherit;"/>
+                    </HBox></graphic>
+                </Button>
+                <Button styleClass="nav-item" maxWidth="Infinity" onAction="#goToRepas">
+                    <graphic><HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="✦" styleClass="nav-icon-label nav-icon-muted"/>
+                        <Label text="Repas" style="-fx-text-fill: inherit;"/>
+                    </HBox></graphic>
+                </Button>
+
+                <Label text="SPORTS" styleClass="nav-section-title"/>
+                <Button styleClass="nav-item" maxWidth="Infinity" onAction="#goToActivites">
+                    <graphic><HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="⚡" styleClass="nav-icon-label nav-icon-gold"/>
+                        <Label text="Activités" style="-fx-text-fill: inherit;"/>
+                    </HBox></graphic>
+                </Button>
+
+                <Label text="FINANCE" styleClass="nav-section-title"/>
+                <Button styleClass="nav-item" maxWidth="Infinity" onAction="#goToDepenses">
+                    <graphic><HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="▤" styleClass="nav-icon-label nav-icon-muted"/>
+                        <Label text="Dépenses" style="-fx-text-fill: inherit;"/>
+                    </HBox></graphic>
+                </Button>
+
+                <Region VBox.vgrow="ALWAYS"/>
+            </VBox>
+
+            <HBox styleClass="sidebar-footer" spacing="12" alignment="CENTER_LEFT">
+                <StackPane styleClass="user-avatar">
+                    <Label text="A" style="-fx-text-fill: white; -fx-font-size: 15px; -fx-font-weight: bold;"/>
+                </StackPane>
+                <VBox spacing="2">
+                    <Label text="Admin User"     styleClass="user-name"/>
+                    <Label text="Administrateur" styleClass="user-role"/>
+                </VBox>
+            </HBox>
+        </VBox>
+    </left>
+
+    <!-- ══════════════════════════════════════
+         MAIN CONTENT
+    ══════════════════════════════════════ -->
+    <center>
+        <VBox spacing="0" VBox.vgrow="ALWAYS">
+
+            <!-- TOP NAVBAR -->
+            <HBox styleClass="top-navbar" alignment="CENTER_LEFT" spacing="12">
+                <Label text="□" style="-fx-text-fill: #34d399; -fx-font-size: 20px;"/>
+                <Label text="Gestion des Cours" styleClass="page-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <!-- Search -->
+                <TextField fx:id="searchField"
+                           promptText="Rechercher un cours..."
+                           styleClass="search-field"
+                           onKeyReleased="#handleSearch"/>
+
+                <!-- Export All PDF -->
+                <Button text="📄 Export PDF"
+                        onAction="#handleExportAllPDF"
+                        style="-fx-background-color: rgba(14,165,233,0.15);
+                               -fx-border-color: rgba(14,165,233,0.30);
+                               -fx-border-radius: 8; -fx-background-radius: 8;
+                               -fx-border-width: 1; -fx-text-fill: #0ea5e9;
+                               -fx-font-size: 12px; -fx-padding: 8 14; -fx-cursor: hand;"/>
+
+                <!-- Notification Bell -->
+                <StackPane>
+                    <Button fx:id="btnNotifBell"
+                            text="🔔"
+                            onAction="#handleToggleNotifications"
+                            style="-fx-background-color: transparent;
+                                   -fx-text-fill: rgba(245,245,244,0.45);
+                                   -fx-background-radius: 10;
+                                   -fx-font-size: 18px;
+                                   -fx-padding: 6 10;
+                                   -fx-cursor: hand;"/>
+                    <Label fx:id="lblNotifBadge"
+                           text="0"
+                           visible="false"
+                           managed="false"
+                           style="-fx-background-color: #ff6b6b;
+                                  -fx-text-fill: white;
+                                  -fx-font-size: 9px;
+                                  -fx-font-weight: bold;
+                                  -fx-background-radius: 8;
+                                  -fx-padding: 1 4;
+                                  -fx-min-width: 16;
+                                  -fx-alignment: center;"
+                           StackPane.alignment="TOP_RIGHT"
+                           translateX="4"
+                           translateY="-2"/>
+                </StackPane>
+
+                <!-- Add Course -->
+                <Button text="+ Nouveau Cours"
+                        styleClass="btn-primary"
+                        onAction="#handleOpenAddDialog"/>
+            </HBox>
+
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                        style="-fx-background-color: transparent;
+                               -fx-background: transparent;
+                               -fx-border-color: transparent;">
+                <VBox spacing="20" style="-fx-padding: 24;">
+
+                    <!-- STAT CARDS -->
+                    <HBox spacing="16">
+                        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="6" minWidth="0">
+                            <HBox alignment="TOP_RIGHT">
+                                <StackPane styleClass="stat-icon-cyan">
+                                    <Label text="□" style="-fx-text-fill: #34d399; -fx-font-size: 18px;"/>
+                                </StackPane>
+                            </HBox>
+                            <Label text="TOTAL COURS" styleClass="stat-label"/>
+                            <Label fx:id="statTotal" text="—" styleClass="stat-value"/>
+                            <Label text="cours enregistrés"
+                                   style="-fx-text-fill: rgba(245,245,244,0.40); -fx-font-size: 11px;"/>
+                        </VBox>
+
+                        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="6" minWidth="0">
+                            <HBox alignment="TOP_RIGHT">
+                                <StackPane styleClass="stat-icon-gold">
+                                    <Label text="▲" style="-fx-text-fill: #d4a574; -fx-font-size: 18px;"/>
+                                </StackPane>
+                            </HBox>
+                            <Label text="BEGINNER" styleClass="stat-label"/>
+                            <Label fx:id="statDebutant" text="—" styleClass="stat-value"/>
+                            <Label text="niveau débutant"
+                                   style="-fx-text-fill: rgba(245,245,244,0.40); -fx-font-size: 11px;"/>
+                        </VBox>
+
+                        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="6" minWidth="0">
+                            <HBox alignment="TOP_RIGHT">
+                                <StackPane styleClass="stat-icon-coral">
+                                    <Label text="◉" style="-fx-text-fill: #e07a5f; -fx-font-size: 18px;"/>
+                                </StackPane>
+                            </HBox>
+                            <Label text="INTERMÉDIAIRE" styleClass="stat-label"/>
+                            <Label fx:id="statIntermediaire" text="—" styleClass="stat-value"/>
+                            <Label text="niveau intermédiaire"
+                                   style="-fx-text-fill: rgba(245,245,244,0.40); -fx-font-size: 11px;"/>
+                        </VBox>
+
+                        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="6" minWidth="0">
+                            <HBox alignment="TOP_RIGHT">
+                                <StackPane styleClass="stat-icon-info">
+                                    <Label text="✦" style="-fx-text-fill: #0ea5e9; -fx-font-size: 18px;"/>
+                                </StackPane>
+                            </HBox>
+                            <Label text="ADVANCED" styleClass="stat-label"/>
+                            <Label fx:id="statAvance" text="—" styleClass="stat-value"/>
+                            <Label text="niveau avancé"
+                                   style="-fx-text-fill: rgba(245,245,244,0.40); -fx-font-size: 11px;"/>
+                        </VBox>
+                    </HBox>
+
+                    <!-- TABLE CARD -->
+                    <VBox styleClass="glass-card" spacing="16" VBox.vgrow="ALWAYS">
+                        <HBox alignment="CENTER_LEFT" spacing="12">
+                            <VBox spacing="3">
+                                <Label text="Liste des cours" styleClass="card-title"/>
+                                <Label fx:id="coursCountLabel" text="0 cours au total"
+                                       styleClass="card-subtitle"/>
+                            </VBox>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <ComboBox fx:id="filterNiveau" promptText="Tous les niveaux"
+                                      onAction="#handleFilter"
+                                      style="-fx-font-size: 12px;"/>
+                            <ComboBox fx:id="filterCategorie" promptText="Toutes les catégories"
+                                      onAction="#handleFilter"
+                                      style="-fx-font-size: 12px;"/>
+                            <Button text="Reset" styleClass="btn-secondary"
+                                    onAction="#handleResetFilters"
+                                    style="-fx-font-size: 12px; -fx-padding: 7 14;"/>
+                        </HBox>
+
+                        <TableView fx:id="coursTable"
+                                   styleClass="table-view"
+                                   VBox.vgrow="ALWAYS"
+                                   prefHeight="460">
+                            <columns>
+                                <TableColumn fx:id="colId"           text="ID"          prefWidth="55"/>
+                                <TableColumn fx:id="colTitre"        text="TITRE"       prefWidth="180"/>
+                                <TableColumn fx:id="colCategorie"    text="CATÉGORIE"   prefWidth="110"/>
+                                <TableColumn fx:id="colNiveau"       text="NIVEAU"      prefWidth="100"/>
+                                <TableColumn fx:id="colDuree"        text="DURÉE (H)"   prefWidth="80"/>
+                                <TableColumn fx:id="colStatus"       text="STATUT"      prefWidth="100"/>
+                                <TableColumn fx:id="colDateCreation" text="DATE"        prefWidth="100"/>
+                                <TableColumn fx:id="colActions"      text="ACTIONS"     prefWidth="140"/>
+                            </columns>
+                            <placeholder>
+                                <Label text="Aucun cours trouvé."
+                                       style="-fx-text-fill: rgba(245,245,244,0.35); -fx-font-size: 14px;"/>
+                            </placeholder>
+                        </TableView>
+                    </VBox>
+
+                </VBox>
+            </ScrollPane>
+        </VBox>
+    </center>
+
+</BorderPane>

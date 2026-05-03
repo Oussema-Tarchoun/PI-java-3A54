@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+            style="-fx-background: transparent; -fx-background-color: transparent;">
+
+    <VBox spacing="24" style="-fx-background-color: #0a0e1a; -fx-padding: 0;">
+
+        <HBox styleClass="card-header" alignment="CENTER_LEFT">
+            <StackPane styleClass="card-icon, card-icon-green">
+                <Label text="🍴" style="-fx-font-size: 20px;"/>
+            </StackPane>
+            <Label text="Smart Nutrition" styleClass="card-title"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="⋯" styleClass="card-menu"/>
+        </HBox>
+
+        <HBox spacing="24" alignment="TOP_LEFT">
+            <VBox styleClass="card" spacing="20" HBox.hgrow="ALWAYS">
+                <HBox spacing="20" alignment="CENTER">
+                    <StackPane styleClass="donut-chart">
+                        <Circle radius="80" fill="transparent" stroke="#1e2538" strokeWidth="16"/>
+                        <Circle radius="80" fill="transparent" stroke="#00d4ff" strokeWidth="16"
+                                strokeDashArray="150502" rotate="90"/>
+                        <Circle radius="80" fill="transparent" stroke="#8b5cf6" strokeWidth="16"
+                                strokeDashArray="100502" rotate="-45"/>
+                        <Circle radius="80" fill="transparent" stroke="#ec4899" strokeWidth="16"
+                                strokeDashArray="50502" rotate="-120"/>
+                        <VBox alignment="CENTER" spacing="2">
+                            <Label text="1,850" styleClass="donut-center" style="-fx-font-size: 32px;"/>
+                            <Label text="KCAL" styleClass="donut-label"/>
+                        </VBox>
+                    </StackPane>
+
+                    <VBox spacing="20" alignment="CENTER_LEFT">
+                        <HBox spacing="12" alignment="CENTER_LEFT">
+                            <Circle radius="6" fill="#00d4ff"/>
+                            <VBox>
+                                <Label text="Carbs" styleClass="nutrient-label"/>
+                                <Label text="124g" styleClass="nutrient-value"/>
+                            </VBox>
+                        </HBox>
+                        <HBox spacing="12" alignment="CENTER_LEFT">
+                            <Circle radius="6" fill="#8b5cf6"/>
+                            <VBox>
+                                <Label text="Protein" styleClass="nutrient-label"/>
+                                <Label text="140g" styleClass="nutrient-value"/>
+                            </VBox>
+                        </HBox>
+                        <HBox spacing="12" alignment="CENTER_LEFT">
+                            <Circle radius="6" fill="#ec4899"/>
+                            <VBox>
+                                <Label text="Fats" styleClass="nutrient-label"/>
+                                <Label text="65g" styleClass="nutrient-value"/>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <VBox styleClass="card" spacing="16" HBox.hgrow="ALWAYS">
+                <Label text="Daily Goals" styleClass="card-title"/>
+
+                <VBox spacing="12">
+                    <HBox alignment="CENTER_LEFT" spacing="12">
+                        <Label text="Calories" styleClass="nutrient-label" HBox.hgrow="ALWAYS"/>
+                        <Label text="1,850 / 2,200" styleClass="progress-meta"/>
+                    </HBox>
+                    <ProgressBar progress="0.84" styleClass="progress-bar, progress-bar-cyan"/>
+                </VBox>
+
+                <VBox spacing="12">
+                    <HBox alignment="CENTER_LEFT" spacing="12">
+                        <Label text="Protein" styleClass="nutrient-label" HBox.hgrow="ALWAYS"/>
+                        <Label text="140 / 150g" styleClass="progress-meta"/>
+                    </HBox>
+                    <ProgressBar progress="0.93" styleClass="progress-bar, progress-bar-purple"/>
+                </VBox>
+
+                <VBox spacing="12">
+                    <HBox alignment="CENTER_LEFT" spacing="12">
+                        <Label text="Carbs" styleClass="nutrient-label" HBox.hgrow="ALWAYS"/>
+                        <Label text="124 / 250g" styleClass="progress-meta"/>
+                    </HBox>
+                    <ProgressBar progress="0.50" style="-fx-accent: #00d4ff;"/>
+                </VBox>
+
+                <VBox spacing="12">
+                    <HBox alignment="CENTER_LEFT" spacing="12">
+                        <Label text="Fats" styleClass="nutrient-label" HBox.hgrow="ALWAYS"/>
+                        <Label text="65 / 70g" styleClass="progress-meta"/>
+                    </HBox>
+                    <ProgressBar progress="0.93" styleClass="progress-bar, progress-bar-pink"/>
+                </VBox>
+            </VBox>
+        </HBox>
+
+        <VBox styleClass="card" spacing="16">
+            <HBox alignment="CENTER_LEFT">
+                <Label text="Today's Meals" styleClass="card-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="+ Add Meal" styleClass="btn-primary"/>
+            </HBox>
+
+            <VBox spacing="12">
+                <HBox styleClass="course-item" spacing="12" alignment="CENTER_LEFT">
+                    <StackPane>
+                        <Circle radius="20" fill="#f59e0b" opacity="0.2"/>
+                        <Label text="🌅" textFill="#f59e0b"/>
+                    </StackPane>
+                    <VBox spacing="2" HBox.hgrow="ALWAYS">
+                        <Label text="Breakfast" styleClass="progress-label"/>
+                        <Label text="Oatmeal with berries, Greek yogurt" styleClass="progress-meta"/>
+                    </VBox>
+                    <Label text="420 kcal" styleClass="nutrient-value"/>
+                </HBox>
+
+                <HBox styleClass="course-item" spacing="12" alignment="CENTER_LEFT">
+                    <StackPane>
+                        <Circle radius="20" fill="#10b981" opacity="0.2"/>
+                        <Label text="☀️" textFill="#10b981"/>
+                    </StackPane>
+                    <VBox spacing="2" HBox.hgrow="ALWAYS">
+                        <Label text="Lunch" styleClass="progress-label"/>
+                        <Label text="Grilled chicken salad, quinoa" styleClass="progress-meta"/>
+                    </VBox>
+                    <Label text="650 kcal" styleClass="nutrient-value"/>
+                </HBox>
+
+                <HBox styleClass="course-item" spacing="12" alignment="CENTER_LEFT">
+                    <StackPane>
+                        <Circle radius="20" fill="#8b5cf6" opacity="0.2"/>
+                        <Label text="🌙" textFill="#8b5cf6"/>
+                    </StackPane>
+                    <VBox spacing="2" HBox.hgrow="ALWAYS">
+                        <Label text="Dinner" styleClass="progress-label"/>
+                        <Label text="Salmon with vegetables, brown rice" styleClass="progress-meta"/>
+                    </VBox>
+                    <Label text="580 kcal" styleClass="nutrient-value"/>
+                </HBox>
+
+                <HBox styleClass="course-item" spacing="12" alignment="CENTER_LEFT">
+                    <StackPane>
+                        <Circle radius="20" fill="#ec4899" opacity="0.2"/>
+                        <Label text="🍎" textFill="#ec4899"/>
+                    </StackPane>
+                    <VBox spacing="2" HBox.hgrow="ALWAYS">
+                        <Label text="Snacks" styleClass="progress-label"/>
+                        <Label text="Apple, almonds, protein shake" styleClass="progress-meta"/>
+                    </VBox>
+                    <Label text="200 kcal" styleClass="nutrient-value"/>
+                </HBox>
+            </VBox>
+        </VBox>
+
+        <VBox styleClass="card" spacing="16">
+            <Label text="Water Intake" styleClass="card-title"/>
+            <HBox spacing="16" alignment="CENTER">
+                <Button text="−" styleClass="temp-button"/>
+                <Label text="1.5L / 2.5L daily goal" styleClass="stat-value" style="-fx-font-size: 20px;"/>
+                <Button text="+" styleClass="temp-button"/>
+            </HBox>
+            <ProgressBar progress="0.6" styleClass="progress-bar, progress-bar-cyan"/>
+        </VBox>
+
+    </VBox>
+</ScrollPane>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.geometry.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+            style="-fx-background: transparent; -fx-background-color: transparent;">
+
+    <VBox spacing="24" style="-fx-background-color: #0a0e1a; -fx-padding: 0;">
+
+        <HBox styleClass="card-header" alignment="CENTER_LEFT">
+            <StackPane styleClass="card-icon, card-icon-pink">
+                <Label text="❤️" style="-fx-font-size: 20px;"/>
+            </StackPane>
+            <Label text="Health &amp; Activity" styleClass="card-title"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="⋯" styleClass="card-menu"/>
+        </HBox>
+
+        <HBox spacing="24" alignment="TOP_LEFT">
+            <VBox styleClass="card" spacing="16" HBox.hgrow="ALWAYS">
+                <HBox spacing="8" alignment="CENTER_LEFT">
+                    <Label text="⭐" textFill="#10b981"/>
+                    <Label text="Steps" styleClass="stat-label"/>
+                </HBox>
+                <Label text="8,432" styleClass="stat-value"/>
+                <Label text="Goal: 10,000" styleClass="steps-goal"/>
+                <ProgressBar progress="0.84" styleClass="progress-bar, progress-bar-cyan"/>
+            </VBox>
+
+            <VBox styleClass="card" spacing="16" HBox.hgrow="ALWAYS">
+                <HBox spacing="8" alignment="CENTER_LEFT">
+                    <Label text="🌙" textFill="#8b5cf6"/>
+                    <Label text="Sleep" styleClass="stat-label"/>
+                </HBox>
+                <Label text="7h 24m" styleClass="stat-value"/>
+                <Label text="Deep Sleep: 2h" styleClass="sleep-deep"/>
+                <ProgressBar progress="0.75" styleClass="progress-bar, progress-bar-purple"/>
+            </VBox>
+
+            <VBox styleClass="card" spacing="16" HBox.hgrow="ALWAYS">
+                <HBox spacing="8" alignment="CENTER_LEFT">
+                    <Label text="🔥" textFill="#f59e0b"/>
+                    <Label text="Calories" styleClass="stat-label"/>
+                </HBox>
+                <Label text="486" styleClass="stat-value"/>
+                <Label text="Burned today" styleClass="progress-meta"/>
+                <ProgressBar progress="0.65" style="-fx-accent: #f59e0b;"/>
+            </VBox>
+        </HBox>
+
+        <VBox styleClass="card" spacing="16">
+            <HBox alignment="CENTER_LEFT" spacing="8">
+                <Label text="❤️" textFill="#ef4444"/>
+                <Label text="Heart Rate" styleClass="stat-label"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <HBox spacing="4" alignment="CENTER_RIGHT">
+                    <Label text="72" styleClass="heart-rate-value"/>
+                    <Label text="BPM" styleClass="heart-rate-unit"/>
+                </HBox>
+            </HBox>
+
+            <LineChart prefHeight="250" createSymbols="false" legendVisible="false">
+                <xAxis>
+                    <CategoryAxis side="BOTTOM" tickLabelsVisible="true"
+                                  tickMarkVisible="false" style="-fx-tick-label-fill: #64748b;"/>
+                </xAxis>
+                <yAxis>
+                    <NumberAxis side="LEFT" tickLabelsVisible="true"
+                                tickMarkVisible="false" style="-fx-tick-label-fill: #64748b;"
+                                lowerBound="60" upperBound="100" tickUnit="10"/>
+                </yAxis>
+            </LineChart>
+        </VBox>
+
+        <VBox styleClass="card" spacing="16">
+            <Label text="Weekly Activity" styleClass="card-title"/>
+            <BarChart prefHeight="250" legendVisible="false">
+                <xAxis>
+                    <CategoryAxis side="BOTTOM" tickLabelsVisible="true"
+                                  tickMarkVisible="false" style="-fx-tick-label-fill: #64748b;"/>
+                </xAxis>
+                <yAxis>
+                    <NumberAxis side="LEFT" tickLabelsVisible="true"
+                                tickMarkVisible="false" style="-fx-tick-label-fill: #64748b;"
+                                lowerBound="0" upperBound="15000" tickUnit="5000"/>
+                </yAxis>
+            </BarChart>
+        </VBox>
+
+        <VBox styleClass="add-widget-card" maxWidth="Infinity">
+            <Label text="+" textFill="#64748b" style="-fx-font-size: 32px;"/>
+            <Label text="Add Widget" styleClass="add-widget-text"/>
+        </VBox>
+
+    </VBox>
+</ScrollPane>

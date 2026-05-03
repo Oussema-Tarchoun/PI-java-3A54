@@ -1,0 +1,714 @@
+package Controller.back;
+
+import Models.Cours;
+import Services.Iservice;
+import Services.ServiceCours;
+import utils.EmailService;
+import utils.NotificationService;
+import utils.PDFExporter;
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+
+import java.io.File;
+import java.io.IOException;
+import java.sql.SQLDataException;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+
+public class CoursBackController {
+
+    // ── Table ──────────────────────────────────────────────────────────────────
+    @FXML private TableView<Cours>            coursTable;
+    @FXML private TableColumn<Cours, Integer> colId;
+    @FXML private TableColumn<Cours, String>  colTitre;
+    @FXML private TableColumn<Cours, String>  colCategorie;
+    @FXML private TableColumn<Cours, String>  colNiveau;
+    @FXML private TableColumn<Cours, Integer> colDuree;
+    @FXML private TableColumn<Cours, String>  colStatus;
+    @FXML private TableColumn<Cours, String>  colDateCreation;
+    @FXML private TableColumn<Cours, Void>    colActions;
+
+    // ── Filters ────────────────────────────────────────────────────────────────
+    @FXML private TextField        searchField;
+    @FXML private ComboBox<String> filterNiveau;
+    @FXML private ComboBox<String> filterCategorie;
+
+    // ── Stats ──────────────────────────────────────────────────────────────────
+    @FXML private Label statTotal;
+    @FXML private Label statDebutant;
+    @FXML private Label statIntermediaire;
+    @FXML private Label statAvance;
+    @FXML private Label coursCountLabel;
+
+    // ── Notification bell ──────────────────────────────────────────────────────
+    @FXML private Button btnNotifBell;
+    @FXML private Label  lblNotifBadge;
+
+    // ── State ──────────────────────────────────────────────────────────────────
+    private final Iservice<Cours>     service;
+    private final NotificationService notifService;
+    private ObservableList<Cours>     allCours;
+    private Cours                     editingCours = null;
+    private Stage                     notifPopup   = null;
+
+    public CoursBackController() {
+        this.service      = new ServiceCours();
+        this.notifService = NotificationService.getInstance();
+    }
+
+    // ── Init ───────────────────────────────────────────────────────────────────
+
+    @FXML
+    public void initialize() {
+        setupColumns();
+        setupFilters();
+        setupSearchListener();
+        bindNotificationBadge();
+        loadData();
+    }
+
+    // ── Notification badge binding ─────────────────────────────────────────────
+
+    private void bindNotificationBadge() {
+        if (lblNotifBadge == null || btnNotifBell == null) return;
+        refreshBellStyle(notifService.getUnreadCount());
+        notifService.unreadCountProperty().addListener((obs, oldVal, newVal) ->
+                Platform.runLater(() -> refreshBellStyle(newVal.intValue())));
+    }
+
+    private void refreshBellStyle(int count) {
+        if (lblNotifBadge == null || btnNotifBell == null) return;
+        if (count > 0) {
+            btnNotifBell.setText("🔔");
+            btnNotifBell.setStyle(
+                    "-fx-background-color: rgba(52,211,153,0.15);" +
+                            "-fx-text-fill: #34d399;" +
+                            "-fx-background-radius: 10;" +
+                            "-fx-font-size: 18px;" +
+                            "-fx-padding: 6 10;" +
+                            "-fx-cursor: hand;" +
+                            "-fx-effect: dropshadow(gaussian, rgba(52,211,153,0.45), 12, 0, 0, 0);");
+            lblNotifBadge.setText(count > 99 ? "99+" : String.valueOf(count));
+            lblNotifBadge.setVisible(true);
+            lblNotifBadge.setManaged(true);
+        } else {
+            btnNotifBell.setText("🔔");
+            btnNotifBell.setStyle(
+                    "-fx-background-color: transparent;" +
+                            "-fx-text-fill: rgba(245,245,244,0.45);" +
+                            "-fx-background-radius: 10;" +
+                            "-fx-font-size: 18px;" +
+                            "-fx-padding: 6 10;" +
+                            "-fx-cursor: hand;");
+            lblNotifBadge.setVisible(false);
+            lblNotifBadge.setManaged(false);
+        }
+    }
+
+    // ── Notification popup ─────────────────────────────────────────────────────
+
+    @FXML
+    private void handleToggleNotifications() {
+        if (notifPopup != null && notifPopup.isShowing()) {
+            notifPopup.close();
+            notifPopup = null;
+            return;
+        }
+        notifService.markAllRead();
+        showNotificationPopup();
+    }
+
+    private void showNotificationPopup() {
+        notifPopup = new Stage();
+        notifPopup.initModality(Modality.NONE);
+        notifPopup.initStyle(StageStyle.TRANSPARENT);
+        notifPopup.setAlwaysOnTop(true);
+
+        // Header
+        Label title = new Label("🔔  Notifications");
+        title.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #f5f5f4;");
+
+        Button btnClear = new Button("Clear all");
+        btnClear.setStyle(
+                "-fx-background-color: transparent; -fx-text-fill: #ff6b6b;" +
+                        "-fx-font-size: 12px; -fx-cursor: hand;");
+        btnClear.setOnAction(e -> {
+            notifService.clearAll();
+            notifPopup.close();
+            notifPopup = null;
+        });
+
+        Button btnClose = new Button("✕");
+        btnClose.setStyle(
+                "-fx-background-color: transparent; -fx-text-fill: rgba(245,245,244,0.45);" +
+                        "-fx-font-size: 14px; -fx-cursor: hand;");
+        btnClose.setOnAction(e -> { notifPopup.close(); notifPopup = null; });
+
+        Region headerSpacer = new Region();
+        HBox.setHgrow(headerSpacer, Priority.ALWAYS);
+        HBox header = new HBox(10, title, headerSpacer, btnClear, btnClose);
+        header.setAlignment(Pos.CENTER_LEFT);
+        header.setPadding(new Insets(14, 16, 10, 16));
+
+        Separator sep = new Separator();
+        sep.setStyle("-fx-background-color: rgba(255,255,255,0.08);");
+
+        // Notifications list
+        VBox listBox = new VBox(0);
+        listBox.setStyle("-fx-background-color: #0d1a14;");
+
+        ObservableList<NotificationService.AppNotification> notifs = notifService.getNotifications();
+
+        if (notifs.isEmpty()) {
+            Label empty = new Label("No notifications yet.");
+            empty.setStyle("-fx-text-fill: rgba(245,245,244,0.40); -fx-font-size: 13px;");
+            VBox emptyBox = new VBox(empty);
+            emptyBox.setAlignment(Pos.CENTER);
+            emptyBox.setPadding(new Insets(24));
+            listBox.getChildren().add(emptyBox);
+        } else {
+            for (NotificationService.AppNotification n : notifs) {
+                listBox.getChildren().add(buildNotifRow(n));
+            }
+        }
+
+        ScrollPane scrollPane = new ScrollPane(listBox);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
+        scrollPane.setPrefHeight(Math.min(notifs.size() * 76 + 20, 360));
+
+        // Root
+        VBox root = new VBox(0, header, sep, scrollPane);
+        root.setPrefWidth(340);
+        root.setStyle(
+                "-fx-background-color: #0d1a14;" +
+                        "-fx-background-radius: 12;" +
+                        "-fx-border-radius: 12;" +
+                        "-fx-border-color: rgba(255,255,255,0.09);" +
+                        "-fx-border-width: 1;" +
+                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.55), 24, 0, 0, 8);");
+
+        StackPane overlay = new StackPane(root);
+        overlay.setStyle("-fx-background-color: transparent;");
+        overlay.setAlignment(Pos.TOP_RIGHT);
+
+        Scene scene = new Scene(overlay, 340, Math.min(notifs.size() * 76 + 76, 440));
+        scene.setFill(Color.TRANSPARENT);
+        notifPopup.setScene(scene);
+
+        // Position below the bell button
+        if (btnNotifBell != null && btnNotifBell.getScene() != null
+                && btnNotifBell.getScene().getWindow() != null) {
+            javafx.geometry.Bounds bounds =
+                    btnNotifBell.localToScreen(btnNotifBell.getBoundsInLocal());
+            if (bounds != null) {
+                notifPopup.setX(bounds.getMaxX() - 340);
+                notifPopup.setY(bounds.getMaxY() + 6);
+            }
+        }
+
+        notifPopup.show();
+    }
+
+    private VBox buildNotifRow(NotificationService.AppNotification n) {
+        String icon, accentColor;
+        switch (n.getType()) {
+            case "course"  -> { icon = "📚"; accentColor = "#34d399"; }
+            case "chapter" -> { icon = "📖"; accentColor = "#0ea5e9"; }
+            default        -> { icon = "ℹ️";  accentColor = "rgba(245,245,244,0.30)"; }
+        }
+
+        Label iconLabel = new Label(icon);
+        iconLabel.setStyle("-fx-font-size: 18px;");
+        iconLabel.setMinWidth(32);
+        iconLabel.setAlignment(Pos.CENTER);
+
+        Label msgLabel = new Label(n.getMessage());
+        msgLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #f5f5f4;");
+        msgLabel.setWrapText(true);
+
+        Label timeLabel = new Label(n.getTime());
+        timeLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: rgba(245,245,244,0.40);");
+
+        VBox textCol = new VBox(3, msgLabel, timeLabel);
+        textCol.setAlignment(Pos.CENTER_LEFT);
+        HBox.setHgrow(textCol, Priority.ALWAYS);
+
+        Region accent = new Region();
+        accent.setMinWidth(3);
+        accent.setMaxWidth(3);
+        accent.setStyle("-fx-background-color: " + accentColor + "; -fx-background-radius: 2;");
+
+        HBox row = new HBox(10, accent, iconLabel, textCol);
+        row.setAlignment(Pos.CENTER_LEFT);
+        row.setPadding(new Insets(10, 14, 10, 10));
+
+        Separator rowSep = new Separator();
+        rowSep.setStyle("-fx-background-color: rgba(255,255,255,0.06);");
+
+        VBox wrapper = new VBox(0, row, rowSep);
+        wrapper.setStyle("-fx-background-color: #0d1a14;");
+        wrapper.setOnMouseEntered(e -> wrapper.setStyle("-fx-background-color: rgba(255,255,255,0.04);"));
+        wrapper.setOnMouseExited(e  -> wrapper.setStyle("-fx-background-color: #0d1a14;"));
+
+        return wrapper;
+    }
+
+    // ── Table setup ────────────────────────────────────────────────────────────
+
+    private void setupColumns() {
+        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        colTitre.setCellValueFactory(new PropertyValueFactory<>("tittre"));
+        colCategorie.setCellValueFactory(new PropertyValueFactory<>("categorie"));
+        colNiveau.setCellValueFactory(new PropertyValueFactory<>("niveau"));
+        colDuree.setCellValueFactory(new PropertyValueFactory<>("dureeEstimee"));
+        colDateCreation.setCellValueFactory(new PropertyValueFactory<>("dateCreation"));
+
+        // Status badge cell
+        colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
+        colStatus.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(String status, boolean empty) {
+                super.updateItem(status, empty);
+                if (empty || status == null) { setGraphic(null); return; }
+                Label badge = new Label(status);
+                String color = switch (status.toLowerCase()) {
+                    case "actif"      -> "-fx-background-color: rgba(52,211,153,0.18);  -fx-text-fill: #34d399;";
+                    case "inactif"    -> "-fx-background-color: rgba(220,38,38,0.18);   -fx-text-fill: #ff6b6b;";
+                    case "en attente" -> "-fx-background-color: rgba(212,165,116,0.18); -fx-text-fill: #d4a574;";
+                    case "en cours"   -> "-fx-background-color: rgba(14,165,233,0.18);  -fx-text-fill: #0ea5e9;";
+                    default           -> "-fx-background-color: rgba(255,255,255,0.08); -fx-text-fill: #f5f5f4;";
+                };
+                badge.setStyle(color +
+                        "-fx-background-radius: 20; -fx-padding: 4 10;" +
+                        "-fx-font-size: 11px; -fx-font-weight: bold;");
+                setGraphic(badge);
+                setText(null);
+            }
+        });
+
+        // Actions cell — Edit | Delete | PDF
+        colActions.setCellFactory(col -> new TableCell<>() {
+            private final Button btnEdit   = new Button("✏");
+            private final Button btnDelete = new Button("🗑");
+            private final Button btnPDF    = new Button("📄");
+            private final HBox   box       = new HBox(5, btnEdit, btnDelete, btnPDF);
+
+            {
+                btnEdit.setStyle(
+                        "-fx-background-color: rgba(52,211,153,0.10);" +
+                                "-fx-background-radius: 8; -fx-border-color: rgba(52,211,153,0.20);" +
+                                "-fx-border-radius: 8; -fx-border-width: 1;" +
+                                "-fx-text-fill: #34d399; -fx-cursor: hand;" +
+                                "-fx-min-width: 30; -fx-min-height: 30; -fx-max-width: 30; -fx-max-height: 30;");
+                btnDelete.setStyle(
+                        "-fx-background-color: rgba(220,38,38,0.10);" +
+                                "-fx-background-radius: 8; -fx-border-color: rgba(220,38,38,0.20);" +
+                                "-fx-border-radius: 8; -fx-border-width: 1;" +
+                                "-fx-text-fill: #ff6b6b; -fx-cursor: hand;" +
+                                "-fx-min-width: 30; -fx-min-height: 30; -fx-max-width: 30; -fx-max-height: 30;");
+                btnPDF.setStyle(
+                        "-fx-background-color: rgba(14,165,233,0.10);" +
+                                "-fx-background-radius: 8; -fx-border-color: rgba(14,165,233,0.20);" +
+                                "-fx-border-radius: 8; -fx-border-width: 1;" +
+                                "-fx-text-fill: #0ea5e9; -fx-cursor: hand;" +
+                                "-fx-min-width: 30; -fx-min-height: 30; -fx-max-width: 30; -fx-max-height: 30;");
+
+                btnEdit.setTooltip(new Tooltip("Edit"));
+                btnDelete.setTooltip(new Tooltip("Delete"));
+                btnPDF.setTooltip(new Tooltip("Export PDF"));
+                box.setAlignment(Pos.CENTER_LEFT);
+
+                btnEdit.setOnAction(e -> {
+                    Cours c = getTableView().getItems().get(getIndex());
+                    editingCours = c;
+                    openDialog(c);
+                });
+                btnDelete.setOnAction(e -> {
+                    Cours c = getTableView().getItems().get(getIndex());
+                    handleDelete(c);
+                });
+                btnPDF.setOnAction(e -> {
+                    Cours c = getTableView().getItems().get(getIndex());
+                    handleExportPDF(c);
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : box);
+            }
+        });
+    }
+
+    // ── Filters ────────────────────────────────────────────────────────────────
+
+    private void setupFilters() {
+        filterNiveau.getItems().add("Tous les niveaux");
+        filterNiveau.getItems().addAll("Beginner", "intermediate", "Advanced");
+        filterNiveau.setValue("Tous les niveaux");
+
+        filterCategorie.getItems().add("Toutes les catégories");
+        filterCategorie.getItems().addAll("Programming", "Design", "Marketing", "Business", "Science", "Autre");
+        filterCategorie.setValue("Toutes les catégories");
+    }
+
+    private void setupSearchListener() {
+        searchField.textProperty().addListener((obs, o, n) -> applyFilters());
+    }
+
+    @FXML private void handleFilter()       { applyFilters(); }
+    @FXML private void handleSearch()       { applyFilters(); }
+
+    @FXML
+    private void handleResetFilters() {
+        searchField.clear();
+        filterNiveau.setValue("Tous les niveaux");
+        filterCategorie.setValue("Toutes les catégories");
+    }
+
+    private void applyFilters() {
+        if (allCours == null) return;
+        String search = searchField.getText() == null ? "" : searchField.getText().toLowerCase();
+        String niveau = filterNiveau.getValue();
+        String cat    = filterCategorie.getValue();
+
+        List<Cours> filtered = allCours.stream().filter(c -> {
+            boolean matchSearch = search.isBlank()
+                    || c.getTittre().toLowerCase().contains(search)
+                    || c.getCategorie().toLowerCase().contains(search);
+            boolean matchNiveau = niveau == null || niveau.startsWith("Tous")
+                    || c.getNiveau().equalsIgnoreCase(niveau);
+            boolean matchCat    = cat    == null || cat.startsWith("Toutes")
+                    || c.getCategorie().equalsIgnoreCase(cat);
+            return matchSearch && matchNiveau && matchCat;
+        }).collect(Collectors.toList());
+
+        coursTable.setItems(FXCollections.observableArrayList(filtered));
+        coursCountLabel.setText(filtered.size() + " cours au total");
+    }
+
+    // ── Data ───────────────────────────────────────────────────────────────────
+
+    private void loadData() {
+        try {
+            List<Cours> list = service.recuperer();
+            allCours = FXCollections.observableArrayList(list);
+            applyFilters();
+            updateStats(list);
+        } catch (SQLDataException e) {
+            showAlert("Erreur", "Impossible de charger les cours : " + e.getMessage());
+        }
+    }
+
+    private void updateStats(List<Cours> list) {
+        statTotal.setText(String.valueOf(list.size()));
+        statDebutant.setText(String.valueOf(
+                list.stream().filter(c -> "Beginner".equalsIgnoreCase(c.getNiveau())).count()));
+        statIntermediaire.setText(String.valueOf(
+                list.stream().filter(c -> "intermediate".equalsIgnoreCase(c.getNiveau())).count()));
+        statAvance.setText(String.valueOf(
+                list.stream().filter(c -> "Advanced".equalsIgnoreCase(c.getNiveau())).count()));
+    }
+
+    // ── CRUD ───────────────────────────────────────────────────────────────────
+
+    @FXML
+    private void handleOpenAddDialog() {
+        editingCours = null;
+        openDialog(null);
+    }
+
+    private void handleDelete(Cours cours) {
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
+                "Supprimer le cours \"" + cours.getTittre() + "\" ?",
+                ButtonType.YES, ButtonType.NO);
+        confirm.setTitle("Confirmation");
+        confirm.setHeaderText(null);
+        confirm.showAndWait().ifPresent(r -> {
+            if (r == ButtonType.YES) {
+                try {
+                    service.supprimer(cours);
+                    notifService.pushCourse(cours.getTittre(), "deleted");
+                    loadData();
+                } catch (SQLDataException e) {
+                    showAlert("Erreur", "Impossible de supprimer : " + e.getMessage());
+                }
+            }
+        });
+    }
+
+    // ── PDF Export ─────────────────────────────────────────────────────────────
+
+    /** Export a single course to PDF */
+    private void handleExportPDF(Cours cours) {
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Exporter le cours en PDF");
+        fc.setInitialFileName(cours.getTittre().replaceAll("[^a-zA-Z0-9]", "_") + ".pdf");
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF Document", "*.pdf"));
+        File file = fc.showSaveDialog(coursTable.getScene().getWindow());
+        if (file != null) {
+            try {
+                PDFExporter.exportCourseToPDF(cours, file);
+                notifService.push("📄 PDF exporté : " + cours.getTittre(), "course");
+                showAlert("Succès", "PDF exporté avec succès !");
+            } catch (IOException e) {
+                showAlert("Erreur", "Impossible d'exporter le PDF : " + e.getMessage());
+            }
+        }
+    }
+
+    /** Export all loaded courses to a single catalogue PDF */
+    @FXML
+    private void handleExportAllPDF() {
+        if (allCours == null || allCours.isEmpty()) {
+            showAlert("Info", "Aucun cours à exporter.");
+            return;
+        }
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Exporter le catalogue en PDF");
+        fc.setInitialFileName("AIVA_Catalogue_Cours.pdf");
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF Document", "*.pdf"));
+        File file = fc.showSaveDialog(coursTable.getScene().getWindow());
+        if (file != null) {
+            try {
+                PDFExporter.exportCoursesListToPDF(allCours, file);
+                notifService.push("📄 Catalogue PDF exporté (" + allCours.size() + " cours)", "course");
+                showAlert("Succès", "Catalogue exporté avec succès !");
+            } catch (IOException e) {
+                showAlert("Erreur", "Impossible d'exporter le catalogue : " + e.getMessage());
+            }
+        }
+    }
+
+    // ── Dialog ─────────────────────────────────────────────────────────────────
+
+    private void openDialog(Cours cours) {
+        Stage dialog = new Stage();
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.initStyle(StageStyle.TRANSPARENT);
+
+        TextField        fTitre       = dialogField("Titre du cours");
+        TextField        fDuree       = dialogField("Durée en heures (ex: 10)");
+        TextArea         fDescription = dialogArea("Description du cours...");
+        ComboBox<String> fNiveau      = dialogCombo("Sélectionner le niveau", "Beginner", "intermediate", "Advanced");
+        ComboBox<String> fCategorie   = dialogCombo("Sélectionner la catégorie", "Programming", "Design", "Marketing", "Business", "Autre");
+        ComboBox<String> fStatus      = dialogCombo("Statut", "actif", "inactif", "en attente", "en cours");
+
+        if (cours != null) {
+            fTitre.setText(cours.getTittre());
+            fDuree.setText(String.valueOf(cours.getDureeEstimee()));
+            fDescription.setText(cours.getDescription());
+            fNiveau.setValue(cours.getNiveau());
+            fCategorie.setValue(cours.getCategorie());
+            fStatus.setValue(cours.getStatus());
+        } else {
+            fStatus.setValue("actif");
+        }
+
+        Label errorLabel = new Label("");
+        errorLabel.setStyle("-fx-text-fill: #ff6b6b; -fx-font-size: 12px;");
+
+        VBox form = new VBox(14,
+                dialogBlock("Titre", fTitre),
+                dialogRow(dialogBlock("Niveau", fNiveau), dialogBlock("Catégorie", fCategorie)),
+                dialogRow(dialogBlock("Durée (heures)", fDuree), dialogBlock("Statut", fStatus)),
+                dialogBlock("Description", fDescription),
+                errorLabel);
+
+        Button btnCancel = new Button("Annuler");
+        btnCancel.setStyle(
+                "-fx-background-color: rgba(255,255,255,0.05); -fx-background-radius: 10;" +
+                        "-fx-border-color: rgba(255,255,255,0.09); -fx-border-radius: 10; -fx-border-width: 1;" +
+                        "-fx-text-fill: #f5f5f4; -fx-padding: 10 24; -fx-cursor: hand;");
+        btnCancel.setOnAction(e -> dialog.close());
+
+        boolean isEdit = (cours != null);
+        Button btnSave = new Button(isEdit ? "Enregistrer" : "+ Ajouter");
+        btnSave.setStyle(
+                "-fx-background-color: linear-gradient(to bottom right, #059669, #34d399);" +
+                        "-fx-background-radius: 10; -fx-text-fill: #ffffff; -fx-font-weight: bold;" +
+                        "-fx-padding: 10 24; -fx-cursor: hand;");
+
+        btnSave.setOnAction(e -> {
+            if (fTitre.getText().isBlank())    { errorLabel.setText("Le titre est obligatoire.");     return; }
+            if (fNiveau.getValue() == null)    { errorLabel.setText("Le niveau est obligatoire.");    return; }
+            if (fCategorie.getValue() == null) { errorLabel.setText("La catégorie est obligatoire."); return; }
+            if (fDuree.getText().isBlank())    { errorLabel.setText("La durée est obligatoire.");     return; }
+            int duree;
+            try {
+                duree = Integer.parseInt(fDuree.getText().trim());
+                if (duree <= 0) throw new NumberFormatException();
+            } catch (NumberFormatException ex) {
+                errorLabel.setText("La durée doit être un nombre positif.");
+                return;
+            }
+            try {
+                if (editingCours == null) {
+                    Cours c = new Cours();
+                    c.setTittre(fTitre.getText().trim());
+                    c.setDescription(fDescription.getText().trim());
+                    c.setNiveau(fNiveau.getValue());
+                    c.setCategorie(fCategorie.getValue());
+                    c.setDureeEstimee(duree);
+                    c.setStatus(fStatus.getValue() != null ? fStatus.getValue() : "actif");
+                    c.setDateCreation(java.time.LocalDate.now().toString());
+                    c.setUser_id(1); // admin user — satisfies FK cours.user_id → user.id
+                    service.ajouter(c);
+                    notifService.pushCourse(fTitre.getText().trim(), "added");
+                } else {
+                    editingCours.setTittre(fTitre.getText().trim());
+                    editingCours.setDescription(fDescription.getText().trim());
+                    editingCours.setNiveau(fNiveau.getValue());
+                    editingCours.setCategorie(fCategorie.getValue());
+                    editingCours.setDureeEstimee(duree);
+                    editingCours.setStatus(fStatus.getValue());
+                    service.modifier(editingCours);
+                    notifService.pushCourse(fTitre.getText().trim(), "updated");
+                }
+                dialog.close();
+                loadData();
+            } catch (SQLDataException ex) {
+                errorLabel.setText("Erreur base de données : " + ex.getMessage());
+            }
+        });
+
+        // Dialog header
+        Label dlgTitle = new Label(cours == null ? "Nouveau Cours" : "Modifier le Cours");
+        dlgTitle.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #f5f5f4;");
+        Button btnX = new Button("✕");
+        btnX.setStyle(
+                "-fx-background-color: transparent; -fx-text-fill: rgba(245,245,244,0.50);" +
+                        "-fx-font-size: 16px; -fx-cursor: hand;");
+        btnX.setOnAction(e -> dialog.close());
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        HBox header = new HBox(dlgTitle, spacer, btnX);
+        header.setAlignment(Pos.CENTER_LEFT);
+
+        Separator sep = new Separator();
+        sep.setStyle("-fx-background-color: rgba(255,255,255,0.08);");
+
+        HBox buttons = new HBox(12, btnCancel, btnSave);
+        buttons.setAlignment(Pos.CENTER_RIGHT);
+
+        VBox root = new VBox(20, header, sep, form, buttons);
+        root.setPadding(new Insets(28));
+        root.setStyle(
+                "-fx-background-color: #0d1a14;" +
+                        "-fx-background-radius: 14;" +
+                        "-fx-border-radius: 14;" +
+                        "-fx-border-width: 1;" +
+                        "-fx-border-color: rgba(255,255,255,0.09);" +
+                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.60), 30, 0, 0, 8);");
+        root.setPrefWidth(560);
+
+        javafx.geometry.Rectangle2D screen = javafx.stage.Screen.getPrimary().getVisualBounds();
+        StackPane overlay = new StackPane(root);
+        overlay.setStyle("-fx-background-color: rgba(0,0,0,0.70);");
+
+        Scene scene = new Scene(overlay, screen.getWidth(), screen.getHeight());
+        scene.setFill(Color.TRANSPARENT);
+        dialog.setScene(scene);
+        dialog.show();
+    }
+
+    // ── Dialog helpers ─────────────────────────────────────────────────────────
+
+    private TextField dialogField(String prompt) {
+        TextField f = new TextField();
+        f.setPromptText(prompt);
+        f.setStyle(
+                "-fx-background-color: rgba(255,255,255,0.05); -fx-background-radius: 10;" +
+                        "-fx-border-color: rgba(255,255,255,0.09); -fx-border-radius: 10; -fx-border-width: 1;" +
+                        "-fx-text-fill: #f5f5f4; -fx-prompt-text-fill: rgba(245,245,244,0.35);" +
+                        "-fx-padding: 11 15; -fx-font-size: 13px;");
+        return f;
+    }
+
+    private TextArea dialogArea(String prompt) {
+        TextArea a = new TextArea();
+        a.setPromptText(prompt);
+        a.setPrefRowCount(3);
+        a.setWrapText(true);
+        a.setStyle(
+                "-fx-background-color: rgba(255,255,255,0.05); -fx-background-radius: 10;" +
+                        "-fx-border-color: rgba(255,255,255,0.09); -fx-border-radius: 10; -fx-border-width: 1;" +
+                        "-fx-text-fill: #f5f5f4; -fx-prompt-text-fill: rgba(245,245,244,0.35);" +
+                        "-fx-padding: 10 14; -fx-font-size: 13px;");
+        return a;
+    }
+
+    private ComboBox<String> dialogCombo(String prompt, String... items) {
+        ComboBox<String> c = new ComboBox<>();
+        c.setPromptText(prompt);
+        c.getItems().addAll(items);
+        c.setMaxWidth(Double.MAX_VALUE);
+        c.setStyle(
+                "-fx-background-color: rgba(255,255,255,0.05); -fx-background-radius: 10;" +
+                        "-fx-border-color: rgba(255,255,255,0.09); -fx-border-radius: 10; -fx-border-width: 1;");
+        return c;
+    }
+
+    private VBox dialogBlock(String label, javafx.scene.Node field) {
+        Label lbl = new Label(label);
+        lbl.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: rgba(245,245,244,0.65);");
+        VBox block = new VBox(6, lbl, field);
+        VBox.setVgrow(field, Priority.ALWAYS);
+        return block;
+    }
+
+    private HBox dialogRow(VBox left, VBox right) {
+        HBox row = new HBox(14, left, right);
+        HBox.setHgrow(left, Priority.ALWAYS);
+        HBox.setHgrow(right, Priority.ALWAYS);
+        return row;
+    }
+
+    // ── Navigation ─────────────────────────────────────────────────────────────
+
+    @FXML private void goToDashboard()  { navigate("/views/back/Dashboard.fxml"); }
+    @FXML private void goToChapitres() { navigate("/views/back/ChapitreBack.fxml"); }
+    @FXML private void goToAliments()  { navigate("/views/aliment/ListAliment.fxml"); }
+    @FXML private void goToRepas()     { navigate("/views/repas/ListRepas.fxml"); }
+    @FXML private void goToActivites() { navigate("/views/activite/ListActivite.fxml"); }
+    @FXML private void goToDepenses()  { navigate("/views/depense/ListDepense.fxml"); }
+
+    private void navigate(String path) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource(path));
+            coursTable.getScene().setRoot(root);
+        } catch (IOException e) {
+            showAlert("Navigation", "Impossible d'ouvrir : " + path);
+        }
+    }
+
+    // ── Utilities ──────────────────────────────────────────────────────────────
+
+    private void showAlert(String title, String msg) {
+        Alert a = new Alert(Alert.AlertType.INFORMATION);
+        a.setTitle(title);
+        a.setHeaderText(null);
+        a.setContentText(msg);
+        a.showAndWait();
+    }
+}

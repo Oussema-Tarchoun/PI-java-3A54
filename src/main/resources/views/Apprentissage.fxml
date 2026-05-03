@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.geometry.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controller.CoursController"
+            fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+            style="-fx-background: transparent; -fx-background-color: transparent;">
+
+    <StackPane>
+
+        <!-- ── Main Content ─────────────────────────────────────────────────── -->
+        <VBox spacing="24" style="-fx-background-color: #0a0e1a; -fx-padding: 24;">
+
+            <!-- ── Page Header ────────────────────────────────────────────── -->
+            <HBox alignment="CENTER_LEFT" spacing="16">
+                <StackPane style="-fx-background-color: rgba(139,92,246,0.2); -fx-background-radius: 12; -fx-padding: 12;">
+                    <Label text="📚" style="-fx-font-size: 22px;"/>
+                </StackPane>
+                <VBox spacing="2">
+                    <Label text="Course Management" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #ffffff;"/>
+                    <Label text="LEARNING OVERVIEW" style="-fx-font-size: 11px; -fx-text-fill: #64748b;"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <!-- ── Notification Bell ──────────────────────────────────── -->
+                <StackPane>
+                    <!-- Bell button -->
+                    <Button fx:id="btnNotifBell"
+                            text="🔔"
+                            onAction="#handleToggleNotifications"
+                            style="-fx-background-color: transparent; -fx-text-fill: #64748b;
+                                   -fx-background-radius: 10; -fx-font-size: 20px;
+                                   -fx-padding: 8 12; -fx-cursor: hand;"/>
+                    <!-- Badge (red dot with count) — hidden when 0 -->
+                    <Label fx:id="lblNotifBadge"
+                           text="0"
+                           visible="false" managed="false"
+                           style="-fx-background-color: #ef4444; -fx-text-fill: #ffffff;
+                                  -fx-background-radius: 10; -fx-font-size: 9px;
+                                  -fx-font-weight: bold; -fx-padding: 2 5;
+                                  -fx-min-width: 18; -fx-min-height: 18;
+                                  -fx-alignment: CENTER;"
+                           StackPane.alignment="TOP_RIGHT"/>
+                </StackPane>
+                <!-- ── End Notification Bell ─────────────────────────────── -->
+
+                <HBox spacing="12" alignment="CENTER_RIGHT">
+                    <Button text="Export All" onAction="#handleExportAllPDF"
+                            style="-fx-background-color: #10b981; -fx-text-fill: #ffffff; -fx-font-weight: bold;
+                                   -fx-background-radius: 8; -fx-padding: 10 20; -fx-cursor: hand;"/>
+                    <Button text="+ Add Course" onAction="#handleAdd"
+                            style="-fx-background-color: #8b5cf6; -fx-text-fill: #ffffff; -fx-font-weight: bold;
+                                   -fx-background-radius: 8; -fx-padding: 10 20; -fx-cursor: hand;"/>
+                </HBox>
+            </HBox>
+
+            <!-- ── Statistics Dashboard ───────────────────────────────────── -->
+            <VBox style="-fx-background-color: #161b2e; -fx-background-radius: 16; -fx-border-radius: 16;
+                         -fx-border-width: 1; -fx-border-color: #2a3142; -fx-padding: 24;" spacing="20">
+
+                <!-- Analytics Header with toggle -->
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <StackPane style="-fx-background-color: rgba(139,92,246,0.15); -fx-background-radius: 10; -fx-padding: 10;">
+                        <Label text="📊" style="-fx-font-size: 20px;"/>
+                    </StackPane>
+                    <VBox spacing="2">
+                        <Label text="Course Analytics" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #ffffff;"/>
+                        <Label text="LEARNING OVERVIEW" style="-fx-font-size: 11px; -fx-text-fill: #64748b;"/>
+                    </VBox>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="btnToggleStats" text="▼  Stats"
+                            onAction="#handleToggleStats"
+                            style="-fx-background-color: rgba(139,92,246,0.15); -fx-text-fill: #8b5cf6;
+                                   -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 7 16;
+                                   -fx-cursor: hand; -fx-font-size: 12px;"/>
+                </HBox>
+
+                <!-- ── Collapsible Stats Body ──────────────────────────────── -->
+                <VBox fx:id="statsBody" spacing="20">
+
+                    <!-- Total + Hours -->
+                    <HBox alignment="CENTER_LEFT" spacing="12">
+                        <VBox spacing="6">
+                            <Label text="Total Courses" style="-fx-font-size: 13px; -fx-text-fill: #94a3b8;"/>
+                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                <Label fx:id="lblTotalCours" text="0"
+                                       style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #ffffff;"/>
+                                <Label fx:id="lblActiveCountBadge" text="0 actif"
+                                       style="-fx-background-color: rgba(16,185,129,0.15); -fx-text-fill: #10b981;
+                                              -fx-background-radius: 6; -fx-padding: 4 10;
+                                              -fx-font-size: 11px; -fx-font-weight: bold;"/>
+                            </HBox>
+                        </VBox>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <VBox spacing="4" alignment="CENTER_RIGHT">
+                            <Label text="Total Hours" style="-fx-font-size: 12px; -fx-text-fill: #64748b;"/>
+                            <Label fx:id="lblTotalHours" text="0h"
+                                   style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #8b5cf6;"/>
+                        </VBox>
+                    </HBox>
+
+                    <!-- Level Bars -->
+                    <VBox spacing="8">
+                        <Label text="Level Distribution" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #ffffff;"/>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Label text="Beginner" style="-fx-font-size: 12px; -fx-text-fill: #94a3b8; -fx-min-width: 90;"/>
+                            <ProgressBar fx:id="progressDebutant" progress="0.0" prefWidth="220" prefHeight="8"
+                                         style="-fx-accent: #00d4ff; -fx-background-color: #1e2538; -fx-background-radius: 4;"/>
+                            <Label fx:id="lblDebutant" text="0" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #00d4ff; -fx-min-width: 28;"/>
+                            <Label fx:id="lblPctDebutant" text="(0%)" style="-fx-font-size: 11px; -fx-text-fill: #64748b;"/>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Label text="Intermediate" style="-fx-font-size: 12px; -fx-text-fill: #94a3b8; -fx-min-width: 90;"/>
+                            <ProgressBar fx:id="progressIntermediaire" progress="0.0" prefWidth="220" prefHeight="8"
+                                         style="-fx-accent: #f59e0b; -fx-background-color: #1e2538; -fx-background-radius: 4;"/>
+                            <Label fx:id="lblIntermediaire" text="0" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #f59e0b; -fx-min-width: 28;"/>
+                            <Label fx:id="lblPctIntermediaire" text="(0%)" style="-fx-font-size: 11px; -fx-text-fill: #64748b;"/>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Label text="Advanced" style="-fx-font-size: 12px; -fx-text-fill: #94a3b8; -fx-min-width: 90;"/>
+                            <ProgressBar fx:id="progressAvance" progress="0.0" prefWidth="220" prefHeight="8"
+                                         style="-fx-accent: #ef4444; -fx-background-color: #1e2538; -fx-background-radius: 4;"/>
+                            <Label fx:id="lblAvance" text="0" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #ef4444; -fx-min-width: 28;"/>
+                            <Label fx:id="lblPctAvance" text="(0%)" style="-fx-font-size: 11px; -fx-text-fill: #64748b;"/>
+                        </HBox>
+                    </VBox>
+
+                    <Separator style="-fx-background-color: #2a3142;"/>
+
+                    <!-- 4 Status Cards -->
+                    <GridPane hgap="14" vgap="14">
+                        <columnConstraints>
+                            <ColumnConstraints hgrow="ALWAYS" percentWidth="25"/>
+                            <ColumnConstraints hgrow="ALWAYS" percentWidth="25"/>
+                            <ColumnConstraints hgrow="ALWAYS" percentWidth="25"/>
+                            <ColumnConstraints hgrow="ALWAYS" percentWidth="25"/>
+                        </columnConstraints>
+                        <VBox GridPane.columnIndex="0" GridPane.rowIndex="0"
+                              style="-fx-background-color: #111827; -fx-background-radius: 12; -fx-padding: 16;" spacing="6">
+                            <Label text="Active" style="-fx-font-size: 12px; -fx-text-fill: #94a3b8;"/>
+                            <Label fx:id="lblStatActif" text="0" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #10b981;"/>
+                            <Label text="actif" style="-fx-font-size: 10px; -fx-text-fill: #64748b;"/>
+                        </VBox>
+                        <VBox GridPane.columnIndex="1" GridPane.rowIndex="0"
+                              style="-fx-background-color: #111827; -fx-background-radius: 12; -fx-padding: 16;" spacing="6">
+                            <Label text="Inactive" style="-fx-font-size: 12px; -fx-text-fill: #94a3b8;"/>
+                            <Label fx:id="lblStatInactif" text="0" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #ef4444;"/>
+                            <Label text="inactif" style="-fx-font-size: 10px; -fx-text-fill: #64748b;"/>
+                        </VBox>
+                        <VBox GridPane.columnIndex="2" GridPane.rowIndex="0"
+                              style="-fx-background-color: #111827; -fx-background-radius: 12; -fx-padding: 16;" spacing="6">
+                            <Label text="Pending" style="-fx-font-size: 12px; -fx-text-fill: #94a3b8;"/>
+                            <Label fx:id="lblStatEnAttente" text="0" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #f59e0b;"/>
+                            <Label text="en attente" style="-fx-font-size: 10px; -fx-text-fill: #64748b;"/>
+                        </VBox>
+                        <VBox GridPane.columnIndex="3" GridPane.rowIndex="0"
+                              style="-fx-background-color: #111827; -fx-background-radius: 12; -fx-padding: 16;" spacing="6">
+                            <Label text="In Progress" style="-fx-font-size: 12px; -fx-text-fill: #94a3b8;"/>
+                            <Label fx:id="lblStatEnCours" text="0" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #00d4ff;"/>
+                            <Label text="en cours" style="-fx-font-size: 10px; -fx-text-fill: #64748b;"/>
+                        </VBox>
+                    </GridPane>
+
+                    <Separator style="-fx-background-color: #2a3142;"/>
+
+                    <!-- Line Chart -->
+                    <VBox style="-fx-background-color: #111827; -fx-background-radius: 14; -fx-padding: 20;" spacing="12">
+                        <HBox alignment="CENTER_LEFT">
+                            <Label text="Courses per Status"
+                                   style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #ffffff;"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label text="Live from DB" style="-fx-font-size: 11px; -fx-text-fill: #64748b;"/>
+                        </HBox>
+                        <LineChart fx:id="statusLineChart" legendVisible="false"
+                                   createSymbols="true" animated="false" prefHeight="220"
+                                   style="-fx-background-color: transparent;">
+                            <xAxis><CategoryAxis fx:id="xAxis" side="BOTTOM"
+                                                 style="-fx-tick-label-fill: #64748b; -fx-font-size: 12px;"/></xAxis>
+                            <yAxis><NumberAxis fx:id="yAxis" side="LEFT" tickMarkVisible="true"
+                                              minorTickVisible="false"
+                                              style="-fx-tick-label-fill: #64748b; -fx-font-size: 11px;"/></yAxis>
+                        </LineChart>
+                    </VBox>
+
+                    <Separator style="-fx-background-color: #2a3142;"/>
+
+                    <!-- Category + Quick Stats -->
+                    <HBox spacing="14">
+                        <VBox HBox.hgrow="ALWAYS"
+                              style="-fx-background-color: #111827; -fx-background-radius: 12; -fx-padding: 18;" spacing="10">
+                            <Label text="Category Distribution"
+                                   style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #ffffff;"/>
+                            <VBox fx:id="categoryStatsContainer" spacing="8"/>
+                        </VBox>
+                        <VBox HBox.hgrow="ALWAYS"
+                              style="-fx-background-color: #111827; -fx-background-radius: 12; -fx-padding: 18;" spacing="14">
+                            <Label text="Quick Stats"
+                                   style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #ffffff;"/>
+                            <HBox spacing="12">
+                                <VBox spacing="4" HBox.hgrow="ALWAYS"
+                                      style="-fx-background-color: #161b2e; -fx-background-radius: 8; -fx-padding: 12;">
+                                    <Label text="Avg Duration" style="-fx-font-size: 11px; -fx-text-fill: #64748b;"/>
+                                    <Label fx:id="lblAvgDuration" text="0h"
+                                           style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #8b5cf6;"/>
+                                </VBox>
+                                <VBox spacing="4" HBox.hgrow="ALWAYS"
+                                      style="-fx-background-color: #161b2e; -fx-background-radius: 8; -fx-padding: 12;">
+                                    <Label text="Top Category" style="-fx-font-size: 11px; -fx-text-fill: #64748b;"/>
+                                    <Label fx:id="lblTopCategory" text="—"
+                                           style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #00d4ff; -fx-wrap-text: true;"/>
+                                </VBox>
+                            </HBox>
+                            <VBox spacing="4">
+                                <Label text="Active Rate" style="-fx-font-size: 11px; -fx-text-fill: #64748b;"/>
+                                <ProgressBar fx:id="progressActive" progress="0.0" maxWidth="1.7976931348623157E308"
+                                             style="-fx-accent: #10b981; -fx-background-color: #1e2538;
+                                                    -fx-pref-height: 10px; -fx-background-radius: 5;"/>
+                                <Label fx:id="lblActivePct" text="0% active courses"
+                                       style="-fx-font-size: 11px; -fx-text-fill: #10b981;"/>
+                            </VBox>
+                        </VBox>
+                    </HBox>
+
+                </VBox>
+                <!-- End statsBody -->
+
+            </VBox>
+            <!-- End analytics card -->
+
+            <!-- ── Filters Card ───────────────────────────────────────────── -->
+            <VBox style="-fx-background-color: #161b2e; -fx-background-radius: 14; -fx-border-radius: 14;
+                         -fx-border-width: 1; -fx-border-color: #2a3142; -fx-padding: 20;" spacing="16">
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <Label text="Filters" style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ffffff;"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="Reset" onAction="#handleResetFilters"
+                            style="-fx-background-color: transparent; -fx-text-fill: #94a3b8;
+                                   -fx-border-color: #2a3142; -fx-border-radius: 6; -fx-padding: 6 14; -fx-cursor: hand;"/>
+                </HBox>
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <TextField fx:id="txtSearch" promptText="Search courses..."
+                               HBox.hgrow="ALWAYS"
+                               style="-fx-background-color: #111827; -fx-text-fill: #ffffff;
+                                      -fx-prompt-text-fill: #64748b; -fx-background-radius: 8;
+                                      -fx-border-radius: 8; -fx-border-width: 1;
+                                      -fx-border-color: #2a3142; -fx-padding: 10 14;"/>
+                    <ComboBox fx:id="comboFilterCategorie" promptText="Category"
+                              style="-fx-background-color: #111827; -fx-border-color: #2a3142;
+                                     -fx-border-radius: 8; -fx-background-radius: 8;"/>
+                    <ComboBox fx:id="comboFilterNiveau" promptText="Level"
+                              style="-fx-background-color: #111827; -fx-border-color: #2a3142;
+                                     -fx-border-radius: 8; -fx-background-radius: 8;"/>
+                    <ComboBox fx:id="comboFilterStatus" promptText="Status"
+                              style="-fx-background-color: #111827; -fx-border-color: #2a3142;
+                                     -fx-border-radius: 8; -fx-background-radius: 8;"/>
+                </HBox>
+                <Label fx:id="lblResultCount" text="" style="-fx-font-size: 12px; -fx-text-fill: #64748b;"/>
+            </VBox>
+
+            <!-- ── Course Cards Grid ──────────────────────────────────────── -->
+            <FlowPane fx:id="courseGrid" hgap="20" vgap="20" prefWrapLength="1200"/>
+
+            <!-- ── Empty State ────────────────────────────────────────────── -->
+            <VBox fx:id="emptyState" alignment="CENTER" spacing="12"
+                  style="-fx-padding: 60 0;" visible="false" managed="false">
+                <Label text="No courses found"
+                       style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #64748b;"/>
+                <Label text="Try adjusting your filters or add a new course."
+                       style="-fx-font-size: 12px; -fx-text-fill: #64748b;"/>
+            </VBox>
+
+            <!-- ── Bottom padding so chat bubble doesn't overlap content ─── -->
+            <Region prefHeight="80"/>
+
+        </VBox>
+
+        <!-- ══════════════════════════════════════════════════════════════════
+             FLOATING CHAT BUBBLE + PANEL (overlaid via StackPane)
+        ══════════════════════════════════════════════════════════════════ -->
+        <VBox alignment="BOTTOM_RIGHT" style="-fx-padding: 0 24 24 0;" pickOnBounds="false">
+
+            <!-- Chat Panel (hidden by default) -->
+            <VBox fx:id="chatPanel" visible="false" managed="false"
+                  spacing="0" prefWidth="340" prefHeight="480"
+                  style="-fx-background-color: #161b2e; -fx-background-radius: 16;
+                         -fx-border-color: #2a3142; -fx-border-radius: 16; -fx-border-width: 1;
+                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 24, 0, 0, 8);">
+
+                <!-- Chat Header -->
+                <HBox alignment="CENTER_LEFT" spacing="10"
+                      style="-fx-background-color: #8b5cf6; -fx-background-radius: 16 16 0 0; -fx-padding: 14 16;">
+                    <Label text="🤖" style="-fx-font-size: 18px;"/>
+                    <VBox spacing="2">
+                        <Label text="AIVA Assistant" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #ffffff;"/>
+                        <Label text="Powered by Llama 3.2" style="-fx-font-size: 10px; -fx-text-fill: rgba(255,255,255,0.7);"/>
+                    </VBox>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="🗑" onAction="#handleClearChat"
+                            style="-fx-background-color: transparent; -fx-text-fill: rgba(255,255,255,0.7);
+               -fx-font-size: 14px; -fx-cursor: hand;"/>
+                    <Button text="✕" onAction="#handleToggleChat"
+                            style="-fx-background-color: transparent; -fx-text-fill: rgba(255,255,255,0.7);
+                                   -fx-font-size: 14px; -fx-cursor: hand;"/>
+                </HBox>
+
+                <!-- Messages area -->
+                <ScrollPane fx:id="chatScrollPane" VBox.vgrow="ALWAYS"
+                            fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+                            style="-fx-background: transparent; -fx-background-color: transparent;">
+                    <VBox fx:id="chatMessages" spacing="8"
+                          style="-fx-padding: 12; -fx-background-color: #0f1424;"/>
+                </ScrollPane>
+
+                <!-- Input area -->
+                <HBox spacing="8" alignment="CENTER"
+                      style="-fx-background-color: #111827; -fx-background-radius: 0 0 16 16; -fx-padding: 12;">
+                    <TextField fx:id="chatInput"
+                               promptText="Posez votre question..."
+                               HBox.hgrow="ALWAYS"
+                               onKeyPressed="#handleChatKeyPress"
+                               style="-fx-background-color: #1e2538; -fx-text-fill: #ffffff;
+                                      -fx-prompt-text-fill: #64748b; -fx-background-radius: 20;
+                                      -fx-border-radius: 20; -fx-padding: 10 16; -fx-font-size: 13px;"/>
+                    <Button text="➤" onAction="#handleSendChat"
+                            style="-fx-background-color: #8b5cf6; -fx-text-fill: #ffffff;
+                                   -fx-background-radius: 20; -fx-font-size: 16px;
+                                   -fx-min-width: 40; -fx-min-height: 40; -fx-cursor: hand;"/>
+                </HBox>
+
+            </VBox>
+
+            <!-- Floating Chat Bubble Button -->
+            <Button text="💬" onAction="#handleToggleChat"
+                    style="-fx-background-color: #8b5cf6; -fx-text-fill: #ffffff;
+                           -fx-background-radius: 28; -fx-font-size: 22px;
+                           -fx-min-width: 56; -fx-min-height: 56;
+                           -fx-max-width: 56; -fx-max-height: 56;
+                           -fx-cursor: hand;
+                           -fx-effect: dropshadow(gaussian, rgba(139,92,246,0.5), 16, 0, 0, 4);"
+                    VBox.vgrow="NEVER"/>
+
+        </VBox>
+
+    </StackPane>
+
+</ScrollPane>
