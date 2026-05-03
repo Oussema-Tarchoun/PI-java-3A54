@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controller.ChapitreController"
+            fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+            style="-fx-background: transparent; -fx-background-color: transparent;">
+
+    <VBox spacing="24" style="-fx-background-color: #0a0e1a; -fx-padding: 24;">
+
+        <!-- ── Page Header ──────────────────────────────────────────────────── -->
+        <HBox styleClass="card-header" alignment="CENTER_LEFT">
+            <StackPane styleClass="card-icon, card-icon-purple">
+                <Label text="📖" style="-fx-font-size: 20px;"/>
+            </StackPane>
+            <VBox spacing="2">
+                <Label fx:id="lblTitle" text="Chapters" styleClass="card-title"/>
+                <Label fx:id="lblCoursInfo" text="Select a course to browse its chapters"
+                       styleClass="card-subtitle"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <!-- Header buttons container -->
+            <HBox fx:id="headerButtons" spacing="12" alignment="CENTER_RIGHT"/>
+        </HBox>
+
+        <!-- ── Course Selector Card (shown when opened from sidebar) ────────── -->
+        <VBox fx:id="courseSelectorCard" styleClass="card" spacing="16" visible="false" managed="false">
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <Label text="Select a Course:" styleClass="form-label"
+                       style="-fx-font-size: 14px; -fx-text-fill: #94a3b8;"/>
+                <ComboBox fx:id="comboCours" promptText="Choose a course to view its chapters…"
+                          onAction="#handleCoursSelected"
+                          HBox.hgrow="ALWAYS" maxWidth="Infinity"
+                          style="-fx-background-color: #111827; -fx-border-color: #2a3142;
+                                 -fx-border-radius: 8; -fx-background-radius: 8;"/>
+            </HBox>
+        </VBox>
+
+        <!-- ── Search bar (hidden until course selected) ────────────────────── -->
+        <HBox fx:id="searchBar" spacing="12" alignment="CENTER_LEFT"
+              visible="false" managed="false"
+              style="-fx-background-color: #161b2e; -fx-background-radius: 12;
+                     -fx-padding: 14 20; -fx-border-radius: 12;
+                     -fx-border-width: 1; -fx-border-color: #2a3142;">
+
+            <TextField fx:id="txtSearch" promptText="🔍   Search chapters by title or content…"
+                       HBox.hgrow="ALWAYS"
+                       style="-fx-background-color: #111827; -fx-text-fill: #ffffff;
+                              -fx-prompt-text-fill: #64748b; -fx-background-radius: 8;
+                              -fx-border-radius: 8; -fx-border-width: 1;
+                              -fx-border-color: #2a3142; -fx-padding: 10 14;"/>
+
+            <Label fx:id="lblResultCount" text="" styleClass="progress-meta"/>
+        </HBox>
+
+        <!-- ── Chapter Cards Grid ───────────────────────────────────────────── -->
+        <FlowPane fx:id="chapitreGrid" hgap="20" vgap="20" prefWrapLength="1200"/>
+
+        <!-- ── Empty State ───────────────────────────────────────────────────── -->
+        <VBox fx:id="emptyState" alignment="CENTER" spacing="12"
+              style="-fx-padding: 60 0;" visible="false" managed="false">
+            <Label text="📭" style="-fx-font-size: 48px;"/>
+            <Label text="No chapters yet" styleClass="card-title"
+                   style="-fx-text-fill: #64748b;"/>
+            <Label text="Click '+ New Chapter' to add the first chapter to this course."
+                   styleClass="progress-meta"/>
+        </VBox>
+
+        <!-- ── Pick a course prompt (shown before selection) ────────────────── -->
+        <VBox fx:id="promptState" alignment="CENTER" spacing="12"
+              style="-fx-padding: 60 0;">
+            <Label text="📚" style="-fx-font-size: 48px;"/>
+            <Label text="Choose a course above" styleClass="card-title"
+                   style="-fx-text-fill: #64748b;"/>
+            <Label text="Select a course from the dropdown to see its chapters."
+                   styleClass="progress-meta"/>
+        </VBox>
+
+    </VBox>
+</ScrollPane>
