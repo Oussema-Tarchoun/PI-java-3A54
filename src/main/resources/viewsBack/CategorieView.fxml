@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<HBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="Controller.back.CategorieController"
+      stylesheets="@/css/dark-theme.css"
+      style="-fx-background-color: #0f1a14;">
+    <VBox styleClass="sidebar">
+        <Label text="AIVA" styleClass="sidebar-logo"/>
+        <Label text="MENU PRINCIPAL" styleClass="sidebar-section-label"/>
+        <Button text="Tableau de bord" styleClass="sidebar-btn"/>
+        <Label text="SPORTS" styleClass="sidebar-section-label"/>
+        <Button text="Activites" styleClass="sidebar-btn"/>
+        <Button text="Objectifs" styleClass="sidebar-btn"/>
+        <Label text="FINANCE" styleClass="sidebar-section-label"/>
+        <Button text="Depenses" styleClass="sidebar-btn" onAction="#showDepenses"/>
+        <Button text="Categories" styleClass="sidebar-btn sidebar-btn-active"/>
+        <Label text="ENERGIES" styleClass="sidebar-section-label"/>
+        <Button text="Consommation" styleClass="sidebar-btn"/>
+        <Button text="Recommandations" styleClass="sidebar-btn"/>
+    </VBox>
+    <VBox styleClass="main-content" HBox.hgrow="ALWAYS" spacing="20">
+        <VBox spacing="4">
+            <Label text="Categories" styleClass="page-title"/>
+            <Label text="Dashboard / Categories" styleClass="breadcrumb"/>
+        </VBox>
+        <VBox styleClass="card" VBox.vgrow="ALWAYS" spacing="16">
+            <HBox alignment="CENTER_LEFT">
+                <VBox HBox.hgrow="ALWAYS" spacing="4">
+                    <Label text="Liste des categories" styleClass="card-title"/>
+                    <Label text="Gere les categories pour tes depenses" styleClass="card-subtitle"/>
+                </VBox>
+                <Button text="+ Nouvelle categorie" styleClass="btn-primary" onAction="#ouvrirFormulaire"/>
+            </HBox>
+            <VBox fx:id="formPane" spacing="10" managed="false" visible="false"
+                  style="-fx-background-color: #1a2d20; -fx-background-radius: 8px; -fx-padding: 16px;">
+                <HBox spacing="10">
+                    <TextField fx:id="nomField"    promptText="Nom categorie" prefWidth="160"/>
+                    <TextField fx:id="descField"   promptText="Description"   HBox.hgrow="ALWAYS"/>
+                    <TextField fx:id="userField"   promptText="ID User"       prefWidth="90"/>
+                    <TextField fx:id="budgetField" promptText="Budget max"    prefWidth="110"/>
+                    <DatePicker fx:id="datePicker" prefWidth="150"/>
+                </HBox>
+                <!-- Boutons mode Ajout -->
+                <HBox fx:id="btnAjouterBox" spacing="8">
+                    <Button text="Enregistrer" styleClass="btn-success"
+                            prefWidth="120" minWidth="120" maxWidth="120"
+                            onAction="#ajouter"/>
+                    <Button text="Annuler" styleClass="btn-primary"
+                            prefWidth="120" minWidth="120" maxWidth="120"
+                            onAction="#annuler"/>
+                </HBox>
+                <!-- Boutons mode Edition -->
+                <HBox fx:id="btnModifierBox" spacing="8" managed="false" visible="false">
+                    <Button text="Modifier" styleClass="btn-warning"
+                            prefWidth="120" minWidth="120" maxWidth="120"
+                            onAction="#modifier"/>
+                    <Button text="Annuler" styleClass="btn-primary"
+                            prefWidth="120" minWidth="120" maxWidth="120"
+                            onAction="#annuler"/>
+                </HBox>
+                <Label fx:id="msgLabel" styleClass="msg-label"/>
+            </VBox>
+            <TableView fx:id="table" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS"
+                       style="-fx-background-color: transparent;">
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                </columnResizePolicy>
+                <columns>
+                    <TableColumn fx:id="colId"      text="#"           prefWidth="40"  minWidth="40"  maxWidth="40"/>
+                    <TableColumn fx:id="colNom"     text="NOM"         prefWidth="120" minWidth="100"/>
+                    <TableColumn fx:id="colDesc"    text="DESCRIPTION" prefWidth="150" minWidth="100"/>
+                    <TableColumn fx:id="colUser"    text="ID USER"     prefWidth="60"  minWidth="60"  maxWidth="60"/>
+                    <TableColumn fx:id="colBudget"  text="BUDGET MAX"  prefWidth="90"  minWidth="80"  maxWidth="100"/>
+                    <TableColumn fx:id="colDate"    text="DATE"        prefWidth="100" minWidth="90"  maxWidth="120"/>
+                    <TableColumn fx:id="colActions" text="ACTIONS"     prefWidth="170" minWidth="170" maxWidth="170"/>
+                </columns>
+                <placeholder>
+                    <Label text="Aucune categorie trouvee"
+                           style="-fx-text-fill: #5a7a65;"/>
+                </placeholder>
+            </TableView>
+        </VBox>
+    </VBox>
+</HBox>
