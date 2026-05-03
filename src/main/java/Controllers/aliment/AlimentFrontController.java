@@ -8,6 +8,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import utils.SessionManager;
+import Models.User;
 
 import java.net.URL;
 import java.sql.SQLDataException;
@@ -18,34 +20,55 @@ import java.util.stream.Collectors;
 public class AlimentFrontController implements Initializable {
 
     // ── Stats ─────────────────────────────────────────────────────────────────
-    @FXML private Label statTotal;
-    @FXML private Label statAvgCal;
-    @FXML private Label statMaxCal;
-    @FXML private Label statWithMacro;
+    @FXML
+    private Label statTotal;
+    @FXML
+    private Label statAvgCal;
+    @FXML
+    private Label statMaxCal;
+    @FXML
+    private Label statWithMacro;
 
     // ── Search ────────────────────────────────────────────────────────────────
-    @FXML private TextField searchField;
+    @FXML
+    private TextField searchField;
 
     // ── Card grid ─────────────────────────────────────────────────────────────
-    @FXML private FlowPane cardsPane;
+    @FXML
+    private FlowPane cardsPane;
 
     // ── Form ──────────────────────────────────────────────────────────────────
-    @FXML private VBox      formPanel;
-    @FXML private Label     formTitle;
-    @FXML private TextField nomField;
-    @FXML private TextField quantiteField;
-    @FXML private TextField caloriesField;
-    @FXML private TextField proteinesField;
-    @FXML private TextField glucidesField;
-    @FXML private TextField lipidesField;
-    @FXML private Label     errorLabel;
+    @FXML
+    private VBox formPanel;
+    @FXML
+    private Label formTitle;
+    @FXML
+    private TextField nomField;
+    @FXML
+    private TextField quantiteField;
+    @FXML
+    private TextField caloriesField;
+    @FXML
+    private TextField proteinesField;
+    @FXML
+    private TextField glucidesField;
+    @FXML
+    private TextField lipidesField;
+    @FXML
+    private Label errorLabel;
 
     private ServiceAliment serviceAliment;
-    private List<Aliment>  allAliments;
-    private Aliment        editingAliment;
+    private List<Aliment> allAliments;
+    private Aliment editingAliment;
+    private int userId = 1;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        User current = SessionManager.getCurrentUser();
+        if (current != null) {
+            this.userId = current.getId();
+        }
+
         try {
             serviceAliment = new ServiceAliment();
         } catch (Exception e) {
@@ -57,7 +80,8 @@ public class AlimentFrontController implements Initializable {
             formPanel.setManaged(false);
         }
 
-        if (quantiteField != null) quantiteField.setText("100");
+        if (quantiteField != null)
+            quantiteField.setText("100");
 
         loadData();
     }
@@ -66,7 +90,7 @@ public class AlimentFrontController implements Initializable {
 
     private void loadData() {
         try {
-            allAliments = serviceAliment.recuperer();
+            allAliments = serviceAliment.recupererParUser(userId);
             updateStats();
             renderCards(allAliments);
         } catch (Exception e) {
@@ -75,30 +99,39 @@ public class AlimentFrontController implements Initializable {
     }
 
     private void updateStats() {
-        if (allAliments == null) return;
+        if (allAliments == null)
+            return;
         int total = allAliments.size();
-        if (statTotal != null) statTotal.setText(String.valueOf(total));
+        if (statTotal != null)
+            statTotal.setText(String.valueOf(total));
 
         if (total > 0) {
             double avg = allAliments.stream().mapToDouble(Aliment::getCalories).average().orElse(0);
-            if (statAvgCal != null) statAvgCal.setText(fmt(avg) + " kcal");
+            if (statAvgCal != null)
+                statAvgCal.setText(fmt(avg) + " kcal");
 
             Aliment max = allAliments.stream()
-                .max((a, b) -> Double.compare(a.getCalories(), b.getCalories())).orElse(null);
-            if (statMaxCal != null) statMaxCal.setText(max != null ? max.getNom() : "—");
+                    .max((a, b) -> Double.compare(a.getCalories(), b.getCalories())).orElse(null);
+            if (statMaxCal != null)
+                statMaxCal.setText(max != null ? max.getNom() : "—");
 
             long withMacro = allAliments.stream()
-                .filter(a -> a.getMacro() != null && !a.getMacro().isBlank()).count();
-            if (statWithMacro != null) statWithMacro.setText(String.valueOf(withMacro));
+                    .filter(a -> a.getMacro() != null && !a.getMacro().isBlank()).count();
+            if (statWithMacro != null)
+                statWithMacro.setText(String.valueOf(withMacro));
         } else {
-            if (statAvgCal    != null) statAvgCal.setText("— kcal");
-            if (statMaxCal    != null) statMaxCal.setText("—");
-            if (statWithMacro != null) statWithMacro.setText("0");
+            if (statAvgCal != null)
+                statAvgCal.setText("— kcal");
+            if (statMaxCal != null)
+                statMaxCal.setText("—");
+            if (statWithMacro != null)
+                statWithMacro.setText("0");
         }
     }
 
     private void renderCards(List<Aliment> list) {
-        if (cardsPane == null) return;
+        if (cardsPane == null)
+            return;
         cardsPane.getChildren().clear();
 
         if (list == null || list.isEmpty()) {
@@ -108,7 +141,8 @@ public class AlimentFrontController implements Initializable {
             return;
         }
 
-        for (Aliment a : list) cardsPane.getChildren().add(buildCard(a));
+        for (Aliment a : list)
+            cardsPane.getChildren().add(buildCard(a));
     }
 
     private VBox buildCard(Aliment a) {
@@ -144,7 +178,7 @@ public class AlimentFrontController implements Initializable {
         calRow.setAlignment(Pos.CENTER_LEFT);
         Label calBadge = new Label("🔥 " + fmt(a.getCalories()) + " kcal");
         calBadge.setStyle("-fx-text-fill: #f59e0b; -fx-font-size: 14px; -fx-font-weight: bold; " +
-            "-fx-background-color: rgba(245,158,11,0.12); -fx-background-radius: 6; -fx-padding: 6 12 6 12;");
+                "-fx-background-color: rgba(245,158,11,0.12); -fx-background-radius: 6; -fx-padding: 6 12 6 12;");
         calRow.getChildren().add(calBadge);
 
         // ── Macro pills ───────────────────────────────────────────────────────
@@ -153,10 +187,9 @@ public class AlimentFrontController implements Initializable {
         if (a.getMacro() != null && !a.getMacro().isBlank()) {
             String[] m = parseMacro(a.getMacro());
             macroRow.getChildren().addAll(
-                pill("P: " + m[0] + "g", "#10b981"),
-                pill("G: " + m[1] + "g", "#f59e0b"),
-                pill("L: " + m[2] + "g", "#8b5cf6")
-            );
+                    pill("P: " + m[0] + "g", "#10b981"),
+                    pill("G: " + m[1] + "g", "#f59e0b"),
+                    pill("L: " + m[2] + "g", "#8b5cf6"));
         } else {
             Label none = new Label("Macros non renseignées");
             none.setStyle("-fx-text-fill: #64748b; -fx-font-size: 11px;");
@@ -169,12 +202,12 @@ public class AlimentFrontController implements Initializable {
 
         Button btnEdit = new Button("✎ Modifier");
         btnEdit.setStyle("-fx-background-color: rgba(0,212,255,0.15); -fx-text-fill: #00d4ff; " +
-            "-fx-background-radius: 6; -fx-font-size: 12px; -fx-cursor: hand; -fx-padding: 6 12 6 12;");
+                "-fx-background-radius: 6; -fx-font-size: 12px; -fx-cursor: hand; -fx-padding: 6 12 6 12;");
         btnEdit.setOnAction(e -> openEditForm(a));
 
         Button btnDel = new Button("✕");
         btnDel.setStyle("-fx-background-color: rgba(239,68,68,0.15); -fx-text-fill: #ef4444; " +
-            "-fx-background-radius: 6; -fx-font-size: 12px; -fx-cursor: hand; -fx-padding: 6 10 6 10;");
+                "-fx-background-radius: 6; -fx-font-size: 12px; -fx-cursor: hand; -fx-padding: 6 10 6 10;");
         btnDel.setOnAction(e -> handleDelete(a));
 
         actions.getChildren().addAll(btnEdit, btnDel);
@@ -186,7 +219,7 @@ public class AlimentFrontController implements Initializable {
     private Label pill(String text, String color) {
         Label l = new Label(text);
         l.setStyle("-fx-text-fill: " + color + "; -fx-background-color: " + color + "22; " +
-            "-fx-background-radius: 4; -fx-padding: 3 8 3 8; -fx-font-size: 11px; -fx-font-weight: bold;");
+                "-fx-background-radius: 4; -fx-padding: 3 8 3 8; -fx-font-size: 11px; -fx-font-weight: bold;");
         return l;
     }
 
@@ -194,12 +227,13 @@ public class AlimentFrontController implements Initializable {
 
     @FXML
     private void handleSearch() {
-        if (allAliments == null) return;
+        if (allAliments == null)
+            return;
         String q = searchField != null ? searchField.getText().toLowerCase().trim() : "";
         List<Aliment> filtered = q.isBlank() ? allAliments
-            : allAliments.stream()
-                .filter(a -> a.getNom().toLowerCase().contains(q))
-                .collect(Collectors.toList());
+                : allAliments.stream()
+                        .filter(a -> a.getNom().toLowerCase().contains(q))
+                        .collect(Collectors.toList());
         renderCards(filtered);
     }
 
@@ -208,22 +242,31 @@ public class AlimentFrontController implements Initializable {
     @FXML
     private void openAddForm() {
         editingAliment = null;
-        if (formTitle != null) formTitle.setText("➕ Nouvel Aliment");
+        if (formTitle != null)
+            formTitle.setText("➕ Nouvel Aliment");
         clearForm();
-        if (quantiteField != null) quantiteField.setText("100");
+        if (quantiteField != null)
+            quantiteField.setText("100");
         showForm(true);
     }
 
     private void openEditForm(Aliment a) {
         editingAliment = a;
-        if (formTitle     != null) formTitle.setText("✎ Modifier : " + a.getNom());
-        if (nomField      != null) nomField.setText(a.getNom());
-        if (quantiteField != null) quantiteField.setText(fmt(a.getQuantite()));
-        if (caloriesField != null) caloriesField.setText(fmt(a.getCalories()));
+        if (formTitle != null)
+            formTitle.setText("✎ Modifier : " + a.getNom());
+        if (nomField != null)
+            nomField.setText(a.getNom());
+        if (quantiteField != null)
+            quantiteField.setText(fmt(a.getQuantite()));
+        if (caloriesField != null)
+            caloriesField.setText(fmt(a.getCalories()));
         String[] m = parseMacro(a.getMacro());
-        if (proteinesField != null) proteinesField.setText(m[0]);
-        if (glucidesField  != null) glucidesField.setText(m[1]);
-        if (lipidesField   != null) lipidesField.setText(m[2]);
+        if (proteinesField != null)
+            proteinesField.setText(m[0]);
+        if (glucidesField != null)
+            glucidesField.setText(m[1]);
+        if (lipidesField != null)
+            lipidesField.setText(m[2]);
         showForm(true);
     }
 
@@ -232,24 +275,38 @@ public class AlimentFrontController implements Initializable {
         hideError();
 
         String nom = nomField != null ? nomField.getText().trim() : "";
-        if (nom.isBlank()) { showError("Le nom est obligatoire."); return; }
-        if (nom.length() < 2) { showError("Le nom doit faire au moins 2 caractères."); return; }
+        if (nom.isBlank()) {
+            showError("Le nom est obligatoire.");
+            return;
+        }
+        if (nom.length() < 2) {
+            showError("Le nom doit faire au moins 2 caractères.");
+            return;
+        }
 
         double quantite = parseNum(quantiteField, "Quantité", true);
-        if (Double.isNaN(quantite)) return;
-        if (quantite <= 0) { showError("La quantité doit être > 0."); return; }
+        if (Double.isNaN(quantite))
+            return;
+        if (quantite <= 0) {
+            showError("La quantité doit être > 0.");
+            return;
+        }
 
         double proteines = parseNum(proteinesField, "Protéines", false);
-        if (Double.isNaN(proteines)) return;
-        double glucides  = parseNum(glucidesField,  "Glucides",  false);
-        if (Double.isNaN(glucides))  return;
-        double lipides   = parseNum(lipidesField,   "Lipides",   false);
-        if (Double.isNaN(lipides))   return;
+        if (Double.isNaN(proteines))
+            return;
+        double glucides = parseNum(glucidesField, "Glucides", false);
+        if (Double.isNaN(glucides))
+            return;
+        double lipides = parseNum(lipidesField, "Lipides", false);
+        if (Double.isNaN(lipides))
+            return;
 
         double calories = (proteines * 4) + (glucides * 4) + (lipides * 9);
         if (caloriesField != null && !caloriesField.getText().isBlank()) {
             double manual = parseNum(caloriesField, "Calories", false);
-            if (!Double.isNaN(manual) && manual > 0) calories = manual;
+            if (!Double.isNaN(manual) && manual > 0)
+                calories = manual;
         }
 
         // Store macros as comma-separated simple values to avoid DB constraint
@@ -257,7 +314,7 @@ public class AlimentFrontController implements Initializable {
 
         try {
             if (editingAliment == null) {
-                Aliment a = new Aliment(nom, quantite, calories, macro);
+                Aliment a = new Aliment(userId, nom, quantite, calories, macro);
                 serviceAliment.ajouter(a);
             } else {
                 editingAliment.setNom(nom);
@@ -306,24 +363,37 @@ public class AlimentFrontController implements Initializable {
     }
 
     private void clearForm() {
-        if (nomField       != null) nomField.clear();
-        if (quantiteField  != null) quantiteField.clear();
-        if (caloriesField  != null) caloriesField.clear();
-        if (proteinesField != null) proteinesField.clear();
-        if (glucidesField  != null) glucidesField.clear();
-        if (lipidesField   != null) lipidesField.clear();
+        if (nomField != null)
+            nomField.clear();
+        if (quantiteField != null)
+            quantiteField.clear();
+        if (caloriesField != null)
+            caloriesField.clear();
+        if (proteinesField != null)
+            proteinesField.clear();
+        if (glucidesField != null)
+            glucidesField.clear();
+        if (lipidesField != null)
+            lipidesField.clear();
     }
 
     private double parseNum(TextField f, String name, boolean required) {
-        if (f == null) return 0;
+        if (f == null)
+            return 0;
         String t = f.getText();
         if (t == null || t.isBlank()) {
-            if (required) { showError(name + " est obligatoire."); return Double.NaN; }
+            if (required) {
+                showError(name + " est obligatoire.");
+                return Double.NaN;
+            }
             return 0;
         }
         try {
             double v = Double.parseDouble(t.trim());
-            if (v < 0) { showError(name + " ne peut pas être négatif."); return Double.NaN; }
+            if (v < 0) {
+                showError(name + " ne peut pas être négatif.");
+                return Double.NaN;
+            }
             return v;
         } catch (NumberFormatException e) {
             showError(name + " doit être un nombre (ex: 3.5).");
@@ -333,8 +403,9 @@ public class AlimentFrontController implements Initializable {
     }
 
     private String[] parseMacro(String macro) {
-        String[] result = {"0", "0", "0"};
-        if (macro == null || macro.isBlank()) return result;
+        String[] result = { "0", "0", "0" };
+        if (macro == null || macro.isBlank())
+            return result;
         // Support both formats: "P:3.5;G:23.0;L:10.0" and "3.5,23.0,10.0"
         if (macro.contains(",")) {
             String[] parts = macro.split(",");
@@ -347,13 +418,15 @@ public class AlimentFrontController implements Initializable {
             try {
                 for (String part : macro.split(";")) {
                     String[] kv = part.split(":");
-                    if (kv.length == 2) switch (kv[0].trim().toUpperCase()) {
-                        case "P" -> result[0] = kv[1].trim();
-                        case "G" -> result[1] = kv[1].trim();
-                        case "L" -> result[2] = kv[1].trim();
-                    }
+                    if (kv.length == 2)
+                        switch (kv[0].trim().toUpperCase()) {
+                            case "P" -> result[0] = kv[1].trim();
+                            case "G" -> result[1] = kv[1].trim();
+                            case "L" -> result[2] = kv[1].trim();
+                        }
                 }
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
         return result;
     }

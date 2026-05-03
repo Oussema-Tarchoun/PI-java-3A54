@@ -12,6 +12,7 @@
 -->
 <BorderPane xmlns="http://javafx.com/javafx/17"
             xmlns:fx="http://javafx.com/fxml/1"
+            fx:id="rootBorderPane"
             fx:controller="Controllers.repas.RepasController"
             styleClass="main-window"
             stylesheets="@/style.css"
@@ -46,6 +47,12 @@
                         </HBox>
                     </graphic>
                 </Button>
+
+                <Button text="&#128203;  Global Reports" maxWidth="Infinity" styleClass="nav-item active"
+                        onAction="#goToGlobalReports" id="btnReportsNavList"/>
+
+                <Button text="&#128100;  User Management" maxWidth="Infinity" styleClass="nav-item"
+                        onAction="#openUserManagement" id="btnUsersNavList"/>
 
                 <!-- SPORTS -->
                 <Label text="SPORTS" styleClass="nav-section-title"/>
@@ -123,7 +130,7 @@
                     </graphic>
                 </Button>
                 <!-- ACTIVE ITEM -->
-                <Button styleClass="nav-item active" maxWidth="Infinity">
+                <Button styleClass="nav-item active" maxWidth="Infinity" onAction="#goToRepas">
                     <graphic>
                         <HBox spacing="10" alignment="CENTER_LEFT">
                             <Label text="✦" styleClass="nav-icon-label nav-icon-emerald"/>
@@ -183,7 +190,7 @@
          MAIN CONTENT
     ════════════════════════════════════════ -->
     <center>
-        <VBox spacing="0" VBox.vgrow="ALWAYS">
+        <VBox fx:id="mainContentArea" spacing="0" VBox.vgrow="ALWAYS">
 
             <!-- TOP NAVBAR -->
             <HBox styleClass="top-navbar" alignment="CENTER_LEFT" spacing="16">

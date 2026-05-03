@@ -26,6 +26,7 @@ public class ServiceRepas implements Iservice<Repas> {
             System.out.println("supprimer error: " + e.getMessage());
         }
     }
+
     public void deleteRepasAliments(int repasId) throws SQLException {
         String sql = "DELETE FROM repas_aliment WHERE repas_id = ?";
 
@@ -55,15 +56,13 @@ public class ServiceRepas implements Iservice<Repas> {
         return ids;
     }
 
-
     public List<Repas> getRepasForAliment(int alimentId) throws SQLException {
         List<Repas> list = new ArrayList<>();
 
-        String sql =
-                "SELECT r.* " +
-                        "FROM repas r " +
-                        "JOIN repas_aliment ra ON r.id = ra.repas_id " +
-                        "WHERE ra.aliment_id = ?";
+        String sql = "SELECT r.* " +
+                "FROM repas r " +
+                "JOIN repas_aliment ra ON r.id = ra.repas_id " +
+                "WHERE ra.aliment_id = ?";
 
         try (PreparedStatement ps = getConnection().prepareStatement(sql)) {
             ps.setInt(1, alimentId);
@@ -104,8 +103,6 @@ public class ServiceRepas implements Iservice<Repas> {
         }
     }
 
-
-
     @Override
     public void ajouter(Repas repas) throws SQLDataException {
         String sql = "INSERT INTO repas (user_id, nom, heure, calories, description, type, date) VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -129,7 +126,7 @@ public class ServiceRepas implements Iservice<Repas> {
         String sql = "SELECT * FROM repas";
 
         try (Statement st = getConnection().createStatement();
-             ResultSet rs = st.executeQuery(sql)) {
+                ResultSet rs = st.executeQuery(sql)) {
 
             while (rs.next()) {
                 Repas r = new Repas();
@@ -146,6 +143,32 @@ public class ServiceRepas implements Iservice<Repas> {
 
         } catch (SQLException e) {
             System.out.println("recuperer error: " + e.getMessage());
+        }
+        return list;
+    }
+
+    public List<Repas> recupererParUser(int userId) throws SQLDataException {
+        List<Repas> list = new ArrayList<>();
+        String sql = "SELECT * FROM repas WHERE user_id = ?";
+
+        try (PreparedStatement ps = getConnection().prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Repas r = new Repas();
+                    r.setId(rs.getInt("id"));
+                    r.setUser_id(rs.getInt("user_id"));
+                    r.setNom(rs.getString("nom"));
+                    r.setCalories(rs.getInt("calories"));
+                    r.setDescription(rs.getString("description"));
+                    r.setType(rs.getString("type"));
+                    r.setDate(rs.getDate("date"));
+                    r.setHeure(rs.getTime("heure"));
+                    list.add(r);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("recupererParUser error: " + e.getMessage());
         }
         return list;
     }
@@ -191,7 +214,8 @@ public class ServiceRepas implements Iservice<Repas> {
                 ps.executeUpdate();
 
                 ResultSet rs = ps.getGeneratedKeys();
-                if (!rs.next()) throw new SQLException("No ID generated");
+                if (!rs.next())
+                    throw new SQLException("No ID generated");
 
                 repasId = rs.getInt(1);
             }

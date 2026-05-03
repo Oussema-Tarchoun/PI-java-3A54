@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.image.ImageView?>
+
+<AnchorPane prefWidth="1080.0" prefHeight="680.0"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controllers.TwoFactorVerifyController"
+            stylesheets="@styles.css">
+    <!-- Background -->
+    <VBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
+          styleClass="main-window"/>
+
+    <!-- Left side (Text/Logo) -->
+    <VBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+          AnchorPane.leftAnchor="0" prefWidth="440"
+          alignment="CENTER" spacing="24">
+        <VBox alignment="CENTER" spacing="10">
+             <VBox alignment="CENTER" styleClass="logo-box" prefWidth="80" prefHeight="80" maxWidth="80" maxHeight="80">
+                <Label text="A" style="-fx-font-size: 40px; -fx-text-fill: white; -fx-font-weight: bold;"/>
+            </VBox>
+            <Label text="AIVA" styleClass="page-title" style="-fx-font-size: 36px;"/>
+            <Label text="2FA SECURITY" styleClass="stat-label"/>
+        </VBox>
+        <Label text="Sécurisez votre accès avec la double authentification." styleClass="card-subtitle"
+               wrapText="true" textAlignment="CENTER" maxWidth="300"/>
+    </VBox>
+
+    <!-- Right form -->
+    <VBox alignment="CENTER" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="440" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+        <VBox maxWidth="480" spacing="0" styleClass="glass-card">
+            <VBox spacing="28" style="-fx-padding: 10;">
+
+            <VBox spacing="6">
+                <Label text="Vérification 2FA" styleClass="card-title" style="-fx-font-size: 24px;"/>
+                <Label text="Entrez le code de 6 chiffres généré par votre application." styleClass="card-subtitle" wrapText="true"/>
+            </VBox>
+
+            <!-- QR Code Section (Hidden by default) -->
+            <VBox fx:id="vboxQrCode" spacing="12" alignment="CENTER" managed="false" visible="false">
+                <Label text="Scannez ce code si vous ne l'avez pas encore fait :" styleClass="stat-label" style="-fx-text-fill: #34d399;"/>
+                <HBox alignment="CENTER" style="-fx-background-color: white; -fx-padding: 10; -fx-background-radius: 10;">
+                    <ImageView fx:id="ivQrCode" fitWidth="180" fitHeight="180" preserveRatio="true"/>
+                </HBox>
+            </VBox>
+
+            <!-- Form -->
+            <VBox spacing="16">
+
+                <VBox spacing="6">
+                    <Label text="CODE DE VALIDATION" styleClass="form-label"/>
+                    <TextField fx:id="tfCode" promptText="000000"
+                               styleClass="form-input" id="tf2faCode"
+                               onAction="#handleVerify" alignment="CENTER"/>
+                </VBox>
+
+                <!-- Error label -->
+                <Label fx:id="lblError" text="" styleClass="error-label"
+                       wrapText="true" managed="false" visible="false"/>
+
+                <!-- Verify button -->
+                <Button text="Vérifier &#8594;" styleClass="btn-primary"
+                        maxWidth="Infinity" prefHeight="44"
+                        onAction="#handleVerify" id="btn2faVerify"
+                        defaultButton="true"/>
+
+                <Button fx:id="btnShowQr" text="Afficher le QR Code" styleClass="btn-secondary"
+                        maxWidth="Infinity" onAction="#handleToggleQr"/>
+
+                <Button text="Retour à la connexion" styleClass="btn-secondary"
+                        maxWidth="Infinity" onAction="#handleBackToLogin"/>
+
+            </VBox>
+            </VBox>
+        </VBox>
+    </VBox>
+</AnchorPane>

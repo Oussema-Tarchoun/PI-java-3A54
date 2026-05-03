@@ -2,6 +2,7 @@ package Models;
 
 public class Aliment {
     private int id;
+    private int user_id;
     private String nom;
     private double quantite;
     private double calories;
@@ -11,8 +12,9 @@ public class Aliment {
     }
 
     // Full constructor
-    public Aliment(int id, String nom, double quantite, double calories, String macro) {
+    public Aliment(int id, int user_id, String nom, double quantite, double calories, String macro) {
         this.id = id;
+        this.user_id = user_id;
         this.nom = nom;
         this.quantite = quantite;
         this.calories = calories;
@@ -20,7 +22,8 @@ public class Aliment {
     }
 
     // Constructor without ID (for adding)
-    public Aliment(String nom, double quantite, double calories, String macro) {
+    public Aliment(int user_id, String nom, double quantite, double calories, String macro) {
+        this.user_id = user_id;
         this.nom = nom;
         this.quantite = quantite;
         this.calories = calories;
@@ -28,20 +31,53 @@ public class Aliment {
     }
 
     // Getters and Setters
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public int getId() {
+        return id;
+    }
 
-    public String getNom() { return nom; }
-    public void setNom(String nom) { this.nom = nom; }
+    public void setId(int id) {
+        this.id = id;
+    }
 
-    public double getQuantite() { return quantite; }
-    public void setQuantite(double quantite) { this.quantite = quantite; }
+    public int getUser_id() {
+        return user_id;
+    }
 
-    public double getCalories() { return calories; }
-    public void setCalories(double calories) { this.calories = calories; }
+    public void setUser_id(int user_id) {
+        this.user_id = user_id;
+    }
 
-    public String getMacro() { return macro; }
-    public void setMacro(String macro) { this.macro = macro; }
+    public String getNom() {
+        return nom;
+    }
+
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+
+    public double getQuantite() {
+        return quantite;
+    }
+
+    public void setQuantite(double quantite) {
+        this.quantite = quantite;
+    }
+
+    public double getCalories() {
+        return calories;
+    }
+
+    public void setCalories(double calories) {
+        this.calories = calories;
+    }
+
+    public String getMacro() {
+        return macro;
+    }
+
+    public void setMacro(String macro) {
+        this.macro = macro;
+    }
 
     @Override
     public String toString() {

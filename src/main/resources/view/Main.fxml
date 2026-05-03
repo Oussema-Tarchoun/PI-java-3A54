@@ -61,8 +61,28 @@
                         maxWidth="Infinity"
                         alignment="CENTER_LEFT"/>
 
-                <!-- Add more sections/buttons here as needed -->
 
+                <!-- Add more sections/buttons here as needed -->
+                <!-- ADMINISTRATION -->
+                <VBox fx:id="adminMenu" managed="false" visible="false" spacing="4">
+                    <Label text="ADMINISTRATION"
+                           style="-fx-text-fill: #64748b; -fx-font-size: 10px;
+                                  -fx-font-weight: bold; -fx-padding: 16 20 4 20;"/>
+
+                    <Button fx:id="btnUsers"
+                            text="👤  Gestion Utilisateurs"
+                            styleClass="nav-button"
+                            onAction="#openUserManagement"
+                            maxWidth="Infinity"
+                            alignment="CENTER_LEFT"/>
+
+                    <Button fx:id="btnGlobalReports"
+                            text="📋  Rapports Globaux"
+                            styleClass="nav-button"
+                            onAction="#openGlobalReports"
+                            maxWidth="Infinity"
+                            alignment="CENTER_LEFT"/>
+                </VBox>
             </VBox>
 
             <!-- Footer -->
