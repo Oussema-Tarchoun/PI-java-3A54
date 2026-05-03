@@ -1,69 +1,70 @@
 package Models;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class Activite {
-
     private int id;
-    private String type;
-    private int duree;              // minutes
-    private double caloriesBrulees;
-    private LocalDate date;
-    private String intensite;
-    private int objectifId;
+    private int userId;
+    private String type; // running, cycling, swimming, etc
+    private double distance; // en km
+    private LocalTime duree;
+    private LocalDate dateActivite;
+    private int caloriesBrulees;
+    private String notes;
 
-    // ── Constructors ──────────────────────────────
     public Activite() {}
 
-    public Activite(String type, int duree, double caloriesBrulees,
-                    LocalDate date, String intensite, int objectifId) {
-        this.type            = type;
-        this.duree           = duree;
+    public Activite(int userId, String type, double distance, LocalTime duree, LocalDate dateActivite, int caloriesBrulees, String notes) {
+        this.userId = userId;
+        this.type = type;
+        this.distance = distance;
+        this.duree = duree;
+        this.dateActivite = dateActivite;
         this.caloriesBrulees = caloriesBrulees;
-        this.date            = date;
-        this.intensite       = intensite;
-        this.objectifId      = objectifId;
+        this.notes = notes;
     }
 
-    public Activite(int id, String type, int duree, double caloriesBrulees,
-                    LocalDate date, String intensite, int objectifId) {
-        this(type, duree, caloriesBrulees, date, intensite, objectifId);
+    public Activite(int id, int userId, String type, double distance, LocalTime duree, LocalDate dateActivite, int caloriesBrulees, String notes) {
+        this(userId, type, distance, duree, dateActivite, caloriesBrulees, notes);
         this.id = id;
     }
 
-    // ── Getters & Setters ─────────────────────────
-    public int getId()                          { return id; }
-    public void setId(int id)                   { this.id = id; }
+    // Getters and Setters
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
 
-    public String getType()                     { return type; }
-    public void setType(String type)            { this.type = type; }
+    public int getUserId() { return userId; }
+    public void setUserId(int userId) { this.userId = userId; }
 
-    public int getDuree()                       { return duree; }
-    public void setDuree(int duree)             { this.duree = duree; }
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
 
-    public double getCaloriesBrulees()          { return caloriesBrulees; }
-    public void setCaloriesBrulees(double c)    { this.caloriesBrulees = c; }
+    public double getDistance() { return distance; }
+    public void setDistance(double distance) { this.distance = distance; }
 
-    public LocalDate getDate()                  { return date; }
-    public void setDate(LocalDate date)         { this.date = date; }
+    public LocalTime getDuree() { return duree; }
+    public void setDuree(LocalTime duree) { this.duree = duree; }
 
-    public String getIntensite()                { return intensite; }
-    public void setIntensite(String intensite)  { this.intensite = intensite; }
+    public LocalDate getDateActivite() { return dateActivite; }
+    public void setDateActivite(LocalDate dateActivite) { this.dateActivite = dateActivite; }
 
-    public int getObjectifId()                  { return objectifId; }
-    public void setObjectifId(int objectifId)   { this.objectifId = objectifId; }
+    public int getCaloriesBrulees() { return caloriesBrulees; }
+    public void setCaloriesBrulees(int caloriesBrulees) { this.caloriesBrulees = caloriesBrulees; }
 
-    // ── toString ──────────────────────────────────
+    public String getNotes() { return notes; }
+    public void setNotes(String notes) { this.notes = notes; }
+
     @Override
     public String toString() {
         return "Activite{" +
                 "id=" + id +
+                ", userId=" + userId +
                 ", type='" + type + '\'' +
+                ", distance=" + distance +
                 ", duree=" + duree +
+                ", dateActivite=" + dateActivite +
                 ", caloriesBrulees=" + caloriesBrulees +
-                ", date=" + date +
-                ", intensite='" + intensite + '\'' +
-                ", objectifId=" + objectifId +
                 '}';
     }
 }

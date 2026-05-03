@@ -2,28 +2,28 @@ package Models;
 
 import java.time.LocalDate;
 
-public class Energie {
+public class Alimentation {
     private int id;
     private int userId;
-    private String type; // electricité, gaz, eau
-    private double consommation; // en kWh ou m3
-    private double cout;
+    private String type; // petit-déjeuner, déjeuner, dîner, snack
+    private String description;
+    private int calories;
     private LocalDate dateConsommation;
     private String notes;
 
-    public Energie() {}
+    public Alimentation() {}
 
-    public Energie(int userId, String type, double consommation, double cout, LocalDate dateConsommation, String notes) {
+    public Alimentation(int userId, String type, String description, int calories, LocalDate dateConsommation, String notes) {
         this.userId = userId;
         this.type = type;
-        this.consommation = consommation;
-        this.cout = cout;
+        this.description = description;
+        this.calories = calories;
         this.dateConsommation = dateConsommation;
         this.notes = notes;
     }
 
-    public Energie(int id, int userId, String type, double consommation, double cout, LocalDate dateConsommation, String notes) {
-        this(userId, type, consommation, cout, dateConsommation, notes);
+    public Alimentation(int id, int userId, String type, String description, int calories, LocalDate dateConsommation, String notes) {
+        this(userId, type, description, calories, dateConsommation, notes);
         this.id = id;
     }
 
@@ -37,11 +37,11 @@ public class Energie {
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
 
-    public double getConsommation() { return consommation; }
-    public void setConsommation(double consommation) { this.consommation = consommation; }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
-    public double getCout() { return cout; }
-    public void setCout(double cout) { this.cout = cout; }
+    public int getCalories() { return calories; }
+    public void setCalories(int calories) { this.calories = calories; }
 
     public LocalDate getDateConsommation() { return dateConsommation; }
     public void setDateConsommation(LocalDate dateConsommation) { this.dateConsommation = dateConsommation; }
@@ -51,13 +51,14 @@ public class Energie {
 
     @Override
     public String toString() {
-        return "Energie{" +
+        return "Alimentation{" +
                 "id=" + id +
                 ", userId=" + userId +
                 ", type='" + type + '\'' +
-                ", consommation=" + consommation +
-                ", cout=" + cout +
+                ", description='" + description + '\'' +
+                ", calories=" + calories +
                 ", dateConsommation=" + dateConsommation +
+                ", notes='" + notes + '\'' +
                 '}';
     }
 }

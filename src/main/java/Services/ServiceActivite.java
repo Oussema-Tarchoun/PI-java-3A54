@@ -2,93 +2,114 @@ package Services;
 
 import Models.Activite;
 import utils.MyDatabase;
-
 import java.sql.*;
-import java.sql.SQLDataException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ServiceActivite implements Iservice<Activite> {
+public class ServiceActivite {
+    private Connection connection;
 
-    private final Connection cnx = MyDatabase.getInstance().getConnection();
+    public ServiceActivite() {
+        connection = MyDatabase.getInstance().getConnection();
+    }
 
-    @Override
-    public void ajouter(Activite a) throws SQLDataException {
-        String sql = "INSERT INTO activite_physique (type, duree, calories_brulees, date, intensite, objectif_id) VALUES (?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
-            ps.setString(1, a.getType());
-            ps.setInt(2, a.getDuree());
-            ps.setDouble(3, a.getCaloriesBrulees());
-            ps.setDate(4, Date.valueOf(a.getDate()));
-            ps.setString(5, a.getIntensite());
-            ps.setInt(6, a.getObjectifId());
+    public void ajouter(Activite activite) throws SQLException {
+        String sql = "INSERT INTO activite (user_id, type, distance, duree, date_activite, calories_brulees, notes) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, activite.getUserId());
+            ps.setString(2, activite.getType());
+            ps.setDouble(3, activite.getDistance());
+            ps.setTime(4, Time.valueOf(activite.getDuree()));
+            ps.setDate(5, Date.valueOf(activite.getDateActivite()));
+            ps.setInt(6, activite.getCaloriesBrulees());
+            ps.setString(7, activite.getNotes());
             ps.executeUpdate();
-            System.out.println("✅ Activité ajoutée.");
-        } catch (SQLException e) { System.err.println("❌ " + e.getMessage()); }
+        }
     }
 
-    @Override
-    public void modifier(Activite a) throws SQLDataException {
-        String sql = "UPDATE activite_physique SET type=?, duree=?, calories_brulees=?, date=?, intensite=?, objectif_id=? WHERE id=?";
-        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
-            ps.setString(1, a.getType());
-            ps.setInt(2, a.getDuree());
-            ps.setDouble(3, a.getCaloriesBrulees());
-            ps.setDate(4, Date.valueOf(a.getDate()));
-            ps.setString(5, a.getIntensite());
-            ps.setInt(6, a.getObjectifId());
-            ps.setInt(7, a.getId());
+    public void modifier(Activite activite) throws SQLException {
+        String sql = "UPDATE activite SET type=?, distance=?, duree=?, date_activite=?, calories_brulees=?, notes=? WHERE id=?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, activite.getType());
+            ps.setDouble(2, activite.getDistance());
+            ps.setTime(3, Time.valueOf(activite.getDuree()));
+            ps.setDate(4, Date.valueOf(activite.getDateActivite()));
+            ps.setInt(5, activite.getCaloriesBrulees());
+            ps.setString(6, activite.getNotes());
+            ps.setInt(7, activite.getId());
             ps.executeUpdate();
-            System.out.println("✅ Activité modifiée.");
-        } catch (SQLException e) { System.err.println("❌ " + e.getMessage()); }
+        }
     }
 
-    @Override
-    public void supprimer(Activite a) throws SQLDataException {
-        String sql = "DELETE FROM activite_physique WHERE id=?";
-        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
-            ps.setInt(1, a.getId());
+    public void supprimer(int id) throws SQLException {
+        String sql = "DELETE FROM activite WHERE id=?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, id);
             ps.executeUpdate();
-            System.out.println("✅ Activité supprimée.");
-        } catch (SQLException e) { System.err.println("❌ " + e.getMessage()); }
+        }
     }
 
-    @Override
-    public List<Activite> recuperer() throws SQLDataException {
-        List<Activite> list = new ArrayList<>();
-        String sql = "SELECT * FROM activite_physique";
-        try (Statement st = cnx.createStatement(); ResultSet rs = st.executeQuery(sql)) {
-            while (rs.next()) list.add(mapRow(rs));
-        } catch (SQLException e) { System.err.println("❌ " + e.getMessage()); }
-        return list;
-    }
-
-    public Activite getById(int id) {
-        String sql = "SELECT * FROM activite_physique WHERE id=?";
-        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+    public Activite obtenirParId(int id) throws SQLException {
+        String sql = "SELECT * FROM activite WHERE id=?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
-            if (rs.next()) return mapRow(rs);
-        } catch (SQLException e) { System.err.println("❌ " + e.getMessage()); }
+            if (rs.next()) {
+                return new Activite(
+                    rs.getInt("id"),
+                    rs.getInt("user_id"),
+                    rs.getString("type"),
+                    rs.getDouble("distance"),
+                    rs.getTime("duree").toLocalTime(),
+                    rs.getDate("date_activite").toLocalDate(),
+                    rs.getInt("calories_brulees"),
+                    rs.getString("notes")
+                );
+            }
+        }
         return null;
     }
 
-    public List<Activite> getByObjectifId(int objectifId) {
+    public List<Activite> obtenirParUtilisateur(int userId) throws SQLException {
+        String sql = "SELECT * FROM activite WHERE user_id=? ORDER BY date_activite DESC";
         List<Activite> list = new ArrayList<>();
-        String sql = "SELECT * FROM activite_physique WHERE objectif_id=?";
-        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
-            ps.setInt(1, objectifId);
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, userId);
             ResultSet rs = ps.executeQuery();
-            while (rs.next()) list.add(mapRow(rs));
-        } catch (SQLException e) { System.err.println("❌ " + e.getMessage()); }
+            while (rs.next()) {
+                list.add(new Activite(
+                    rs.getInt("id"),
+                    rs.getInt("user_id"),
+                    rs.getString("type"),
+                    rs.getDouble("distance"),
+                    rs.getTime("duree").toLocalTime(),
+                    rs.getDate("date_activite").toLocalDate(),
+                    rs.getInt("calories_brulees"),
+                    rs.getString("notes")
+                ));
+            }
+        }
         return list;
     }
 
-    private Activite mapRow(ResultSet rs) throws SQLException {
-        return new Activite(
-                rs.getInt("id"), rs.getString("type"), rs.getInt("duree"),
-                rs.getDouble("calories_brulees"), rs.getDate("date").toLocalDate(),
-                rs.getString("intensite"), rs.getInt("objectif_id")
-        );
+    public List<Activite> obtenirTous() throws SQLException {
+        String sql = "SELECT * FROM activite ORDER BY date_activite DESC";
+        List<Activite> list = new ArrayList<>();
+        try (Statement st = connection.createStatement()) {
+            ResultSet rs = st.executeQuery(sql);
+            while (rs.next()) {
+                list.add(new Activite(
+                    rs.getInt("id"),
+                    rs.getInt("user_id"),
+                    rs.getString("type"),
+                    rs.getDouble("distance"),
+                    rs.getTime("duree").toLocalTime(),
+                    rs.getDate("date_activite").toLocalDate(),
+                    rs.getInt("calories_brulees"),
+                    rs.getString("notes")
+                ));
+            }
+        }
+        return list;
     }
 }
