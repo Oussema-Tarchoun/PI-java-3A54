@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+
+<!--
+    Controller : Controllers.repas.RepasController
+    CSS        : /style.css
+    Place at   : src/main/resources/view/repas/DetailRepas.fxml
+
+    Tab 1 "Informations" : edit repas fields (nom, type, date, heure, calories, description)
+    Tab 2 "Aliments"     : multi-select ListView of all aliments → saved to repas_aliment table
+-->
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controllers.repas.RepasController"
+            styleClass="main-window"
+            stylesheets="@/style.css"
+            prefWidth="1280" prefHeight="800">
+
+    <left>
+        <VBox styleClass="sidebar" prefWidth="240" spacing="0">
+            <HBox alignment="CENTER_LEFT" spacing="10"
+                  style="-fx-padding: 2 0 16 0;
+                         -fx-border-color: rgba(255,255,255,0.08);
+                         -fx-border-width: 0 0 1 0;">
+                <ImageView fitWidth="36" fitHeight="36" preserveRatio="true" styleClass="logo-image">
+                    <Image url="@/images/img.png"/>
+                </ImageView>
+                <Label text="AIVA" styleClass="logo-name"/>
+            </HBox>
+            <VBox spacing="1" style="-fx-padding: 12 0 0 0;" VBox.vgrow="ALWAYS">
+                <Label text="ALIMENTATION" styleClass="nav-section-title"/>
+                <Button styleClass="nav-item" maxWidth="Infinity" onAction="#goToAliments">
+                    <graphic><HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="○" styleClass="nav-icon-label nav-icon-muted"/>
+                        <Label text="Aliments" style="-fx-text-fill: inherit;"/>
+                    </HBox></graphic>
+                </Button>
+                <Button styleClass="nav-item active" maxWidth="Infinity">
+                    <graphic><HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="✦" styleClass="nav-icon-label nav-icon-emerald"/>
+                        <Label text="Repas" style="-fx-text-fill: #f5f5f4; -fx-font-weight: bold;"/>
+                    </HBox></graphic>
+                </Button>
+                <Region VBox.vgrow="ALWAYS"/>
+            </VBox>
+            <HBox styleClass="sidebar-footer" spacing="12" alignment="CENTER_LEFT">
+                <StackPane styleClass="user-avatar">
+                    <Label text="A" style="-fx-text-fill: white; -fx-font-size: 15px; -fx-font-weight: bold;"/>
+                </StackPane>
+                <VBox spacing="2">
+                    <Label text="Admin User" styleClass="user-name"/>
+                    <Label text="Administrateur" styleClass="user-role"/>
+                </VBox>
+            </HBox>
+        </VBox>
+    </left>
+
+    <center>
+        <VBox spacing="0">
+
+            <!-- NAVBAR -->
+            <HBox styleClass="top-navbar" alignment="CENTER_LEFT" spacing="16">
+                <Label text="✎" style="-fx-text-fill: #34d399; -fx-font-size: 20px;"/>
+                <Label fx:id="pageTitle" text="Modifier : Repas" styleClass="page-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="← Retour" styleClass="btn-secondary" onAction="#goBack"/>
+            </HBox>
+
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                        style="-fx-background-color: transparent;
+                               -fx-background: transparent;
+                               -fx-border-color: transparent;">
+                <HBox spacing="20" style="-fx-padding: 24;" alignment="TOP_LEFT">
+
+                    <!-- LEFT: tab selector -->
+                    <VBox styleClass="glass-card" spacing="6"
+                          prefWidth="200" minWidth="200" maxWidth="200">
+                        <Button fx:id="btnTabInfo"
+                                styleClass="form-tab-btn active"
+                                maxWidth="Infinity"
+                                onAction="#showInfoTab">
+                            <graphic><HBox spacing="8" alignment="CENTER_LEFT">
+                                <Label text="✦" styleClass="nav-icon-label nav-icon-emerald"/>
+                                <Label text="Informations" style="-fx-text-fill: inherit;"/>
+                            </HBox></graphic>
+                        </Button>
+                        <Button fx:id="btnTabAliments"
+                                styleClass="form-tab-btn"
+                                maxWidth="Infinity"
+                                onAction="#showAlimentsTab">
+                            <graphic><HBox spacing="8" alignment="CENTER_LEFT">
+                                <Label text="○" styleClass="nav-icon-label nav-icon-muted"/>
+                                <Label text="Aliments" style="-fx-text-fill: inherit;"/>
+                            </HBox></graphic>
+                        </Button>
+                    </VBox>
+
+                    <!-- RIGHT: content panels -->
+                    <VBox HBox.hgrow="ALWAYS" spacing="0">
+
+                        <!-- ── TAB 1: INFORMATIONS ── -->
+                        <VBox fx:id="paneInfo" styleClass="glass-card" spacing="20">
+
+                            <Label text="Détails du Repas" styleClass="section-header"/>
+                            <Separator/>
+
+                            <!-- NOM -->
+                            <VBox spacing="6">
+                                <Label text="NOM DU REPAS" styleClass="form-label"/>
+                                <TextField fx:id="nomField"
+                                           promptText="Ex: Déjeuner du lundi"
+                                           styleClass="form-input"
+                                           maxWidth="Infinity"/>
+                            </VBox>
+
+                            <!-- TYPE + DATE -->
+                            <HBox spacing="16">
+                                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                                    <Label text="TYPE DE REPAS" styleClass="form-label"/>
+                                    <ComboBox fx:id="typeCombo"
+                                              styleClass="combo-box"
+                                              maxWidth="Infinity"/>
+                                </VBox>
+                                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                                    <Label text="DATE" styleClass="form-label"/>
+                                    <DatePicker fx:id="datePicker" maxWidth="Infinity"/>
+                                </VBox>
+                            </HBox>
+
+                            <!-- HEURE + CALORIES -->
+                            <HBox spacing="16">
+                                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                                    <Label text="HEURE (HH:mm:ss)" styleClass="form-label"/>
+                                    <TextField fx:id="heureField"
+                                               promptText="Ex: 12:30:00"
+                                               styleClass="form-input"/>
+                                </VBox>
+                                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                                    <Label text="CALORIES (KCAL)" styleClass="form-label"/>
+                                    <TextField fx:id="caloriesField"
+                                               promptText="0"
+                                               styleClass="form-input"/>
+                                </VBox>
+                            </HBox>
+
+                            <!-- DESCRIPTION -->
+                            <VBox spacing="6">
+                                <Label text="DESCRIPTION (OPTIONNELLE)" styleClass="form-label"/>
+                                <TextArea fx:id="descriptionArea"
+                                          promptText="Ajoutez une description..."
+                                          prefRowCount="4"
+                                          wrapText="true"/>
+                            </VBox>
+
+                            <!-- Error label -->
+                            <Label fx:id="errorLabel" text=""
+                                   style="-fx-text-fill: #ff6b6b; -fx-font-size: 13px;"
+                                   wrapText="true" managed="false" visible="false"/>
+
+                            <!-- Buttons -->
+                            <HBox spacing="12">
+                                <Button text="✔  Mettre à jour" styleClass="btn-update"
+                                        onAction="#handleUpdate"/>
+                                <Button text="Annuler"          styleClass="btn-secondary"
+                                        onAction="#goBack"/>
+                                <Region HBox.hgrow="ALWAYS"/>
+                                <Button text="✕  Supprimer"     styleClass="btn-danger"
+                                        onAction="#handleDelete"/>
+                            </HBox>
+
+                        </VBox>
+
+                        <!-- ── TAB 2: ALIMENTS ── -->
+                        <VBox fx:id="paneAliments" styleClass="glass-card" spacing="20"
+                              visible="false" managed="false">
+
+                            <VBox spacing="4">
+                                <Label text="Aliments du Repas" styleClass="section-header"/>
+                                <Label text="Sélectionnez les aliments composant ce repas"
+                                       styleClass="section-sub"/>
+                            </VBox>
+
+                            <Separator/>
+
+                            <VBox spacing="8">
+                                <Label text="SÉLECTIONNER LES ALIMENTS" styleClass="form-label"/>
+                                <!--
+                                    SelectionMode.MULTIPLE set in controller.
+                                    Style class "aliment-list-view" gives the dark themed list.
+                                -->
+                                <ListView fx:id="alimentsListView"
+                                          styleClass="aliment-list-view"
+                                          prefHeight="300"/>
+                                <Label text="ⓘ  Maintenez Ctrl (Windows) ou Cmd (Mac) pour sélectionner plusieurs aliments."
+                                       styleClass="hint-label"/>
+                            </VBox>
+
+                            <!-- Error label (shared via controller) -->
+                            <Label fx:id="errorLabelAliments" text=""
+                                   style="-fx-text-fill: #ff6b6b; -fx-font-size: 13px;"
+                                   wrapText="true" managed="false" visible="false"/>
+
+                            <HBox spacing="12">
+                                <Button text="✔  Mettre à jour" styleClass="btn-update"
+                                        onAction="#handleUpdateAliments"/>
+                                <Button text="Annuler"          styleClass="btn-secondary"
+                                        onAction="#goBack"/>
+                            </HBox>
+
+                        </VBox>
+                    </VBox>
+                </HBox>
+            </ScrollPane>
+        </VBox>
+    </center>
+
+</BorderPane>

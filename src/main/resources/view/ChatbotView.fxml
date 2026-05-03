@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controllers.ChatBotFrontController"
+      fx:id="chatbotPane"
+      prefWidth="370"
+      prefHeight="580"
+      style="-fx-background-color: #0f172a; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 24, 0, 0, 8);"
+      visible="true">
+
+    <!-- Header -->
+    <HBox alignment="CENTER_LEFT" spacing="10"
+          style="-fx-background-color: #1e293b; -fx-padding: 12 16 12 16; -fx-background-radius: 16 16 0 0; -fx-border-color: #334155; -fx-border-width: 0 0 1 0;">
+
+        <Label text="🤖" style="-fx-font-size: 20px;"/>
+
+        <VBox spacing="0" HBox.hgrow="ALWAYS">
+            <Label text="Assistant Repas" style="-fx-text-fill: #f1f5f9; -fx-font-size: 14px; -fx-font-weight: bold;"/>
+            <HBox spacing="4" alignment="CENTER_LEFT">
+                <Label text="●" style="-fx-text-fill: #22c55e; -fx-font-size: 8px;"/>
+                <Label text="Powered by Groq ⚡" style="-fx-text-fill: #64748b; -fx-font-size: 10px;"/>
+            </HBox>
+        </VBox>
+
+        <Button fx:id="closeButton" text="✕" onAction="#handleClose"
+                style="-fx-background-color: #374151; -fx-text-fill: #94a3b8; -fx-background-radius: 50; -fx-min-width: 28; -fx-min-height: 28; -fx-max-width: 28; -fx-max-height: 28; -fx-cursor: hand; -fx-font-size: 12px;"/>
+    </HBox>
+
+    <!-- Messages -->
+    <ScrollPane fx:id="scrollPane" VBox.vgrow="ALWAYS" fitToWidth="true"
+                style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;"
+                pannable="true">
+        <VBox fx:id="messagesContainer" spacing="6" fillWidth="true"
+              style="-fx-background-color: #0f172a; -fx-padding: 12;">
+        </VBox>
+    </ScrollPane>
+
+    <!-- Input zone -->
+    <HBox spacing="8" alignment="CENTER"
+          style="-fx-background-color: #1e293b; -fx-padding: 10 12 10 12; -fx-border-color: #334155; -fx-border-width: 1 0 0 0; -fx-background-radius: 0 0 16 16;">
+
+        <!-- Photo button -->
+        <Button fx:id="photoButton" text="📷" onAction="#handlePhoto"
+                style="-fx-background-color: #374151; -fx-text-fill: #94a3b8; -fx-background-radius: 50; -fx-min-width: 36; -fx-min-height: 36; -fx-max-width: 36; -fx-max-height: 36; -fx-cursor: hand; -fx-font-size: 15px;"/>
+
+        <!-- Text input -->
+        <TextField fx:id="inputField" promptText="Ou écris ici..." HBox.hgrow="ALWAYS"
+                   style="-fx-background-color: #374151; -fx-text-fill: #f1f5f9; -fx-prompt-text-fill: #64748b; -fx-background-radius: 20; -fx-padding: 8 14 8 14; -fx-font-size: 13px; -fx-border-color: transparent;"/>
+
+        <!-- Send button -->
+        <Button fx:id="sendButton" text="➤" onAction="#handleSend"
+                style="-fx-background-color: #14b8a6; -fx-text-fill: white; -fx-background-radius: 50; -fx-min-width: 36; -fx-min-height: 36; -fx-max-width: 36; -fx-max-height: 36; -fx-cursor: hand; -fx-font-size: 14px; -fx-font-weight: bold;"/>
+    </HBox>
+
+</VBox>

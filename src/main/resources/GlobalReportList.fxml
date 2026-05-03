@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+
+<AnchorPane prefHeight="720.0" prefWidth="1080.0"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controllers.GlobalReportListController"
+            stylesheets="@styles.css">
+
+    <VBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+          AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
+          styleClass="main-window">
+
+        <HBox alignment="CENTER_LEFT" styleClass="top-navbar">
+            <Label text="Gestion Globale des Rapports" styleClass="page-title"/>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <Label text="Bienvenue, Admin" style="-fx-text-fill: rgba(245,245,244,0.6);"/>
+        </HBox>
+
+        <HBox alignment="CENTER_LEFT" spacing="12">
+            <VBox.margin><Insets top="20" right="24" bottom="6" left="24"/></VBox.margin>
+            <TextField fx:id="txtSearch" promptText="&#128269;  Rechercher par titre, description ou auteur..."
+                       styleClass="search-field" prefWidth="440" id="txtSearchGlobal"/>
+            <Label text="Trier par :" styleClass="form-label" style="-fx-padding: 0 0 0 8;"/>
+            <ComboBox fx:id="comboSort" prefWidth="200" styleClass="combo-box">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Date (Plus récent)"/>
+                        <String fx:value="Date (Plus ancien)"/>
+                        <String fx:value="Titre (A-Z)"/>
+                        <String fx:value="Auteur (A-Z)"/>
+                    </FXCollections>
+                </items>
+            </ComboBox>
+            <Pane HBox.hgrow="ALWAYS"/>
+        </HBox>
+
+        <HBox alignment="CENTER_LEFT" spacing="10">
+            <VBox.margin><Insets right="24" bottom="12" left="24"/></VBox.margin>
+            <Button text="&#10010;  Nouveau" styleClass="btn-primary" onAction="#handleAddReport"/>
+            <Button fx:id="btnEdit" text="&#9998;  Modifier" styleClass="btn-warning" onAction="#handleEditButton"/>
+            <Button fx:id="btnDelete" text="&#128465;  Supprimer" styleClass="btn-danger" onAction="#handleDeleteButton"/>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <Button text="&#8635;  Actualiser" styleClass="btn-secondary" onAction="#initialize"/>
+        </HBox>
+
+        <TableView fx:id="tableReports" VBox.vgrow="ALWAYS" styleClass="table-view">
+            <VBox.margin><Insets right="24" bottom="20" left="24"/></VBox.margin>
+            <columns>
+                <TableColumn fx:id="colId" text="ID" prefWidth="60"/>
+                <TableColumn fx:id="colTitle" text="Titre" prefWidth="200"/>
+                <TableColumn fx:id="colUser" text="Auteur" prefWidth="180"/>
+                <TableColumn fx:id="colDate" text="Date" prefWidth="180"/>
+                <TableColumn fx:id="colDescription" text="Description" prefWidth="350"/>
+            </columns>
+            <placeholder>
+                <Label text="Aucun rapport trouvé" styleClass="table-placeholder"/>
+            </placeholder>
+        </TableView>
+    </VBox>
+</AnchorPane>

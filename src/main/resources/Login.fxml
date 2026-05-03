@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<AnchorPane prefWidth="1080.0" prefHeight="680.0"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controllers.LoginController"
+            stylesheets="@styles.css">
+
+    <!-- Background -->
+    <VBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
+          styleClass="main-window"/>
+
+    <!-- Left side (Text/Logo) -->
+    <VBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+          AnchorPane.leftAnchor="0" prefWidth="500"
+          alignment="CENTER" spacing="24">
+        <VBox alignment="CENTER" spacing="10">
+             <VBox alignment="CENTER" styleClass="logo-box" prefWidth="80" prefHeight="80" maxWidth="80" maxHeight="80">
+                <Label text="A" style="-fx-font-size: 40px; -fx-text-fill: white; -fx-font-weight: bold;"/>
+            </VBox>
+            <Label text="AIVA" styleClass="page-title" style="-fx-font-size: 36px;"/>
+            <Label text="PREMIUM ECOSYSTEM" styleClass="stat-label"/>
+        </VBox>
+        <Label text="Gérez vos utilisateurs, vos cours et bien plus avec élégance." styleClass="card-subtitle"
+               wrapText="true" textAlignment="CENTER" maxWidth="350"/>
+    </VBox>
+
+    <!-- Right login form -->
+    <VBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+          AnchorPane.leftAnchor="500" AnchorPane.rightAnchor="0"
+          alignment="CENTER">
+        <VBox maxWidth="420" spacing="0" styleClass="glass-card">
+            <VBox spacing="28" style="-fx-padding: 10;">
+
+            <!-- Header -->
+            <VBox spacing="6">
+                <Label text="Bon retour !" styleClass="card-title" style="-fx-font-size: 24px;"/>
+                <Label text="Connectez-vous à votre compte administrateur." styleClass="card-subtitle"/>
+            </VBox>
+
+            <!-- Form -->
+            <VBox spacing="16">
+
+                <VBox spacing="2">
+                    <Label fx:id="errEmail" text="" visible="false" managed="false" style="-fx-text-fill: #ff6b6b; -fx-font-size: 11px;"/>
+                    <Label text="ADRESSE EMAIL" styleClass="form-label"/>
+                    <TextField fx:id="tfEmail" promptText="admin@exemple.com"
+                               styleClass="form-input" id="tfLoginEmail"/>
+                </VBox>
+
+                <VBox spacing="2">
+                    <Label fx:id="errPassword" text="" visible="false" managed="false" style="-fx-text-fill: #ff6b6b; -fx-font-size: 11px;"/>
+                    <Label text="MOT DE PASSE" styleClass="form-label"/>
+                    <PasswordField fx:id="pfPassword" promptText="••••••••"
+                                  styleClass="form-input" id="pfLoginPassword"
+                                  onAction="#handleLogin"/>
+                </VBox>
+
+                <!-- Forgot password link -->
+                <HBox alignment="CENTER_RIGHT">
+                    <Button text="Mot de passe oublié ?" styleClass="btn-secondary" style="-fx-border-color: transparent; -fx-padding: 5 0 5 0;"
+                            onAction="#handleForgotPassword" id="btnForgotPassword"/>
+                </HBox>
+
+                <!-- Error label -->
+                <Label fx:id="lblError" text="" styleClass="error-label"
+                       wrapText="true" managed="false" visible="false"/>
+
+                <!-- Login button -->
+                <Button text="Se connecter &#8594;" styleClass="btn-primary"
+                        maxWidth="Infinity" prefHeight="44"
+                        onAction="#handleLogin" id="btnLoginSubmit"
+                        defaultButton="true"/>
+
+            </VBox>
+
+            </VBox>
+
+            <!-- Register link -->
+            <HBox alignment="CENTER" spacing="8" style="-fx-padding: 20 0 0 0;">
+                <Label text="Pas encore de compte ?" styleClass="card-subtitle"/>
+                <Button text="Créer un compte" styleClass="btn-secondary"
+                        onAction="#goToRegister" id="btnGoRegister"/>
+            </HBox>
+        </VBox>
+    </VBox>
+</AnchorPane>

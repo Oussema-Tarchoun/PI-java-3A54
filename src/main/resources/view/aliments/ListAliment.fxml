@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<!--
+    Controller : Controllers.aliment.AlimentController
+    CSS        : /style.css
+    Embedded in ListRepas.fxml center area — no sidebar
+-->
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controllers.aliment.AlimentController"
+      styleClass="main-window"
+      stylesheets="@/style.css"
+      spacing="0" VBox.vgrow="ALWAYS">
+
+    <!-- TOP NAVBAR -->
+    <HBox styleClass="top-navbar" alignment="CENTER_LEFT" spacing="16">
+        <Label text="○" style="-fx-text-fill: #34d399; -fx-font-size: 20px;"/>
+        <Label text="Mes Aliments" styleClass="page-title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <TextField fx:id="searchField"
+                   promptText="Rechercher un aliment..."
+                   styleClass="search-field"
+                   onKeyReleased="#handleSearch"/>
+        <Button text="+ Nouvel Aliment"
+                styleClass="btn-primary"
+                onAction="#openAddAliment"/>
+    </HBox>
+
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                style="-fx-background-color: transparent;
+                       -fx-background: transparent;
+                       -fx-border-color: transparent;">
+        <VBox spacing="20" style="-fx-padding: 24;">
+
+            <!-- STAT CARDS -->
+            <HBox spacing="16">
+                <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="6" minWidth="0">
+                    <HBox alignment="TOP_RIGHT">
+                        <StackPane styleClass="stat-icon-cyan">
+                            <Label text="○" style="-fx-text-fill: #34d399; -fx-font-size: 20px;"/>
+                        </StackPane>
+                    </HBox>
+                    <Label text="TOTAL ALIMENTS" styleClass="stat-label"/>
+                    <Label fx:id="statTotal" text="—" styleClass="stat-value"/>
+                    <Label text="aliments enregistrés"
+                           style="-fx-text-fill: rgba(245,245,244,0.40); -fx-font-size: 11px;"/>
+                </VBox>
+                <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="6" minWidth="0">
+                    <HBox alignment="TOP_RIGHT">
+                        <StackPane styleClass="stat-icon-gold">
+                            <Label text="◉" style="-fx-text-fill: #d4a574; -fx-font-size: 20px;"/>
+                        </StackPane>
+                    </HBox>
+                    <Label text="MOY. CALORIES" styleClass="stat-label"/>
+                    <Label fx:id="statAvgCal" text="—" styleClass="stat-value"/>
+                    <Label text="par 100g"
+                           style="-fx-text-fill: rgba(245,245,244,0.40); -fx-font-size: 11px;"/>
+                </VBox>
+                <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="6" minWidth="0">
+                    <HBox alignment="TOP_RIGHT">
+                        <StackPane styleClass="stat-icon-coral">
+                            <Label text="▲" style="-fx-text-fill: #e07a5f; -fx-font-size: 20px;"/>
+                        </StackPane>
+                    </HBox>
+                    <Label text="PLUS CALORIQUE" styleClass="stat-label"/>
+                    <Label fx:id="statMaxCal" text="—" styleClass="stat-value"
+                           style="-fx-font-size: 18px;"/>
+                    <Label text="calories max"
+                           style="-fx-text-fill: rgba(245,245,244,0.40); -fx-font-size: 11px;"/>
+                </VBox>
+                <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="6" minWidth="0">
+                    <HBox alignment="TOP_RIGHT">
+                        <StackPane styleClass="stat-icon-info">
+                            <Label text="◎" style="-fx-text-fill: #0ea5e9; -fx-font-size: 20px;"/>
+                        </StackPane>
+                    </HBox>
+                    <Label text="AVEC MACROS" styleClass="stat-label"/>
+                    <Label fx:id="statWithMacro" text="—" styleClass="stat-value"/>
+                    <Label text="macros renseignées"
+                           style="-fx-text-fill: rgba(245,245,244,0.40); -fx-font-size: 11px;"/>
+                </VBox>
+            </HBox>
+
+            <!-- TABLE CARD -->
+            <VBox styleClass="glass-card" spacing="16" VBox.vgrow="ALWAYS">
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <VBox spacing="3">
+                        <Label text="Liste des aliments" styleClass="card-title"/>
+                        <Label fx:id="alimentCountLabel" text="0 aliments au total"
+                               styleClass="card-subtitle"/>
+                    </VBox>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="↑ Calories" styleClass="btn-secondary"
+                            onAction="#sortAscCalories"
+                            style="-fx-font-size: 12px; -fx-padding: 7 14 7 14;"/>
+                    <Button text="↓ Calories" styleClass="btn-secondary"
+                            onAction="#sortDescCalories"
+                            style="-fx-font-size: 12px; -fx-padding: 7 14 7 14;"/>
+                </HBox>
+
+                <TableView fx:id="alimentTable"
+                           styleClass="table-view"
+                           VBox.vgrow="ALWAYS"
+                           prefHeight="440">
+                    <columns>
+                        <TableColumn fx:id="colId"       text="#"           prefWidth="55"/>
+                        <TableColumn fx:id="colNom"      text="NOM"         prefWidth="220"/>
+                        <TableColumn fx:id="colQuantite" text="QUANTITÉ (G)" prefWidth="130"/>
+                        <TableColumn fx:id="colCalories" text="CALORIES"    prefWidth="130"/>
+                        <TableColumn fx:id="colMacro"    text="MACROS"      prefWidth="200"/>
+                        <TableColumn fx:id="colActions"  text="ACTIONS"     prefWidth="110"/>
+                    </columns>
+                    <placeholder>
+                        <Label text="Aucun aliment trouvé."
+                               style="-fx-text-fill: rgba(245,245,244,0.35); -fx-font-size: 14px;"/>
+                    </placeholder>
+                </TableView>
+            </VBox>
+
+        </VBox>
+    </ScrollPane>
+</VBox>
+
+

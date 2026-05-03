@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="680.0" prefWidth="1080.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.RegisterController">
+    <!-- Background -->
+    <VBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
+          styleClass="main-window"/>
+
+    <!-- Left side (Text/Logo) -->
+    <VBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+          AnchorPane.leftAnchor="0" prefWidth="440"
+          alignment="CENTER" spacing="24">
+        <VBox alignment="CENTER" spacing="10">
+             <VBox alignment="CENTER" styleClass="logo-box" prefWidth="80" prefHeight="80" maxWidth="80" maxHeight="80">
+                <Label text="A" style="-fx-font-size: 40px; -fx-text-fill: white; -fx-font-weight: bold;"/>
+            </VBox>
+            <Label text="AIVA" styleClass="page-title" style="-fx-font-size: 36px;"/>
+            <Label text="JOIN THE MISSION" styleClass="stat-label"/>
+        </VBox>
+        <Label text="Rejoignez la plateforme d'administration AIVA et commencez à gérer votre écosystème." styleClass="card-subtitle"
+               wrapText="true" textAlignment="CENTER" maxWidth="300"/>
+    </VBox>
+
+    <!-- Right register form -->
+    <VBox alignment="CENTER" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="440" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+        <VBox maxWidth="480" spacing="0" styleClass="glass-card">
+            <VBox spacing="20" style="-fx-padding: 10;">
+
+            <!-- Header -->
+            <VBox spacing="6">
+                <Label styleClass="card-title" text="Créer un compte" style="-fx-font-size: 24px;" />
+                <Label styleClass="card-subtitle" text="Remplissez les champs pour vous inscrire." />
+            </VBox>
+
+            <!-- Form -->
+            <VBox spacing="14">
+
+                <HBox spacing="12">
+                    <VBox spacing="2" HBox.hgrow="ALWAYS">
+                        <Label fx:id="errName" text="" visible="false" managed="false" style="-fx-text-fill: #ff6b6b; -fx-font-size: 11px;"/>
+                        <Label styleClass="form-label" text="NOM COMPLET *" />
+                        <TextField id="tfRegisterName" fx:id="tfName" promptText="Jean Dupont" styleClass="form-input" />
+                    </VBox>
+                </HBox>
+ 
+                <VBox spacing="2">
+                    <Label fx:id="errEmail" text="" visible="false" managed="false" style="-fx-text-fill: #ff6b6b; -fx-font-size: 11px;"/>
+                    <Label styleClass="form-label" text="ADRESSE EMAIL *" />
+                    <TextField id="tfRegisterEmail" fx:id="tfEmail" promptText="jean@exemple.com" styleClass="form-input" />
+                </VBox>
+ 
+                <VBox spacing="6">
+                    <Label styleClass="form-label" text="RÔLE *" />
+                    <ComboBox id="cbRegisterRole" fx:id="cbRole" maxWidth="Infinity" promptText="Choisir un rôle" styleClass="combo-box" />
+                </VBox>
+ 
+                <VBox spacing="2">
+                    <Label fx:id="errPassword" text="" visible="false" managed="false" style="-fx-text-fill: #ff6b6b; -fx-font-size: 11px;"/>
+                    <Label styleClass="form-label" text="MOT DE PASSE *" />
+                    <PasswordField id="pfRegisterPassword" fx:id="pfPassword" promptText="••••••••" styleClass="form-input" />
+                </VBox>
+ 
+                <VBox spacing="2">
+                    <Label fx:id="errConfirm" text="" visible="false" managed="false" style="-fx-text-fill: #ff6b6b; -fx-font-size: 11px;"/>
+                    <Label styleClass="form-label" text="CONFIRMER LE MOT DE PASSE *" />
+                    <PasswordField id="pfRegisterConfirm" fx:id="pfConfirm" onAction="#handleRegister" promptText="••••••••" styleClass="form-input" />
+                </VBox>
+
+                <!-- Error / success label -->
+                <Label fx:id="lblError" managed="false" styleClass="error-label" text="" visible="false" wrapText="true" />
+
+                <!-- Register button -->
+                <Button id="btnRegisterSubmit" defaultButton="true" maxWidth="Infinity" onAction="#handleRegister" prefHeight="44" styleClass="btn-primary" text="S'inscrire →" />
+
+            </VBox>
+
+            </VBox>
+ 
+            <!-- Login link -->
+            <HBox alignment="CENTER" spacing="8" style="-fx-padding: 20 0 0 0;">
+                <Label styleClass="card-subtitle" text="Déjà un compte ?" />
+                <Button id="btnGoLogin" onAction="#goToLogin" styleClass="btn-secondary" text="Se connecter" />
+            </HBox>
+        </VBox>
+    </VBox>
+</AnchorPane>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+
+<AnchorPane prefHeight="720.0" prefWidth="1080.0"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controllers.UserListController"
+            stylesheets="@styles.css">
+
+    <VBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+          AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
+          styleClass="main-window">
+
+        <HBox alignment="CENTER_LEFT" styleClass="top-navbar">
+            <Label text="Gestion des Utilisateurs" styleClass="page-title"/>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <Label text="Bienvenue, Admin" style="-fx-text-fill: rgba(245,245,244,0.6);"/>
+        </HBox>
+
+        <HBox alignment="CENTER_LEFT" spacing="12">
+            <VBox.margin><Insets top="20" right="24" bottom="6" left="24"/></VBox.margin>
+            <TextField fx:id="tfSearch" promptText="&#128269;  Rechercher (nom, email, id, rôle)..."
+                       styleClass="search-field" prefWidth="340" onKeyReleased="#handleSearch"
+                       id="tfSearchUsers"/>
+            <Label text="Trier par :" styleClass="form-label" style="-fx-padding: 0 0 0 8;"/>
+            <ComboBox fx:id="cmbSort" prefWidth="160" styleClass="combo-box" id="cmbSortUsers"
+                       onAction="#handleSort">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Nom"/>
+                        <String fx:value="Email"/>
+                        <String fx:value="XP"/>
+                    </FXCollections>
+                </items>
+            </ComboBox>
+            <Pane HBox.hgrow="ALWAYS"/>
+        </HBox>
+
+        <HBox alignment="CENTER_LEFT" spacing="10">
+            <VBox.margin><Insets right="24" bottom="12" left="24"/></VBox.margin>
+            <Button text="&#10010;  Ajouter" styleClass="btn-primary" onAction="#openAddUser"
+                    id="btnAdd"/>
+            <Button text="&#9998;  Modifier" styleClass="btn-warning" onAction="#openEditUser"
+                    id="btnEdit" fx:id="btnEdit"/>
+            <Button text="&#128465;  Supprimer" styleClass="btn-danger" onAction="#deleteUser"
+                    id="btnDelete" fx:id="btnDelete"/>
+            <Button text="&#128274;  Bloquer" styleClass="btn-block" onAction="#blockUser"
+                    id="btnBlock" fx:id="btnBlock"/>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <Button text="&#8635;  Actualiser" styleClass="btn-secondary" onAction="#loadUsers"
+                    id="btnRefresh"/>
+            <Button text="&#128196;  Exporter PDF" styleClass="btn-pdf" onAction="#exportPdf"
+                    id="btnExportPdf"/>
+        </HBox>
+
+        <TableView fx:id="tableUsers" VBox.vgrow="ALWAYS" styleClass="table-view">
+            <VBox.margin><Insets right="24" bottom="0" left="24"/></VBox.margin>
+            <columns>
+                <TableColumn fx:id="colName" text="Nom" prefWidth="130"/>
+                <TableColumn fx:id="colEmail" text="Email" prefWidth="200"/>
+                <TableColumn fx:id="colRoles" text="Rôle" prefWidth="110"/>
+                <TableColumn fx:id="colVerified" text="Vérifié" prefWidth="80"/>
+                <TableColumn fx:id="colBlocked" text="Bloqué" prefWidth="80"/>
+                <TableColumn fx:id="col2FA" text="2FA" prefWidth="60"/>
+                <TableColumn fx:id="colXP" text="XP" prefWidth="70"/>
+            </columns>
+            <placeholder>
+                <Label text="Aucun utilisateur trouvé" styleClass="table-placeholder"/>
+            </placeholder>
+        </TableView>
+
+        <HBox alignment="CENTER_LEFT" styleClass="top-navbar" minHeight="50">
+            <VBox.margin><Insets top="0" right="0" bottom="0" left="0"/></VBox.margin>
+            <Label fx:id="lblStatus" text="Chargement..." styleClass="status-text"/>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <Label fx:id="lblCount" text="" styleClass="status-count"/>
+        </HBox>
+    </VBox>
+</AnchorPane>

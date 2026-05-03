@@ -5,29 +5,49 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class MyDatabase {
-    private final String USERNAME = "root";
-    private final String PASSWORD = "root";        // change if you have a password
-    private final String URL = "jdbc:mysql://localhost:3306/aiva"; // change DB name
+
+    private static final String URL      = "jdbc:mysql://localhost:3306/aiva";
+    private static final String USERNAME = "root";
+    private static final String PASSWORD = "";
+
     private Connection connection;
     private static MyDatabase instance;
 
-    public static MyDatabase getInstance() {
+    // ── Singleton ────────────────────────────────────────────────────────────
+    public static synchronized MyDatabase getInstance() {
         if (instance == null) {
             instance = new MyDatabase();
         }
         return instance;
     }
 
-    public Connection getConnection() {
-        return connection;
+    private MyDatabase() {
+        connect();
     }
 
-    private MyDatabase() {
+    // ── Internal connect ─────────────────────────────────────────────────────
+    private void connect() {
         try {
             connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             System.out.println("Connected to database successfully");
         } catch (SQLException e) {
-            System.err.println("Database connection failed: " + e.getMessage());
+            System.out.println("Database connection FAILED: " + e.getMessage());
+            connection = null;
         }
+    }
+
+    // ── Public getter — always returns a live connection ─────────────────────
+    public Connection getConnection() {
+        try {
+            // isValid(2) sends a ping — reconnects if dead or null
+            if (connection == null || !connection.isValid(2)) {
+                System.out.println("Connection lost — reconnecting...");
+                connect();
+            }
+        } catch (SQLException e) {
+            System.out.println("isValid check failed — reconnecting: " + e.getMessage());
+            connect();
+        }
+        return connection;
     }
 }

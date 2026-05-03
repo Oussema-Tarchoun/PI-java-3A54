@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+
+<!--
+    Controller : Controllers.repas.RepasController
+    CSS        : /style.css
+    Place at   : src/main/resources/view/repas/AddRepas.fxml
+-->
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controllers.repas.RepasController"
+            styleClass="main-window"
+            stylesheets="@/style.css"
+            prefWidth="1280" prefHeight="800">
+
+    <left>
+        <VBox styleClass="sidebar" prefWidth="240" spacing="0">
+            <HBox alignment="CENTER_LEFT" spacing="10"
+                  style="-fx-padding: 2 0 16 0;
+                         -fx-border-color: rgba(255,255,255,0.08);
+                         -fx-border-width: 0 0 1 0;">
+                <ImageView fitWidth="36" fitHeight="36" preserveRatio="true" styleClass="logo-image">
+                    <Image url="@/images/img.png"/>
+                </ImageView>
+                <Label text="AIVA" styleClass="logo-name"/>
+            </HBox>
+            <VBox spacing="1" style="-fx-padding: 12 0 0 0;" VBox.vgrow="ALWAYS">
+                <Label text="ALIMENTATION" styleClass="nav-section-title"/>
+                <Button styleClass="nav-item" maxWidth="Infinity" onAction="#goToAliments">
+                    <graphic><HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="○" styleClass="nav-icon-label nav-icon-muted"/>
+                        <Label text="Aliments" style="-fx-text-fill: inherit;"/>
+                    </HBox></graphic>
+                </Button>
+                <Button styleClass="nav-item active" maxWidth="Infinity">
+                    <graphic><HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="✦" styleClass="nav-icon-label nav-icon-emerald"/>
+                        <Label text="Repas" style="-fx-text-fill: #f5f5f4; -fx-font-weight: bold;"/>
+                    </HBox></graphic>
+                </Button>
+                <Region VBox.vgrow="ALWAYS"/>
+            </VBox>
+            <HBox styleClass="sidebar-footer" spacing="12" alignment="CENTER_LEFT">
+                <StackPane styleClass="user-avatar">
+                    <Label text="A" style="-fx-text-fill: white; -fx-font-size: 15px; -fx-font-weight: bold;"/>
+                </StackPane>
+                <VBox spacing="2">
+                    <Label text="Admin User"     styleClass="user-name"/>
+                    <Label text="Administrateur" styleClass="user-role"/>
+                </VBox>
+            </HBox>
+        </VBox>
+    </left>
+
+    <center>
+        <VBox spacing="0">
+
+            <HBox styleClass="top-navbar" alignment="CENTER_LEFT" spacing="16">
+                <Label text="✦" style="-fx-text-fill: #34d399; -fx-font-size: 20px;"/>
+                <Label text="Nouveau Repas" styleClass="page-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="← Retour" styleClass="btn-secondary" onAction="#goBack"/>
+            </HBox>
+
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                        style="-fx-background-color: transparent;
+                               -fx-background: transparent;
+                               -fx-border-color: transparent;">
+                <HBox spacing="20" style="-fx-padding: 24;" alignment="TOP_LEFT">
+
+                    <!-- Left tab selector -->
+                    <VBox styleClass="glass-card" spacing="6"
+                          prefWidth="200" minWidth="200" maxWidth="200">
+                        <Button fx:id="btnTabInfo" styleClass="form-tab-btn active"
+                                maxWidth="Infinity" onAction="#showInfoTab">
+                            <graphic><HBox spacing="8" alignment="CENTER_LEFT">
+                                <Label text="✦" styleClass="nav-icon-label nav-icon-emerald"/>
+                                <Label text="Informations" style="-fx-text-fill: inherit;"/>
+                            </HBox></graphic>
+                        </Button>
+                        <Button fx:id="btnTabAliments" styleClass="form-tab-btn"
+                                maxWidth="Infinity" onAction="#showAlimentsTab">
+                            <graphic><HBox spacing="8" alignment="CENTER_LEFT">
+                                <Label text="○" styleClass="nav-icon-label nav-icon-muted"/>
+                                <Label text="Aliments" style="-fx-text-fill: inherit;"/>
+                            </HBox></graphic>
+                        </Button>
+                    </VBox>
+
+                    <!-- Right form -->
+                    <VBox styleClass="glass-card" HBox.hgrow="ALWAYS" spacing="18">
+
+                        <Label text="Détails du Repas" styleClass="section-header"/>
+                        <Separator/>
+
+                        <VBox spacing="6">
+                            <Label text="NOM DU REPAS" styleClass="form-label"/>
+                            <TextField fx:id="nomField"
+                                       promptText="Ex: Déjeuner du lundi"
+                                       styleClass="form-input" maxWidth="Infinity"/>
+                        </VBox>
+
+                        <HBox spacing="16">
+                            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                                <Label text="TYPE DE REPAS" styleClass="form-label"/>
+                                <ComboBox fx:id="typeCombo" styleClass="combo-box" maxWidth="Infinity"/>
+                            </VBox>
+                            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                                <Label text="DATE" styleClass="form-label"/>
+                                <DatePicker fx:id="datePicker" maxWidth="Infinity"/>
+                            </VBox>
+                        </HBox>
+
+                        <HBox spacing="16">
+                            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                                <Label text="HEURE (HH:mm:ss)" styleClass="form-label"/>
+                                <TextField fx:id="heureField"
+                                           promptText="Ex: 12:30:00"
+                                           styleClass="form-input"/>
+                            </VBox>
+                            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                                <Label text="CALORIES (KCAL)" styleClass="form-label"/>
+                                <TextField fx:id="caloriesField"
+                                           promptText="0"
+                                           styleClass="form-input"/>
+                            </VBox>
+                        </HBox>
+
+                        <VBox spacing="6">
+                            <Label text="DESCRIPTION (OPTIONNELLE)" styleClass="form-label"/>
+                            <TextArea fx:id="descriptionArea"
+                                      promptText="Ajoutez une description..."
+                                      prefRowCount="4" wrapText="true"/>
+                        </VBox>
+
+                        <VBox spacing="6">
+                            <Label text="ALIMENTS" styleClass="form-label"/>
+                            <HBox spacing="8">
+                                <ComboBox fx:id="alimentCombo" promptText="Sélectionner un aliment..."
+                                          HBox.hgrow="ALWAYS" maxWidth="Infinity" styleClass="combo-box"/>
+                                <Button text="➕" onAction="#handleAddAliment"
+                                        styleClass="btn-primary" style="-fx-padding: 8 14;"/>
+                            </HBox>
+                            <VBox fx:id="selectedAlimentsBox" spacing="4"/>
+                        </VBox>
+
+                        <Label fx:id="errorLabel" text=""
+                               style="-fx-text-fill: #ff6b6b; -fx-font-size: 13px;"
+                               wrapText="true" managed="false" visible="false"/>
+
+                        <HBox spacing="12">
+                            <Button text="✔  Créer"  styleClass="btn-primary"   onAction="#handleCreate"/>
+                            <Button text="Annuler"   styleClass="btn-secondary"  onAction="#goBack"/>
+                        </HBox>
+                    </VBox>
+                </HBox>
+            </ScrollPane>
+        </VBox>
+    </center>
+
+</BorderPane>

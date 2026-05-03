@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.geometry.Insets?>
+
+<AnchorPane prefHeight="720.0" prefWidth="1080.0"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controllers.DashboardController"
+            stylesheets="@styles/aiva-theme.css">
+
+    <VBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+          AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
+          styleClass="main-container">
+
+        <!-- Top Bar -->
+        <HBox alignment="CENTER_LEFT" styleClass="topbar">
+            <Label text="Tableau de Bord Nutritionnel" styleClass="topbar-title"/>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <Label text="Bienvenue sur votre espace" styleClass="topbar-user"/>
+        </HBox>
+
+        <!-- Stats Cards Row -->
+        <HBox spacing="20" styleClass="stats-row">
+            <VBox.margin>
+                <Insets top="30" right="30" bottom="0" left="30"/>
+            </VBox.margin>
+            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <VBox styleClass="card-icon, card-icon-cyan">
+                        <Label text="&#127858;" style="-fx-text-fill: white; -fx-font-size: 20px;"/>
+                    </VBox>
+                    <VBox>
+                        <Label text="TOTAL REPAS" styleClass="stat-label"/>
+                        <Label fx:id="lblTotalRepas" text="—" styleClass="stat-value"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <VBox styleClass="card-icon, card-icon-cyan">
+                        <Label text="&#128293;" style="-fx-text-fill: white; -fx-font-size: 20px;"/>
+                    </VBox>
+                    <VBox>
+                        <Label text="MOY. CALORIES" styleClass="stat-label"/>
+                        <Label fx:id="lblAvgCalories" text="—" styleClass="stat-value"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <VBox styleClass="card-icon, card-icon-orange">
+                        <Label text="&#127828;" style="-fx-text-fill: white; -fx-font-size: 20px;"/>
+                    </VBox>
+                    <VBox>
+                        <Label text="TOTAL ALIMENTS" styleClass="stat-label"/>
+                        <Label fx:id="lblTotalAliments" text="—" styleClass="stat-value"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <VBox styleClass="card-icon, card-icon-purple">
+                        <Label text="&#127942;" style="-fx-text-fill: white; -fx-font-size: 20px;"/>
+                    </VBox>
+                    <VBox>
+                        <Label text="PLUS CALORIQUE" styleClass="stat-label"/>
+                        <Label fx:id="lblMaxCalAliment" text="—" styleClass="stat-value" style="-fx-font-size: 18px;"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+        </HBox>
+
+        <!-- Quick Access Section -->
+        <Label text="Raccourcis Nutrition" styleClass="section-title">
+            <VBox.margin><Insets top="40" left="30" bottom="15" right="30"/></VBox.margin>
+            <style>
+                -fx-font-size: 18px;
+                -fx-font-weight: bold;
+                -fx-text-fill: white;
+            </style>
+        </Label>
+        
+        <HBox spacing="20">
+            <VBox.margin><Insets left="30" right="30"/></VBox.margin>
+            
+            <VBox styleClass="card" onMouseClicked="#openRepas" HBox.hgrow="ALWAYS" alignment="CENTER" prefHeight="200">
+                <Label text="&#127858;" style="-fx-font-size: 40px; -fx-text-fill: #10b981;"/>
+                <Label text="Mes Repas" styleClass="card-title"/>
+                <Label text="Planifiez vos repas, suivez vos calories et analysez votre équilibre." styleClass="card-subtitle" alignment="CENTER" textAlignment="CENTER" wrapText="true"/>
+                <Button text="Gérer mes Repas →" styleClass="btn-primary" onAction="#openRepas">
+                    <VBox.margin><Insets top="15"/></VBox.margin>
+                </Button>
+            </VBox>
+
+            <VBox styleClass="card" onMouseClicked="#openAliments" HBox.hgrow="ALWAYS" alignment="CENTER" prefHeight="200">
+                <Label text="&#127828;" style="-fx-font-size: 40px; -fx-text-fill: #f59e0b;"/>
+                <Label text="Mes Aliments" styleClass="card-title"/>
+                <Label text="Consultez et gérez votre bibliothèque d'aliments personnalisée." styleClass="card-subtitle" alignment="CENTER" textAlignment="CENTER" wrapText="true"/>
+                <Button text="Voir mes Aliments →" styleClass="btn-secondary" onAction="#openAliments">
+                    <VBox.margin><Insets top="15"/></VBox.margin>
+                </Button>
+            </VBox>
+        </HBox>
+
+
+
+    </VBox>
+</AnchorPane>
