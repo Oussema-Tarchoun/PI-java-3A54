@@ -59,7 +59,11 @@ public class TwoFactorVerifyController {
         }
 
         if (TotpUtils.verifyCode(user.getTotpSecret(), code)) {
-            navigateTo("/Dashboard.fxml", "AIVA — Tableau de Bord");
+            if (user.getRoles() != null && user.getRoles().contains("ROLE_ADMIN")) {
+                navigateTo("/Dashboard.fxml", "AIVA — Tableau de Bord");
+            } else {
+                navigateTo("/Front.fxml", "AIVA — Accueil Utilisateur");
+            }
         } else {
             showError("Code incorrect. Veuillez réessayer.");
         }

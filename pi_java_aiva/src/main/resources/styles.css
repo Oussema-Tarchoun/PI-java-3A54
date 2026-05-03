@@ -837,6 +837,13 @@
     -fx-background-color: transparent;
 }
 
+/* Error labels */
+.error-label {
+    -fx-text-fill: #ff6b6b;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
 /* Form labels */
 .form-label {
     -fx-text-fill: rgba(245,245,244,0.65);

@@ -29,19 +29,19 @@
 
                 <HBox spacing="16">
                     <VBox HBox.hgrow="ALWAYS" spacing="2">
-                        <Label fx:id="errName" text="" visible="false" managed="false" style="-fx-text-fill: #ef4444; -fx-font-size: 11px;"/>
+                        <Label fx:id="errName" text="" visible="false" managed="false" style="-fx-text-fill: #ff6b6b; -fx-font-size: 11px;"/>
                         <Label text="Nom complet *" styleClass="form-label"/>
                         <TextField fx:id="tfName" promptText="ex: Jean Dupont" styleClass="form-input" id="tfName"/>
                     </VBox>
                     <VBox HBox.hgrow="ALWAYS" spacing="2">
-                        <Label fx:id="errEmail" text="" visible="false" managed="false" style="-fx-text-fill: #ef4444; -fx-font-size: 11px;"/>
+                        <Label fx:id="errEmail" text="" visible="false" managed="false" style="-fx-text-fill: #ff6b6b; -fx-font-size: 11px;"/>
                         <Label text="Email *" styleClass="form-label"/>
                         <TextField fx:id="tfEmail" promptText="ex: jean@mail.com" styleClass="form-input" id="tfEmail"/>
                     </VBox>
                 </HBox>
 
                 <VBox spacing="2">
-                    <Label fx:id="errPassword" text="" visible="false" managed="false" style="-fx-text-fill: #ef4444; -fx-font-size: 11px;"/>
+                    <Label fx:id="errPassword" text="" visible="false" managed="false" style="-fx-text-fill: #ff6b6b; -fx-font-size: 11px;"/>
                     <Label text="Mot de passe *" styleClass="form-label"/>
                     <PasswordField fx:id="pfPassword" promptText="••••••••" styleClass="form-input" id="pfPassword"/>
                 </VBox>
@@ -97,7 +97,7 @@
                         </ComboBox>
                     </VBox>
                     <VBox HBox.hgrow="ALWAYS" spacing="2">
-                        <Label fx:id="errXP" text="" visible="false" managed="false" style="-fx-text-fill: #ef4444; -fx-font-size: 11px;"/>
+                        <Label fx:id="errXP" text="" visible="false" managed="false" style="-fx-text-fill: #ff6b6b; -fx-font-size: 11px;"/>
                         <Label text="Points XP" styleClass="form-label"/>
                         <TextField fx:id="tfXP" promptText="0" text="0" styleClass="form-input" id="tfXP"/>
                     </VBox>

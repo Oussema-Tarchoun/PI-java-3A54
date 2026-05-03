@@ -70,7 +70,11 @@ public class LoginController {
                     return;
                 }
                 
-                navigateTo("/Dashboard.fxml", "AIVA — Tableau de Bord");
+                if (user.getRoles() != null && user.getRoles().contains("ROLE_ADMIN")) {
+                    navigateTo("/Dashboard.fxml", "AIVA — Tableau de Bord");
+                } else {
+                    navigateTo("/Front.fxml", "AIVA — Accueil Utilisateur");
+                }
             } else {
                 showError("Email ou mot de passe incorrect.");
             }

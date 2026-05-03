@@ -46,14 +46,14 @@
             <VBox spacing="16">
 
                 <VBox spacing="2">
-                    <Label fx:id="errEmail" text="" visible="false" managed="false" style="-fx-text-fill: #ef4444; -fx-font-size: 11px;"/>
+                    <Label fx:id="errEmail" text="" visible="false" managed="false" style="-fx-text-fill: #ff6b6b; -fx-font-size: 11px;"/>
                     <Label text="ADRESSE EMAIL" styleClass="form-label"/>
                     <TextField fx:id="tfEmail" promptText="admin@exemple.com"
                                styleClass="form-input" id="tfLoginEmail"/>
                 </VBox>
 
                 <VBox spacing="2">
-                    <Label fx:id="errPassword" text="" visible="false" managed="false" style="-fx-text-fill: #ef4444; -fx-font-size: 11px;"/>
+                    <Label fx:id="errPassword" text="" visible="false" managed="false" style="-fx-text-fill: #ff6b6b; -fx-font-size: 11px;"/>
                     <Label text="MOT DE PASSE" styleClass="form-label"/>
                     <PasswordField fx:id="pfPassword" promptText="••••••••"
                                   styleClass="form-input" id="pfLoginPassword"

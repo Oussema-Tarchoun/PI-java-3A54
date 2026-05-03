@@ -41,7 +41,7 @@
             <!-- Form -->
             <VBox spacing="20">
                 <VBox spacing="2">
-                    <Label fx:id="errCode" text="" visible="false" managed="false" style="-fx-text-fill: #ef4444; -fx-font-size: 11px;"/>
+                    <Label fx:id="errCode" text="" visible="false" managed="false" style="-fx-text-fill: #ff6b6b; -fx-font-size: 11px;"/>
                     <Label styleClass="form-label" text="CODE DE VÉRIFICATION *" />
                     <TextField fx:id="tfVerificationCode" alignment="CENTER" prefHeight="50" promptText="000000" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-background-color: rgba(255,255,255,0.05); -fx-text-fill: #34d399; -fx-border-color: rgba(52,211,153,0.3); -fx-border-radius: 10; -fx-background-radius: 10;" styleClass="form-input" />
                 </VBox>

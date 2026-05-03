@@ -46,14 +46,14 @@
 
                 <HBox spacing="12">
                     <VBox spacing="2" HBox.hgrow="ALWAYS">
-                        <Label fx:id="errName" text="" visible="false" managed="false" style="-fx-text-fill: #ef4444; -fx-font-size: 11px;"/>
+                        <Label fx:id="errName" text="" visible="false" managed="false" style="-fx-text-fill: #ff6b6b; -fx-font-size: 11px;"/>
                         <Label styleClass="form-label" text="NOM COMPLET *" />
                         <TextField id="tfRegisterName" fx:id="tfName" promptText="Jean Dupont" styleClass="form-input" />
                     </VBox>
                 </HBox>
  
                 <VBox spacing="2">
-                    <Label fx:id="errEmail" text="" visible="false" managed="false" style="-fx-text-fill: #ef4444; -fx-font-size: 11px;"/>
+                    <Label fx:id="errEmail" text="" visible="false" managed="false" style="-fx-text-fill: #ff6b6b; -fx-font-size: 11px;"/>
                     <Label styleClass="form-label" text="ADRESSE EMAIL *" />
                     <TextField id="tfRegisterEmail" fx:id="tfEmail" promptText="jean@exemple.com" styleClass="form-input" />
                 </VBox>
@@ -64,13 +64,13 @@
                 </VBox>
  
                 <VBox spacing="2">
-                    <Label fx:id="errPassword" text="" visible="false" managed="false" style="-fx-text-fill: #ef4444; -fx-font-size: 11px;"/>
+                    <Label fx:id="errPassword" text="" visible="false" managed="false" style="-fx-text-fill: #ff6b6b; -fx-font-size: 11px;"/>
                     <Label styleClass="form-label" text="MOT DE PASSE *" />
                     <PasswordField id="pfRegisterPassword" fx:id="pfPassword" promptText="••••••••" styleClass="form-input" />
                 </VBox>
  
                 <VBox spacing="2">
-                    <Label fx:id="errConfirm" text="" visible="false" managed="false" style="-fx-text-fill: #ef4444; -fx-font-size: 11px;"/>
+                    <Label fx:id="errConfirm" text="" visible="false" managed="false" style="-fx-text-fill: #ff6b6b; -fx-font-size: 11px;"/>
                     <Label styleClass="form-label" text="CONFIRMER LE MOT DE PASSE *" />
                     <PasswordField id="pfRegisterConfirm" fx:id="pfConfirm" onAction="#handleRegister" promptText="••••••••" styleClass="form-input" />
                 </VBox>

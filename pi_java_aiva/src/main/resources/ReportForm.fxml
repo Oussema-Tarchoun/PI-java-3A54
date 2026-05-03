@@ -16,20 +16,20 @@
     <Label fx:id="lblTitle" text="Nouveau Rapport" styleClass="card-title" style="-fx-font-size: 18px;"/>
     
     <VBox spacing="2">
-        <Label fx:id="errTitle" text="" visible="false" managed="false" style="-fx-text-fill: #ef4444; -fx-font-size: 11px;"/>
+        <Label fx:id="errTitle" text="" visible="false" managed="false" style="-fx-text-fill: #ff6b6b; -fx-font-size: 11px;"/>
         <Label text="Titre *" styleClass="form-label"/>
         <TextField fx:id="tfTitle" promptText="Titre du rapport" styleClass="form-input"/>
     </VBox>
 
     <VBox spacing="2" VBox.vgrow="ALWAYS">
-        <Label fx:id="errDescription" text="" visible="false" managed="false" style="-fx-text-fill: #ef4444; -fx-font-size: 11px;"/>
+        <Label fx:id="errDescription" text="" visible="false" managed="false" style="-fx-text-fill: #ff6b6b; -fx-font-size: 11px;"/>
         <Label text="Description *" styleClass="form-label"/>
         <TextArea fx:id="taDescription" promptText="Détails du rapport..." 
                   prefHeight="150" wrapText="true" styleClass="text-area"/>
     </VBox>
 
     <Label fx:id="lblError" text="Veuillez remplir tous les champs." 
-           style="-fx-text-fill: #ef4444; -fx-font-size: 11;" visible="false"/>
+           style="-fx-text-fill: #ff6b6b; -fx-font-size: 11;" visible="false"/>
 
     <HBox spacing="10" alignment="CENTER_RIGHT">
         <Button text="Annuler" onAction="#handleCancel" styleClass="btn-secondary"/>
